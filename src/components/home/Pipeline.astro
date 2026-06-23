@@ -1,0 +1,172 @@
+---
+/**
+ * Pipeline — the EARNED 4-stage numbered signal path (per the design system).
+ * Numbering is genuine because order is real:
+ *   01 Capture → 02 Gate (Silero VAD) → 03 Decode (Whisper) → 04 Broadcast
+ *   (ws://127.0.0.1:8765).
+ * Vertical emerald spine connects the stages; each step shows its REAL artifact
+ * as a mono code chip. Big numerals are neon (large/bold law); icons are inline
+ * lucide SVG with currentColor (emerald active). All copy from the product spec
+ * via src/i18n/pages/home.ts. Answer-first H2; one `.section-glow`.
+ *
+ * Props: copy = HomeCopy["pipeline"].
+ */
+import type { PipelineStage } from "../../i18n/pages/home";
+
+interface Props {
+  copy: {
+    eyebrow: string;
+    heading: string;
+    intro: string;
+    stages: PipelineStage[];
+  };
+}
+
+const { copy } = Astro.props;
+
+// Inline lucide path data (stroke 1.75, 24px, currentColor) keyed by concept.
+const ICON_PATHS: Record<PipelineStage["icon"], string> = {
+  mic: '<path d="M12 19v3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><rect x="9" y="2" width="6" height="13" rx="3"/>',
+  "audio-waveform":
+    '<path d="M2 13a2 2 0 0 0 2-2V7a2 2 0 0 1 4 0v13a2 2 0 0 0 4 0V4a2 2 0 0 1 4 0v13a2 2 0 0 0 4 0v-4a2 2 0 0 1 2-2"/>',
+  cpu: '<path d="M12 20v2"/><path d="M12 2v2"/><path d="M17 20v2"/><path d="M17 2v2"/><path d="M2 12h2"/><path d="M2 17h2"/><path d="M2 7h2"/><path d="M20 12h2"/><path d="M20 17h2"/><path d="M20 7h2"/><path d="M7 20v2"/><path d="M7 2v2"/><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="8" y="8" width="8" height="8" rx="1"/>',
+  "share-2":
+    '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/>',
+};
+---
+
+<section class="section section-glow pipe" aria-labelledby="pipe-h2">
+  <div class="container">
+    <p class="eyebrow">{copy.eyebrow}</p>
+    <h2 id="pipe-h2" class="pipe-heading">{copy.heading}</h2>
+    <p class="pipe-intro">{copy.intro}</p>
+
+    <ol class="pipe-list" role="list">
+      {
+        copy.stages.map((stage) => (
+          <li class="pipe-step">
+            <div class="pipe-spine" aria-hidden="true">
+              <span class="pipe-num">{stage.n}</span>
+              <span class="pipe-icon">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.75"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                  set:html={ICON_PATHS[stage.icon]}
+                />
+              </span>
+            </div>
+            <div class="pipe-body">
+              <h3 class="pipe-title">{stage.title}</h3>
+              <p class="pipe-text">{stage.body}</p>
+              <code class="pipe-artifact">{stage.artifact}</code>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .pipe-heading {
+    font-size: var(--text-2xl);
+    margin: var(--space-3) 0 var(--space-4);
+    max-width: var(--measure);
+  }
+  .pipe-intro {
+    color: var(--color-text-muted);
+    font-size: var(--text-base);
+    margin: 0 0 var(--space-9);
+  }
+
+  .pipe-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .pipe-step {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-5);
+  }
+
+  /* Vertical emerald spine: the connector line lives on the spine column. */
+  .pipe-spine {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    position: relative;
+  }
+  .pipe-spine::after {
+    content: "";
+    width: 1px;
+    flex: 1;
+    background: linear-gradient(
+      to bottom,
+      var(--color-green),
+      var(--color-border)
+    );
+    margin-top: var(--space-2);
+  }
+  .pipe-step:last-child .pipe-spine::after {
+    display: none;
+  }
+  .pipe-num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--color-neon); /* big numerals — neon large/bold law */
+    line-height: 1;
+  }
+  .pipe-icon {
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-green);
+    color: var(--color-green);
+    background: var(--color-green-faint);
+    flex-shrink: 0;
+  }
+
+  .pipe-body {
+    padding-bottom: var(--space-8);
+  }
+  .pipe-step:last-child .pipe-body {
+    padding-bottom: 0;
+  }
+  .pipe-title {
+    font-size: var(--text-lg);
+    margin: 0 0 var(--space-2);
+  }
+  .pipe-text {
+    color: var(--color-text);
+    font-size: var(--text-sm);
+    line-height: 1.7;
+    margin: 0 0 var(--space-3);
+    max-width: var(--measure);
+  }
+  .pipe-artifact {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-green);
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 4px 10px;
+  }
+</style>

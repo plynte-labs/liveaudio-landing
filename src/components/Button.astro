@@ -1,0 +1,81 @@
+---
+/**
+ * Button — THE SIGNAL DESK button system (per the design system).
+ *
+ * Variants (map to the .btn* classes in global.css — NO invented classes):
+ *   primary    -> .btn .btn-primary  (emerald fill, the ONE glow object; every
+ *                 Primary on the site is a Download path). Near-black text 7.91:1.
+ *   secondary  -> .btn .btn-secondary (ghost border, emerald on hover, NO glow).
+ *   tertiary   -> .btn-tertiary       (bare emerald mono link + arrow).
+ *   ghost-icon -> .btn .btn-secondary square icon-only (e.g. GitHub chip).
+ *
+ * Renders an <a> when `href` is provided, otherwise a <button>.
+ * 44px min tap target + focus-visible emerald ring come from global.css.
+ * Sizing/squaring is expressed with design tokens via inline style (tokens are
+ * the only allowed source of values — never a hardcoded hex/px outside tokens).
+ */
+type Variant = "primary" | "secondary" | "tertiary" | "ghost-icon";
+type Size = "sm" | "md" | "lg";
+
+interface Props {
+  variant?: Variant;
+  href?: string;
+  label?: string;
+  /** aria-label override (required for ghost-icon / icon-only buttons). */
+  ariaLabel?: string;
+  icon?: boolean;
+  size?: Size;
+  class?: string;
+  /** Extra passthrough attributes (target, rel, data-*, etc). */
+  [key: string]: unknown;
+}
+
+const {
+  variant = "primary",
+  href,
+  label,
+  ariaLabel,
+  icon = false,
+  size = "md",
+  class: className = "",
+  ...rest
+} = Astro.props;
+
+const variantClass: Record<Variant, string> = {
+  primary: "btn btn-primary",
+  secondary: "btn btn-secondary",
+  tertiary: "btn-tertiary",
+  "ghost-icon": "btn btn-secondary",
+};
+
+// Size + ghost-icon squaring via tokens only (no hardcoded values).
+const sizeStyle: Record<Size, string> = {
+  sm: "min-height:44px;padding-inline:var(--space-4);font-size:var(--text-sm);",
+  md: "",
+  lg: "min-height:52px;padding-inline:var(--space-7);font-size:var(--text-base);",
+};
+const iconOnlyStyle =
+  variant === "ghost-icon"
+    ? "padding-inline:0;width:44px;justify-content:center;aspect-ratio:1;"
+    : "";
+
+const classes = [variantClass[variant], className].filter(Boolean).join(" ");
+const inlineStyle = [sizeStyle[size], iconOnlyStyle].filter(Boolean).join("");
+
+const Tag = href ? "a" : "button";
+const labelText = label ?? "";
+const computedAriaLabel = ariaLabel ?? undefined;
+---
+
+<Tag
+  class={classes}
+  href={href}
+  style={inlineStyle || undefined}
+  aria-label={computedAriaLabel}
+  {...rest}
+>
+  <slot name="icon-leading" />
+  {labelText && <span>{labelText}</span>}
+  <slot />
+  <slot name="icon-trailing" />
+</Tag>

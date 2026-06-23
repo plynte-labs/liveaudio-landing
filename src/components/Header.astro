@@ -1,0 +1,318 @@
+---
+/**
+ * Header / Nav — THE SIGNAL DESK sticky glass nav (per the design system).
+ *
+ * Left:   wordmark `LiveAudio` (Inter 800) + mono `v1.2.0` pill + neon live-dot.
+ * Center: mono lowercase links (download / getting-started / obs-setup / docs /
+ *         faq / vs); active link carries a `>` caret + emerald color.
+ * Right:  persistent .btn-primary Download + GitHub icon link + en/es toggle.
+ * Mobile: the desktop center/right collapse; the vanilla MobileNav takes over.
+ *
+ * Props: lang, path (current path, used for active state + the language toggle).
+ */
+import { t } from "../i18n/ui";
+import { localizedPath, altLangPath, type Locale } from "../i18n/routes";
+import Button from "./Button.astro";
+import MobileNav from "./MobileNav.astro";
+
+interface Props {
+  lang?: Locale;
+  path?: string;
+}
+
+const { lang = "en", path = "/" } = Astro.props;
+const tt = t(lang);
+
+const REPO_URL = "https://github.com/plynte-labs/LiveAudio";
+
+// Logical segments -> localized href + label. Order per the design system.
+const navItems = [
+  { seg: "download", label: tt("nav.download") },
+  { seg: "getting-started", label: tt("nav.gettingStarted") },
+  { seg: "obs-setup", label: tt("nav.obsSetup") },
+  { seg: "docs/overview", label: tt("nav.docs") },
+  { seg: "faq", label: tt("nav.faq") },
+  { seg: "vs", label: tt("nav.vs") },
+].map((item) => ({
+  ...item,
+  href: localizedPath(lang, item.seg),
+}));
+
+// Active = the current path starts with this item's localized href.
+// The docs item points at /docs/overview/ (a real section) but should stay
+// active on EVERY /docs/* subpath, so match the parent /docs/ prefix for it.
+const normalize = (p: string) => (p.endsWith("/") ? p : `${p}/`);
+const currentPath = normalize(path);
+const docsBase = localizedPath(lang, "docs");
+const isActive = (href: string) => {
+  if (href === "/") return false;
+  if (href.startsWith(docsBase)) return currentPath.startsWith(docsBase);
+  return currentPath.startsWith(href);
+};
+
+const homeHref = localizedPath(lang, "");
+const downloadHref = localizedPath(lang, "download");
+const altHref = altLangPath(lang, path);
+const otherLangLabel = lang === "en" ? tt("lang.es") : tt("lang.en");
+
+// Links handed to the MobileNav drawer (already localized).
+const mobileLinks = navItems.map(({ href, label }) => ({ href, label }));
+---
+
+<header class="site-header glass" data-header>
+  <nav class="container site-nav" aria-label="Primary">
+    <!-- Brand -->
+    <a class="brand" href={homeHref} aria-label={tt("brand.name")}>
+      <span class="brand-name">{tt("brand.name")}</span>
+      <span class="pill brand-version">{tt("brand.version")}</span>
+      <span class="live-dot" aria-hidden="true"></span>
+    </a>
+
+    <!-- Center nav (desktop) -->
+    <ul class="nav-links" role="list">
+      {
+        navItems.map((item) => (
+          <li>
+            <a
+              class:list={["nav-link", { "is-active": isActive(item.href) }]}
+              href={item.href}
+              aria-current={isActive(item.href) ? "page" : undefined}
+            >
+              <span class="nav-caret" aria-hidden="true">
+                {">"}
+              </span>
+              <span class="nav-label">{item.label}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <!-- Right actions (desktop) -->
+    <div class="nav-actions">
+      <span class="nav-sep" aria-hidden="true"></span>
+      <Button
+        variant="primary"
+        href={downloadHref}
+        label={tt("cta.download")}
+        size="sm"
+      />
+      <a
+        class="btn btn-secondary nav-icon-link"
+        href={REPO_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={tt("cta.github")}
+        style="padding-inline:0;width:44px;justify-content:center;aspect-ratio:1;"
+      >
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.04-.02-2.05-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5.99.11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.34-5.47-5.95 0-1.32.47-2.39 1.24-3.23-.13-.3-.54-1.53.11-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02 0 2.05.14 3 .4 2.29-1.55 3.3-1.23 3.3-1.23.65 1.65.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.23 0 4.62-2.81 5.64-5.49 5.94.43.37.81 1.1.81 2.22 0 1.61-.01 2.9-.01 3.29 0 .32.21.7.82.58A12.01 12.01 0 0 0 24 12.5C24 5.87 18.63.5 12 .5z"
+          ></path>
+        </svg>
+      </a>
+      <a
+        class="lang-toggle pill"
+        href={altHref}
+        hreflang={lang === "en" ? "es" : "en"}
+        aria-label={`${tt("lang.label")}: ${tt("lang.switchTo")} (${otherLangLabel})`}
+      >
+        {otherLangLabel}
+      </a>
+    </div>
+
+    <!-- Mobile drawer island -->
+    <div class="nav-mobile">
+      <MobileNav
+        links={mobileLinks}
+        downloadHref={downloadHref}
+        downloadLabel={tt("cta.download")}
+        githubHref={REPO_URL}
+        githubLabel={tt("cta.github")}
+        altHref={altHref}
+        altLabel={otherLangLabel}
+        openLabel={tt("nav.openMenu")}
+        closeLabel={tt("nav.closeMenu")}
+      />
+    </div>
+  </nav>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid var(--color-border-soft);
+    /* Top "signal in" hairline — a quiet emerald edge that reads as the
+       instrument's input rail. Faint token only; NO glow (glow law: CTA +
+       live-dot only). */
+    box-shadow: inset 0 1px 0 var(--color-green-faint);
+  }
+  .site-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-6);
+    min-height: 64px;
+  }
+  /* Every flex zone may shrink without forcing horizontal overflow. */
+  .site-nav > * {
+    min-width: 0;
+  }
+
+  /* Brand — tight lockup so wordmark + version pill + live-dot read as one
+     instrument badge, distinct from the mono link group. */
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-text-strong);
+    flex: 0 0 auto;
+  }
+  .brand:hover {
+    text-decoration: none;
+  }
+  .brand-name {
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    font-size: var(--text-lg);
+  }
+  .brand-version {
+    text-transform: none;
+    /* sit closer to the wordmark than to the live-dot */
+    margin-inline-start: calc(var(--space-1) * -1);
+  }
+
+  /* Center links — a discrete control group centered between brand and
+     actions. Quiet by default; the active item is the only "lit" channel. */
+  .nav-links {
+    display: none;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    flex: 1 1 auto;
+    justify-content: center;
+    min-width: 0;
+  }
+  .nav-link {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: lowercase;
+    color: var(--color-text-muted);
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+    transition:
+      color 120ms var(--ease-mech),
+      background 120ms var(--ease-mech);
+  }
+  /* Caret is always in the DOM (stable layout, no shift on active change);
+     it collapses to zero width until the channel is active. */
+  .nav-caret {
+    color: var(--color-green);
+    display: inline-block;
+    width: 0;
+    overflow: hidden;
+    opacity: 0;
+    margin-right: -4px; /* cancel the row gap while collapsed */
+    transition:
+      width 140ms var(--ease-mech),
+      opacity 140ms var(--ease-mech),
+      margin-right 140ms var(--ease-mech);
+  }
+  .nav-link:hover {
+    color: var(--color-green);
+    background: var(--color-green-faint);
+    text-decoration: none;
+  }
+  .nav-link.is-active {
+    color: var(--color-green);
+    background: var(--color-green-faint);
+  }
+  .nav-link.is-active .nav-caret {
+    width: 0.7em;
+    opacity: 1;
+    margin-right: 0;
+  }
+  /* Active underline — a precise 2px emerald channel that animates in,
+     reading as a selected/lit signal rather than a hairline. */
+  .nav-link.is-active::after {
+    content: "";
+    position: absolute;
+    left: var(--space-3);
+    right: var(--space-3);
+    bottom: 2px;
+    height: 2px;
+    border-radius: 1px;
+    background: var(--color-green);
+    transform: scaleX(1);
+    transform-origin: left center;
+  }
+
+  /* Right actions — a distinct control cluster, set apart from the link
+     group by a vertical editorial hairline. */
+  .nav-actions {
+    display: none;
+    align-items: center;
+    gap: var(--space-3);
+    flex: 0 0 auto;
+  }
+  .nav-sep {
+    width: 1px;
+    align-self: stretch;
+    margin-block: var(--space-3);
+    margin-inline-end: var(--space-1);
+    background: var(--color-border-soft);
+  }
+  .nav-icon-link {
+    color: var(--color-text-muted);
+  }
+  .nav-icon-link:hover {
+    color: var(--color-green);
+    text-decoration: none;
+  }
+  .lang-toggle {
+    color: var(--color-text-muted);
+    transition:
+      color 120ms var(--ease-mech),
+      border-color 120ms var(--ease-mech);
+  }
+  .lang-toggle:hover {
+    color: var(--color-green);
+    border-color: var(--color-green);
+    text-decoration: none;
+  }
+
+  .nav-mobile {
+    display: flex;
+  }
+
+  @media (min-width: 1024px) {
+    .nav-links,
+    .nav-actions {
+      display: flex;
+    }
+    .nav-mobile {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav-link,
+    .nav-caret,
+    .lang-toggle {
+      transition: none;
+    }
+  }
+</style>

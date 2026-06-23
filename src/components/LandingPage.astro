@@ -1,0 +1,116 @@
+---
+/**
+ * LandingPage — the full Home funnel (EN at `/`, ES mirror at `/es/`).
+ *
+ * Composes the conversion funnel in the exact design system (`/`) order:
+ *   Hero Signal Desk (owns the page's single <h1>)
+ *   → Trust strip
+ *   → 3 objection-killer cards (100% local / Linux / GPU)
+ *   → EARNED 4-stage numbered pipeline (01 capture → 02 gate Silero VAD →
+ *     03 decode Whisper → 04 broadcast ws://127.0.0.1:8765)
+ *   → WebSocket compatibility panel (replaces Kira — verbatim from the product spec)
+ *   → feature bento (hot-swap, profiles, blacklist, session files, diagnostics,
+ *     in-app update)
+ *   → FeaturesGrid island (interactive sandboxes)
+ *   → mini /vs teaser
+ *   → FAQ teaser
+ *   → closing full-width Download module.
+ *
+ * Every claim is traceable to the product spec via src/i18n/pages/home.ts. The Home
+ * carries SoftwareApplication + FAQPage JSON-LD (§10) through Layout's jsonLd.
+ * Marketing page → docked transport bar (transport defaults true). Exactly one
+ * <h1> (in HeroSignalDesk); every section opens answer-first with a mono eyebrow
+ * + H2.
+ *
+ * Props: lang.
+ */
+import Layout from "../layouts/Layout.astro";
+import HeroSignalDesk from "./islands/HeroSignalDesk.tsx";
+import FeaturesGrid from "./islands/FeaturesGrid.tsx";
+
+import TrustStrip from "./home/TrustStrip.astro";
+import ObjectionCards from "./home/ObjectionCards.astro";
+import Pipeline from "./home/Pipeline.astro";
+import LiveDemo from "./home/LiveDemo.astro";
+import WsCompatPanel from "./home/WsCompatPanel.astro";
+import FeatureBento from "./home/FeatureBento.astro";
+import VsTeaser from "./home/VsTeaser.astro";
+import FaqTeaser from "./home/FaqTeaser.astro";
+import ClosingDownload from "./home/ClosingDownload.astro";
+
+import { localizedPath, type Locale } from "../i18n/routes";
+import { homeCopy } from "../i18n/pages/home";
+import {
+  softwareApplication,
+  faqPage,
+  organizationWebSite,
+} from "../i18n/jsonld";
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = "en" } = Astro.props;
+const copy = homeCopy(lang);
+
+const path = localizedPath(lang, "");
+const downloadHref = localizedPath(lang, "download");
+const gettingStartedHref = localizedPath(lang, "getting-started");
+const vsHref = localizedPath(lang, "vs");
+const faqHref = localizedPath(lang, "faq");
+
+// JSON-LD: SoftwareApplication + FAQPage + WebSite (Home, §10). The FAQPage is
+// built from the SAME teaser items the FaqTeaser renders. Filter null nodes
+// (faqPage returns null on an empty list) before handing to Layout.
+const jsonLd = [
+  softwareApplication({ lang }),
+  faqPage(copy.faqTeaser.items),
+  organizationWebSite(),
+].filter((node): node is Record<string, unknown> => node !== null);
+---
+
+<Layout
+  title={copy.meta.title}
+  description={copy.meta.description}
+  lang={lang}
+  path={path}
+  jsonLd={jsonLd}
+  transport={true}
+>
+  <!-- 1 · Signature hero (owns the page's single <h1>) -->
+  <HeroSignalDesk client:visible lang={lang} />
+
+  <!-- 2 · Trust strip -->
+  <TrustStrip items={copy.trust.items} label={copy.trust.label} />
+
+  <!-- 3 · Objection-killer cards (100% local / Linux / GPU) -->
+  <ObjectionCards copy={copy.objections} />
+
+  <!-- 4 · EARNED 4-stage numbered pipeline -->
+  <Pipeline copy={copy.pipeline} />
+
+  <!-- 4b · Live Demo — explain the pipeline, then SHOW it real (unedited capture) -->
+  <LiveDemo lang={lang} />
+
+  <!-- 5 · WebSocket compatibility panel (replaces Kira) -->
+  <WsCompatPanel copy={copy.ws} />
+
+  <!-- 6 · Feature bento -->
+  <FeatureBento copy={copy.bento} />
+
+  <!-- 7 · Interactive feature sandboxes island -->
+  <FeaturesGrid client:visible lang={lang} />
+
+  <!-- 9 · Mini /vs teaser -->
+  <VsTeaser copy={copy.vsTeaser} vsHref={vsHref} />
+
+  <!-- 10 · FAQ teaser -->
+  <FaqTeaser copy={copy.faqTeaser} faqHref={faqHref} />
+
+  <!-- 11 · Closing full-width Download module -->
+  <ClosingDownload
+    copy={copy.closing}
+    downloadHref={downloadHref}
+    secondaryHref={gettingStartedHref}
+  />
+</Layout>

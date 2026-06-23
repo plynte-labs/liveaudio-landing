@@ -1,0 +1,85 @@
+---
+/**
+ * ClosingDownload — the closing full-width Download module (the design system
+ * Home: "closing full-width Download module"; cross-page: every page closes with
+ * the Download module). Answer-first H2 + the "Free & open-source" line
+ * (from the product spec, verbatim per locale) + the primary Download CTA (the
+ * ONE glow object, the hero of every marketing page) and a secondary
+ * "How it works" link. One `.section-glow`.
+ *
+ * Props: copy = HomeCopy["closing"], downloadHref, secondaryHref.
+ */
+import Button from "../Button.astro";
+
+interface Props {
+  copy: {
+    eyebrow: string;
+    heading: string;
+    body: string;
+    download: string;
+    secondary: string;
+  };
+  downloadHref: string;
+  secondaryHref: string;
+}
+
+const { copy, downloadHref, secondaryHref } = Astro.props;
+
+// Inline lucide `download` glyph for the primary CTA (leading icon slot).
+const DOWNLOAD_ICON =
+  '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>';
+---
+
+<section class="section section-glow close" aria-labelledby="close-h2">
+  <div class="container close-inner">
+    <p class="eyebrow">{copy.eyebrow}</p>
+    <h2 id="close-h2" class="close-heading">{copy.heading}</h2>
+    <p class="close-body">{copy.body}</p>
+
+    <div class="close-ctas">
+      <Button variant="primary" href={downloadHref} label={copy.download} size="lg">
+        <svg
+          slot="icon-leading"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.75"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          set:html={DOWNLOAD_ICON}
+        />
+      </Button>
+      <Button variant="secondary" href={secondaryHref} label={copy.secondary} size="lg" />
+    </div>
+  </div>
+</section>
+
+<style>
+  .close-inner {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .close-heading {
+    font-size: var(--text-3xl);
+    margin: var(--space-3) 0 var(--space-4);
+    max-width: 20ch;
+  }
+  .close-body {
+    color: var(--color-text);
+    font-size: var(--text-base);
+    line-height: 1.7;
+    max-width: var(--measure);
+    margin: 0 0 var(--space-8);
+  }
+  .close-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+  }
+</style>

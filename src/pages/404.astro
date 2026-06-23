@@ -1,0 +1,80 @@
+---
+/**
+ * 404 — branded "page not found" (THE SIGNAL DESK).
+ *
+ * Astro serves this for any unmatched route. It reuses the standard Layout
+ * shell (Header + Footer come with it) and stays on-brand: mono eyebrow ->
+ * answer-first H1 -> short message -> the primary Download CTA (every Primary
+ * on the site is a Download path) -> tertiary links back home / to the docs.
+ *
+ * Utility page: no transport bar (transport={false}), like docs/faq, so the
+ * docked CTA never floats over this short message.
+ *
+ * Tokens only — no hardcoded colors. EN only (404 has no localized mirror).
+ */
+import Layout from "../layouts/Layout.astro";
+import Button from "../components/Button.astro";
+
+const homeHref = "/";
+const downloadHref = "/download/";
+const docsHref = "/docs/overview/";
+---
+
+<Layout
+  title="Page not found"
+  description="The page you were looking for does not exist. Head back home or download LiveAudio v1.2.0."
+  lang="en"
+  path="/404/"
+  transport={false}
+>
+  <section class="section section-glow" aria-labelledby="nf-h1">
+    <div class="container nf">
+      <p class="eyebrow nf-code">404 · signal lost</p>
+      <h1 id="nf-h1" class="nf-title">Page not found.</h1>
+      <p class="nf-body">
+        That route does not exist on the Signal Desk. The page may have moved,
+        or the link was mistyped. You can still grab LiveAudio v1.2.0 below, or
+        head back to a known page.
+      </p>
+
+      <div class="nf-actions">
+        <Button
+          variant="primary"
+          href={downloadHref}
+          label="Download LiveAudio v1.2.0 (free)"
+        />
+        <a class="btn-tertiary nf-link" href={homeHref}>Back to home →</a>
+        <a class="btn-tertiary nf-link" href={docsHref}>Read the docs →</a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .nf {
+    max-width: var(--measure);
+  }
+  .nf-code {
+    color: var(--color-text-muted);
+  }
+  .nf-title {
+    font-size: var(--text-3xl);
+    margin: var(--space-3) 0 var(--space-4);
+  }
+  .nf-body {
+    color: var(--color-text);
+    font-size: var(--text-lg);
+    margin: 0 0 var(--space-7);
+    max-width: var(--measure);
+  }
+  .nf-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-5);
+  }
+  .nf-link {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+</style>

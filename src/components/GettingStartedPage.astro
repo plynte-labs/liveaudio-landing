@@ -1,0 +1,671 @@
+---
+/**
+ * GettingStartedPage — /getting-started/ body (EN at /getting-started/,
+ * ES mirror at /es/getting-started/).
+ *
+ * THE SIGNAL DESK numbered "signal timeline" (per the design system's
+ * Pipeline and /getting-started/ layout): the EARNED, real activation sequence for
+ * LiveAudio v1.2.0, on a single vertical emerald spine. Numbering is honest —
+ * each step is a real ordered action the user performs:
+ *
+ *   01  get LiveAudio   installer (.exe / tarball) vs source via `uv`
+ *   02  first run       provisions Python + deps; first-run internet only (amber)
+ *   03  GPU auto-detect  CPU works; CUDA driver >= 525 / VRAM >= 4 GiB ladder
+ *   04  pick + START SYSTEM  Fast/Balanced/Quality/Stable Streaming -> START SYSTEM
+ *
+ * Every claim is traceable to the product spec (GPU optional; first-run
+ * footprint, SmartScreen, libportaudio2). Copy lives in
+ * src/i18n/pages/getting-started.ts — this file is structure + tokens only.
+ *
+ * JSON-LD: HowTo (steps mirror the timeline 1:1) + SoftwareApplication + WebSite
+ * for entity grounding (§10). Transport bar ON (marketing page).
+ *
+ * Page shape (cross-page contract): mono eyebrow -> answer-first single H1 ->
+ * numbered timeline (per-step H2) -> closing Download module (the page hero CTA).
+ *
+ * Colors are tokens only (emerald spine/numerals, amber caveats/timing, muted
+ * captions, off-white body). No hardcoded hex. The two amber semantics on this
+ * page are warn/verify (SmartScreen, libportaudio2) and first-run internet.
+ *
+ * Props: lang.
+ */
+import Layout from "../layouts/Layout.astro";
+import Button from "./Button.astro";
+import { localizedPath, type Locale } from "../i18n/routes";
+import { t } from "../i18n/ui";
+import {
+  gettingStartedCopy,
+  gettingStartedHowToSteps,
+} from "../i18n/pages/getting-started";
+import {
+  howTo,
+  softwareApplication,
+  organizationWebSite,
+} from "../i18n/jsonld";
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = "en" } = Astro.props;
+const tt = t(lang);
+const path = localizedPath(lang, "getting-started");
+const downloadHref = localizedPath(lang, "download");
+
+const copy = gettingStartedCopy(lang);
+
+// Chrome strings for the inline code-block copy button (§7 "Code block").
+const copyLabel = tt("cta.copy");
+const copiedLabel = tt("cta.copied");
+
+/** Map a CodeLine kind to its in-palette syntax tint class. */
+const codeLineClass: Record<"comment" | "command" | "value", string> = {
+  comment: "gs-code-comment",
+  command: "gs-code-command",
+  value: "gs-code-value",
+};
+
+// JSON-LD: HowTo built from the SAME timeline the page renders (steps mirror
+// the on-page numbered sequence 1:1), plus SoftwareApplication + WebSite for
+// entity grounding (§10). Filter nulls before passing to Layout.
+const jsonLd = [
+  howTo({ name: copy.howToName, steps: gettingStartedHowToSteps(copy) }),
+  softwareApplication({ lang }),
+  organizationWebSite(),
+].filter((node): node is Record<string, unknown> => node !== null);
+
+/** Map a GPU-ladder tone to a token-driven class (tint only, never text). */
+const rungToneClass: Record<"go" | "warn" | "info", string> = {
+  go: "rung-go",
+  warn: "rung-warn",
+  info: "rung-info",
+};
+---
+
+<Layout
+  title={copy.title}
+  description={copy.description}
+  lang={lang}
+  path={path}
+  jsonLd={jsonLd}
+>
+  <!-- Intro: mono eyebrow -> answer-first single H1 -> lede -->
+  <section class="section section-glow" aria-labelledby="gs-h1">
+    <div class="container gs-head">
+      <p class="eyebrow">{copy.eyebrow}</p>
+      <h1 id="gs-h1" class="gs-title">{copy.h1}</h1>
+      <p class="gs-intro">{copy.intro}</p>
+    </div>
+  </section>
+
+  <!-- Numbered signal timeline on a single vertical emerald spine. -->
+  <section class="section gs-timeline-section" aria-labelledby="gs-h1">
+    <div class="container">
+      <p class="eyebrow gs-spine-label">{copy.spineLabel}</p>
+
+      <ol class="gs-timeline" aria-label={copy.timelineLabel}>
+        {
+          copy.steps.map((step) => (
+            <li class="gs-step">
+              <div class="gs-spine" aria-hidden="true">
+                <span class="gs-num mono">{step.num}</span>
+              </div>
+
+              <div class="gs-step-body">
+                <p class="gs-kicker mono">{step.kicker}</p>
+                <h2 class="gs-step-title">{step.title}</h2>
+                <p class="gs-lede">{step.lede}</p>
+
+                {step.flag && (
+                  <p class="gs-flag">
+                    <span class="pill pill-amber">
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.75"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+                        <path d="M12 9v4" />
+                        <path d="M12 17h.01" />
+                      </svg>
+                      {step.flag}
+                    </span>
+                  </p>
+                )}
+
+                {/* Step 01: install tracks (installer vs source/uv). */}
+                {step.tracks && (
+                  <div class="gs-tracks">
+                    {step.tracks.map((track) => (
+                      <article class="card gs-track">
+                        <p class="gs-track-kicker mono">{track.kicker}</p>
+                        <h3 class="gs-track-title">{track.title}</h3>
+                        <p class="gs-track-body">{track.body}</p>
+                        {track.code && (
+                          <div class="code-block gs-code">
+                            <div class="code-head">
+                              <span class="gs-dots" aria-hidden="true">
+                                <span class="gs-dot gs-dot-on" />
+                                <span class="gs-dot" />
+                                <span class="gs-dot" />
+                              </span>
+                              <span class="gs-code-tab">{track.code.tab}</span>
+                              <button
+                                type="button"
+                                class="gs-copy mono"
+                                data-copy
+                                data-copy-label={copyLabel}
+                                data-copied-label={copiedLabel}
+                              >
+                                {copyLabel}
+                              </button>
+                            </div>
+                            <pre class="gs-code-pre"><code>{track.code.lines.map((line) => (
+                              <span class={`gs-code-line ${codeLineClass[line.kind]}`}>{line.text + "\n"}</span>
+                            ))}</code></pre>
+                          </div>
+                        )}
+                        {track.flag && (
+                          <p class="gs-track-flag">
+                            <span class="pill pill-amber">{track.flag}</span>
+                          </p>
+                        )}
+                      </article>
+                    ))}
+                  </div>
+                )}
+
+                {/* A standalone code block on a step (none today, but supported). */}
+                {step.code && (
+                  <div class="gs-step-code">
+                    <div class="code-block gs-code">
+                      <div class="code-head">
+                        <span class="gs-dots" aria-hidden="true">
+                          <span class="gs-dot gs-dot-on" />
+                          <span class="gs-dot" />
+                          <span class="gs-dot" />
+                        </span>
+                        <span class="gs-code-tab">{step.code.tab}</span>
+                        <button
+                          type="button"
+                          class="gs-copy mono"
+                          data-copy
+                          data-copy-label={copyLabel}
+                          data-copied-label={copiedLabel}
+                        >
+                          {copyLabel}
+                        </button>
+                      </div>
+                      <pre class="gs-code-pre"><code>{step.code.lines.map((line) => (
+                        <span class={`gs-code-line ${codeLineClass[line.kind]}`}>{line.text + "\n"}</span>
+                      ))}</code></pre>
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 03: GPU auto-detect ladder. */}
+                {step.rungs && (
+                  <ul class="gs-ladder" aria-label={copy.detectLabel}>
+                    {step.rungs.map((rung) => (
+                      <li class={`gs-rung ${rungToneClass[rung.tone]}`}>
+                        <span class="gs-rung-label mono">{rung.label}</span>
+                        <span class="gs-rung-detail">{rung.detail}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {/* Step 04: profile chips (recommended one highlighted). */}
+                {step.profiles && (
+                  <ul class="gs-profiles" aria-label={copy.profilesLabel}>
+                    {step.profiles.map((profile) => (
+                      <li
+                        class:list={[
+                          "gs-profile",
+                          profile.recommended && "gs-profile-rec",
+                        ]}
+                      >
+                        <span class="gs-profile-dot" aria-hidden="true" />
+                        <span class="gs-profile-name">{profile.name}</span>
+                        <span class="gs-profile-note mono">{profile.note}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {step.note && <p class="gs-note mono">{step.note}</p>}
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- Closing Download module — the Download CTA is the hero of every page. -->
+  <section class="section" aria-labelledby="gs-closing-h2">
+    <div class="container gs-closing">
+      <p class="eyebrow">{copy.closingEyebrow}</p>
+      <h2 id="gs-closing-h2" class="gs-closing-heading">
+        {copy.closingHeading}
+      </h2>
+      <p class="gs-closing-body">{copy.closingBody}</p>
+      <Button variant="primary" href={downloadHref} label={copy.download} />
+    </div>
+  </section>
+</Layout>
+
+<style>
+  /* ---- Intro ---- */
+  .gs-head {
+    max-width: var(--measure);
+  }
+  .gs-title {
+    font-size: var(--text-3xl);
+    margin: var(--space-3) 0 var(--space-4);
+  }
+  .gs-intro {
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+    margin: 0;
+  }
+
+  /* ---- Timeline section ---- */
+  .gs-timeline-section {
+    padding-block-start: 0;
+  }
+  .gs-spine-label {
+    margin: 0 0 var(--space-7);
+  }
+
+  .gs-timeline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-10);
+  }
+
+  /* Each step: numeral spine column + content column. */
+  .gs-step {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--space-5);
+    position: relative;
+  }
+
+  /* The single continuous emerald spine: a 1px rule running through the
+     numeral gutter. Each numeral sits on the spine; the line connects them. */
+  .gs-spine {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    width: 48px;
+  }
+  .gs-spine::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: calc(-1 * var(--space-10));
+    left: 50%;
+    width: 1px;
+    transform: translateX(-50%);
+    background: linear-gradient(
+      to bottom,
+      var(--color-green),
+      var(--color-border)
+    );
+  }
+  /* The last step's connector should not run past the final numeral. */
+  .gs-step:last-child .gs-spine::before {
+    bottom: auto;
+    height: var(--space-9);
+  }
+
+  .gs-num {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 9999px;
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-green);
+    color: var(--color-green);
+    font-size: var(--text-base);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .gs-step-body {
+    min-width: 0;
+    padding-block-start: var(--space-2);
+  }
+  .gs-kicker {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    margin: 0 0 var(--space-2);
+  }
+  .gs-step-title {
+    font-size: var(--text-xl);
+    margin: 0 0 var(--space-3);
+  }
+  .gs-lede {
+    color: var(--color-text);
+    margin: 0;
+    max-width: var(--measure);
+    overflow-wrap: anywhere;
+  }
+
+  /* ---- Amber caveat flag ---- */
+  .gs-flag {
+    margin: var(--space-4) 0 0;
+    max-width: none;
+  }
+  .gs-flag .pill svg {
+    flex-shrink: 0;
+  }
+
+  /* ---- Step 01 install tracks ---- */
+  .gs-tracks {
+    margin-top: var(--space-6);
+    display: grid;
+    gap: var(--space-5);
+  }
+  @media (min-width: 1024px) {
+    .gs-tracks {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+  }
+  .gs-track {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    /* Holds a code block whose <pre> scrolls; let the card shrink in the
+       1fr 1fr grid so a long command line can't widen the row. */
+    min-width: 0;
+  }
+  .gs-track-kicker {
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+  .gs-track-title {
+    font-size: var(--text-lg);
+    margin: 0;
+  }
+  .gs-track-body {
+    color: var(--color-text);
+    font-size: var(--text-sm);
+    margin: 0;
+    max-width: none;
+    /* Names like LiveAudio-1.2.0-linux-x64.tar.gz appear inline; allow breaks. */
+    overflow-wrap: anywhere;
+  }
+  .gs-track-flag {
+    margin: 0;
+    max-width: none;
+  }
+
+  .gs-step-code {
+    margin-top: var(--space-5);
+    max-width: 720px;
+  }
+
+  /* ---- Inline code block (§7 "Code block") ---- */
+  .gs-code {
+    margin-top: var(--space-4);
+  }
+  .gs-code .code-head {
+    /* 3 dots | filename/port tab | copy — no fake traffic lights */
+    justify-content: flex-start;
+  }
+  .gs-dots {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .gs-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: var(--color-ghost);
+  }
+  .gs-dot-on {
+    background: var(--color-green);
+  }
+  .gs-code-tab {
+    color: var(--color-text-muted);
+  }
+  .gs-copy {
+    margin-left: auto;
+    background: transparent;
+    border: 1px solid var(--color-border-soft);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    padding: 2px var(--space-3);
+    min-height: 28px;
+    cursor: pointer;
+    transition:
+      color 120ms var(--ease-mech),
+      border-color 120ms var(--ease-mech);
+  }
+  .gs-copy:hover {
+    color: var(--color-green);
+    border-color: var(--color-green);
+  }
+  .gs-copy[data-copied] {
+    color: var(--color-green);
+    border-color: var(--color-green);
+  }
+  .gs-code-pre {
+    margin: 0;
+    padding: var(--space-4);
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: 1.7;
+    -webkit-overflow-scrolling: touch;
+  }
+  .gs-code-pre code {
+    font-family: inherit;
+  }
+  .gs-code-line {
+    display: block;
+    white-space: pre;
+  }
+  /* Syntax tint — in-palette only (comments muted, commands body, one live
+     value neon). Keys are not used in these shell snippets. Comments carry
+     meaningful instructions, so they use --color-text-muted (AA), not the
+     decoration-only ghost token. */
+  .gs-code-comment {
+    color: var(--color-text-muted);
+  }
+  .gs-code-command {
+    color: var(--color-text);
+  }
+  .gs-code-value {
+    color: var(--color-neon);
+  }
+
+  /* ---- Step 03 GPU auto-detect ladder ---- */
+  .gs-ladder {
+    list-style: none;
+    margin: var(--space-6) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2);
+    max-width: 720px;
+  }
+  .gs-rung {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: baseline;
+    gap: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-left-width: 2px;
+    border-radius: var(--radius-sm);
+  }
+  .gs-rung-label {
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .gs-rung-detail {
+    color: var(--color-text);
+    font-size: var(--text-sm);
+  }
+  /* Tone = left-border + label color (token only, never body text). */
+  .rung-go {
+    border-left-color: var(--color-green);
+  }
+  .rung-go .gs-rung-label {
+    color: var(--color-green);
+  }
+  .rung-info {
+    border-left-color: var(--color-border);
+  }
+  .rung-info .gs-rung-label {
+    color: var(--color-text-muted);
+  }
+  .rung-warn {
+    border-left-color: var(--color-amber);
+  }
+  .rung-warn .gs-rung-label {
+    color: var(--color-amber);
+  }
+
+  /* ---- Step 04 profile chips ---- */
+  .gs-profiles {
+    list-style: none;
+    margin: var(--space-6) 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+  .gs-profile {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+  }
+  .gs-profile-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: var(--color-ghost);
+    flex-shrink: 0;
+  }
+  .gs-profile-name {
+    color: var(--color-text-strong);
+    font-weight: 600;
+    font-size: var(--text-sm);
+  }
+  .gs-profile-note {
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+  }
+  /* Recommended default (Balanced): emerald signal. */
+  .gs-profile-rec {
+    border-color: var(--color-green);
+    background: var(--color-green-faint);
+  }
+  .gs-profile-rec .gs-profile-dot {
+    background: var(--color-green);
+  }
+  .gs-profile-rec .gs-profile-note {
+    color: var(--color-green);
+  }
+
+  /* ---- Per-step mono micro-note ---- */
+  .gs-note {
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    margin: var(--space-5) 0 0;
+    max-width: var(--measure);
+    /* Inline literals (portable.marker, sudo apt install libportaudio2). */
+    overflow-wrap: anywhere;
+  }
+
+  /* ---- Closing Download module ---- */
+  .gs-closing-heading {
+    font-size: var(--text-2xl);
+    margin: var(--space-3) 0 var(--space-4);
+    max-width: var(--measure);
+  }
+  .gs-closing-body {
+    color: var(--color-text);
+    margin: 0 0 var(--space-6);
+    max-width: var(--measure);
+  }
+
+  /* ---- Mobile: collapse the numeral gutter ---- */
+  @media (max-width: 640px) {
+    .gs-step {
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: var(--space-4);
+    }
+    .gs-spine {
+      width: 36px;
+    }
+    .gs-num {
+      width: 36px;
+      height: 36px;
+      font-size: var(--text-sm);
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Copy-to-clipboard for the inline code blocks. Reads the sibling <code>
+   * text, writes it to the clipboard, and flips the button to "> copied" for a
+   * moment (labels come from data-* so they stay localized: EN/ES chrome).
+   * Progressive enhancement only — the code is fully readable without JS.
+   */
+  function initCopyButtons(): void {
+    const buttons =
+      document.querySelectorAll<HTMLButtonElement>("button[data-copy]");
+    buttons.forEach((button) => {
+      const block = button.closest(".code-block");
+      const code = block?.querySelector("code");
+      if (!code) return;
+
+      const idleLabel = button.dataset.copyLabel ?? "Copy";
+      const doneLabel = button.dataset.copiedLabel ?? "copied";
+
+      button.addEventListener("click", () => {
+        const text = code.textContent ?? "";
+        void navigator.clipboard
+          ?.writeText(text.replace(/\n+$/, ""))
+          .then(() => {
+            button.textContent = `> ${doneLabel}`;
+            button.setAttribute("data-copied", "");
+            window.setTimeout(() => {
+              button.textContent = idleLabel;
+              button.removeAttribute("data-copied");
+            }, 1600);
+          });
+      });
+    });
+  }
+
+  initCopyButtons();
+  document.addEventListener("astro:page-load", initCopyButtons);
+</script>

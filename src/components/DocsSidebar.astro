@@ -1,0 +1,97 @@
+---
+/**
+ * DocsSidebar — the left column of the /docs/ console (the design system "Docs
+ * layout" / "/docs/[section]/").
+ *
+ * Sticky mono nav listing the 5 doc sections, in nav order. The active section
+ * carries a `>` caret + emerald color (mirrors the Header nav convention). All
+ * labels come from `getDocsNav(lang)` so EN/ES stay in lockstep with docs.ts.
+ *
+ * On lg+ this renders as the 3/12 sticky rail. Below lg it is wrapped by
+ * DocsPage in a <details> so the nav collapses to a top disclosure (the rail
+ * itself is layout-agnostic; the parent controls placement).
+ *
+ * Props:
+ *   lang    — active locale (drives labels).
+ *   active  — the current section slug (drives caret + aria-current).
+ *   baseHref — localized "/docs/" base ("/docs/" en, "/es/docs/" es); each
+ *              section href is `${baseHref}${slug}/`.
+ */
+import { type Locale } from "../i18n/routes";
+import { getDocsNav, type DocSection } from "../i18n/pages/docs";
+
+interface Props {
+  lang: Locale;
+  active: DocSection;
+  baseHref: string;
+}
+
+const { lang, active, baseHref } = Astro.props;
+
+const nav = getDocsNav(lang).map((item) => ({
+  ...item,
+  href: `${baseHref}${item.slug}/`,
+}));
+---
+
+<nav class="docs-nav" aria-label="Documentation sections">
+  <ul class="docs-nav-list" role="list">
+    {
+      nav.map((item) => {
+        const isActive = item.slug === active;
+        return (
+          <li>
+            <a
+              class:list={["docs-nav-link", { "is-active": isActive }]}
+              href={item.href}
+              aria-current={isActive ? "page" : undefined}
+            >
+              {isActive && (
+                <span class="docs-nav-caret" aria-hidden="true">
+                  {">"}
+                </span>
+              )}
+              <span>{item.label}</span>
+            </a>
+          </li>
+        );
+      })
+    }
+  </ul>
+</nav>
+
+<style>
+  .docs-nav {
+    position: sticky;
+    top: calc(64px + var(--space-6));
+  }
+  .docs-nav-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin: 0;
+    padding: 0;
+  }
+  .docs-nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+    border-left: 1px solid transparent;
+  }
+  .docs-nav-link:hover {
+    color: var(--color-green);
+    text-decoration: none;
+  }
+  .docs-nav-link.is-active {
+    color: var(--color-green);
+    border-left-color: var(--color-green);
+  }
+  .docs-nav-caret {
+    color: var(--color-green);
+  }
+</style>

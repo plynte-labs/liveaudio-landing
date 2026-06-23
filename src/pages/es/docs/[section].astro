@@ -1,0 +1,20 @@
+---
+/**
+ * /es/docs/[section]/ (ES) — thin route wrapper (Spanish mirror).
+ *
+ * Same getStaticPaths over the 5 DOC_SECTIONS as the EN route; DocsPage renders
+ * the Spanish content from src/i18n/pages/docs.ts when lang="es".
+ */
+import DocsPage from "../../../components/DocsPage.astro";
+import { DOC_SECTIONS, type DocSection } from "../../../i18n/pages/docs";
+
+export function getStaticPaths() {
+  return DOC_SECTIONS.map((section) => ({
+    params: { section },
+  }));
+}
+
+const { section } = Astro.params as { section: DocSection };
+---
+
+<DocsPage lang="es" section={section} />

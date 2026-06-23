@@ -1,0 +1,131 @@
+---
+/**
+ * FaqTeaser — the Home FAQ accordion teaser (the design system FAQ accordion,
+ * Home). Questions are from the product spec verbatim; answers ≤2 sentences and
+ * LLM-citable (traceable to the product spec). Built on native `<details>`/`<summary>` so
+ * it works with zero JS and is accessible by default: mono Q-index + Inter 600
+ * question + emerald `chevron-down` that rotates on open. Closes with a tertiary
+ * link to the full `/faq/`. FAQPage JSON-LD is emitted once at the page level
+ * (LandingPage) from this same data — no duplicate graph here.
+ *
+ * Props: copy = HomeCopy["faqTeaser"], faqHref = full FAQ URL.
+ */
+import type { FaqItem } from "../../i18n/jsonld";
+
+interface Props {
+  copy: {
+    eyebrow: string;
+    heading: string;
+    items: FaqItem[];
+    cta: string;
+  };
+  faqHref: string;
+}
+
+const { copy, faqHref } = Astro.props;
+
+/** Two-digit mono Q-index (01, 02, …). */
+function qIndex(i: number): string {
+  return String(i + 1).padStart(2, "0");
+}
+---
+
+<section class="section section-glow faqt" aria-labelledby="faqt-h2">
+  <div class="container">
+    <p class="eyebrow">{copy.eyebrow}</p>
+    <h2 id="faqt-h2" class="faqt-heading">{copy.heading}</h2>
+
+    <div class="faqt-list">
+      {
+        copy.items.map((item, i) => (
+          <details class="faqt-item">
+            <summary class="faqt-q">
+              <span class="faqt-q-index" aria-hidden="true">
+                {qIndex(i)}
+              </span>
+              <span class="faqt-q-text">{item.question}</span>
+              <svg
+                class="faqt-chevron"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.75"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="m6 9 6 6 6-6" />
+              </svg>
+            </summary>
+            <p class="faqt-a">{item.answer}</p>
+          </details>
+        ))
+      }
+    </div>
+
+    <p class="faqt-cta">
+      <a class="btn-tertiary" href={faqHref}>{copy.cta}<span aria-hidden="true"> →</span></a>
+    </p>
+  </div>
+</section>
+
+<style>
+  .faqt-heading {
+    font-size: var(--text-2xl);
+    margin: var(--space-3) 0 var(--space-8);
+    max-width: var(--measure);
+  }
+
+  .faqt-list {
+    border-top: 1px solid var(--color-border-soft);
+    max-width: var(--measure);
+  }
+  .faqt-item {
+    border-bottom: 1px solid var(--color-border-soft);
+  }
+  .faqt-q {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-5) 0;
+    cursor: pointer;
+    list-style: none;
+  }
+  .faqt-q::-webkit-details-marker {
+    display: none;
+  }
+  .faqt-q-index {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    flex-shrink: 0;
+  }
+  .faqt-q-text {
+    flex: 1;
+    font-weight: 600;
+    color: var(--color-text-strong);
+    font-size: var(--text-base);
+  }
+  .faqt-chevron {
+    flex-shrink: 0;
+    color: var(--color-green);
+    transition: transform 180ms var(--ease-mech);
+  }
+  .faqt-item[open] .faqt-chevron {
+    transform: rotate(180deg);
+  }
+  .faqt-a {
+    color: var(--color-text);
+    font-size: var(--text-sm);
+    line-height: 1.7;
+    margin: 0;
+    padding: 0 0 var(--space-5) calc(var(--space-4) + 2ch);
+  }
+
+  .faqt-cta {
+    margin: var(--space-7) 0 0;
+  }
+</style>

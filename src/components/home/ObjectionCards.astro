@@ -1,0 +1,97 @@
+---
+/**
+ * ObjectionCards — three answer-first objection-killer cards
+ * (card pattern per the design system: "100% local / Linux / GPU").
+ *
+ * Each card = mono `// kicker` + answer-first H3 (the question IS the heading)
+ * + 2-line substantiation + mono micro-spec line. The Linux card carries the
+ * amber Windows-only loopback flag (per the product spec — loopback is
+ * Windows-only; amber = warn/verify law). One `.section-glow` per section;
+ * answer-first H2.
+ *
+ * Props: copy = HomeCopy["objections"].
+ */
+import type { ObjectionCard } from "../../i18n/pages/home";
+
+interface Props {
+  copy: {
+    eyebrow: string;
+    heading: string;
+    cards: ObjectionCard[];
+    loopbackFlag: string;
+  };
+}
+
+const { copy } = Astro.props;
+
+// The Linux card (index 1) is the only one carrying the loopback caveat flag.
+const LOOPBACK_CARD_INDEX = 1;
+---
+
+<section class="section section-glow" aria-labelledby="why-h2">
+  <div class="container">
+    <p class="eyebrow">{copy.eyebrow}</p>
+    <h2 id="why-h2" class="why-heading">{copy.heading}</h2>
+
+    <div class="why-grid">
+      {
+        copy.cards.map((card, i) => (
+          <article class="card why-card">
+            <p class="tile-kicker">{card.kicker}</p>
+            <h3 class="why-card-title">{card.title}</h3>
+            <p class="why-card-body">{card.body}</p>
+            <p class="why-card-spec">{card.spec}</p>
+            {i === LOOPBACK_CARD_INDEX && (
+              <span class="pill pill-amber why-flag">{copy.loopbackFlag}</span>
+            )}
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .why-heading {
+    font-size: var(--text-2xl);
+    margin: var(--space-3) 0 var(--space-8);
+    max-width: var(--measure);
+  }
+
+  .why-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+  }
+  @media (min-width: 768px) {
+    .why-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .why-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .why-card-title {
+    font-size: var(--text-lg);
+    margin: var(--space-2) 0 0;
+  }
+  .why-card-body {
+    color: var(--color-text);
+    font-size: var(--text-sm);
+    line-height: 1.6;
+    margin: 0;
+  }
+  .why-card-spec {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    margin: var(--space-1) 0 0;
+  }
+  .why-flag {
+    align-self: flex-start;
+    margin-top: var(--space-2);
+  }
+</style>

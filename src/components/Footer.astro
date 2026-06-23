@@ -1,0 +1,192 @@
+---
+/**
+ * Footer — THE SIGNAL DESK footer (per the design system).
+ *
+ * Carbon, 1px top border, 3 columns:
+ *   1. wordmark + MIT/local tagline + live-dot
+ *   2. nav mirror (download / getting-started / obs-setup / docs / faq / vs)
+ *   3. resources (GitHub / releases / llms.txt / SHA256SUMS)
+ * Mono micro-row `© Plynte · LiveAudio v1.2.0 · MIT · Windows + Linux` + en/es
+ * toggle. No newsletter / no social.
+ *
+ * Props: lang, path (current path — used for the language toggle alternate).
+ */
+import { t } from "../i18n/ui";
+import { localizedPath, altLangPath, type Locale } from "../i18n/routes";
+
+interface Props {
+  lang?: Locale;
+  path?: string;
+}
+
+const { lang = "en", path = "/" } = Astro.props;
+const tt = t(lang);
+
+const REPO_URL = "https://github.com/plynte-labs/LiveAudio";
+const RELEASES_URL = `${REPO_URL}/releases`;
+const CHECKSUMS_URL =
+  "https://github.com/plynte-labs/LiveAudio/releases/download/v1.2.0/SHA256SUMS.txt";
+
+const navItems = [
+  { seg: "download", label: tt("nav.download") },
+  { seg: "getting-started", label: tt("nav.gettingStarted") },
+  { seg: "obs-setup", label: tt("nav.obsSetup") },
+  { seg: "docs/overview", label: tt("nav.docs") },
+  { seg: "faq", label: tt("nav.faq") },
+  { seg: "vs", label: tt("nav.vs") },
+].map((item) => ({ ...item, href: localizedPath(lang, item.seg) }));
+
+const resources = [
+  { href: REPO_URL, label: tt("footer.resources.github"), external: true },
+  { href: RELEASES_URL, label: tt("footer.resources.releases"), external: true },
+  { href: "/llms.txt", label: tt("footer.resources.llms"), external: false },
+  { href: CHECKSUMS_URL, label: tt("footer.resources.checksums"), external: true },
+];
+
+const homeHref = localizedPath(lang, "");
+const altHref = altLangPath(lang, path);
+const otherLangLabel = lang === "en" ? tt("lang.es") : tt("lang.en");
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <!-- Brand col -->
+      <div class="footer-brand">
+        <a class="footer-wordmark" href={homeHref}>
+          <span>{tt("brand.name")}</span>
+          <span class="live-dot" aria-hidden="true"></span>
+        </a>
+        <p class="footer-tagline">{tt("footer.tagline")}</p>
+      </div>
+
+      <!-- Nav mirror -->
+      <nav class="footer-col" aria-label={tt("footer.colProduct")}>
+        <h2 class="footer-heading eyebrow">{tt("footer.colProduct")}</h2>
+        <ul role="list">
+          {
+            navItems.map((item) => (
+              <li>
+                <a class="footer-link" href={item.href}>
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <!-- Resources -->
+      <nav class="footer-col" aria-label={tt("footer.colResources")}>
+        <h2 class="footer-heading eyebrow">{tt("footer.colResources")}</h2>
+        <ul role="list">
+          {
+            resources.map((res) => (
+              <li>
+                <a
+                  class="footer-link"
+                  href={res.href}
+                  target={res.external ? "_blank" : undefined}
+                  rel={res.external ? "noopener noreferrer" : undefined}
+                >
+                  {res.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </div>
+
+    <!-- Micro-row -->
+    <div class="footer-micro">
+      <p class="footer-legal eyebrow">{tt("footer.legal")}</p>
+      <a
+        class="lang-toggle pill"
+        href={altHref}
+        hreflang={lang === "en" ? "es" : "en"}
+        aria-label={`${tt("lang.label")}: ${tt("lang.switchTo")} (${otherLangLabel})`}
+      >
+        {otherLangLabel}
+      </a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--color-border);
+    padding-block: var(--space-11) var(--space-9);
+    margin-bottom: 64px; /* clear the fixed transport bar */
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-9);
+  }
+  @media (min-width: 768px) {
+    .footer-grid {
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: var(--space-8);
+    }
+  }
+  .footer-wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    font-size: var(--text-lg);
+    color: var(--color-text-strong);
+  }
+  .footer-wordmark:hover {
+    text-decoration: none;
+  }
+  .footer-tagline {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    margin-top: var(--space-3);
+  }
+  .footer-heading {
+    margin-bottom: var(--space-4);
+  }
+  .footer-col ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .footer-link {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+  .footer-link:hover {
+    color: var(--color-green);
+  }
+  .footer-micro {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-top: var(--space-10);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border-soft);
+  }
+  .footer-legal {
+    margin: 0;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .lang-toggle {
+    color: var(--color-text-muted);
+  }
+  .lang-toggle:hover {
+    color: var(--color-green);
+    border-color: var(--color-green);
+    text-decoration: none;
+  }
+</style>

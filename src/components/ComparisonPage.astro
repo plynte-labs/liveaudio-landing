@@ -1,0 +1,455 @@
+---
+/**
+ * ComparisonPage — /vs body (EN at `/vs/`, ES mirror at `/es/vs/`).
+ *
+ * A single decisive, full-bleed brutalist comparison (per the design system):
+ *   - Columns: LiveAudio (highlighted `.vs-col-self`) vs OBS caption plugins vs
+ *     browser-source tools vs cloud ASR APIs.
+ *   - Glyphs: ● `.vs-yes` (emerald yes) · ○ `.vs-no` (ghost no) · ◐ `.vs-cond`
+ *     (amber conditional — e.g. WASAPI loopback is Windows-only).
+ *   - Amber flags on cloud cost/latency + conditional cells (the amber
+ *     warn/verify/timing semantic only).
+ *
+ * Responsive rendering (same data, two layouts — never a page horizontal scroll):
+ *   - DESKTOP (>=768px): the real `.vs-table` lives in `.vs-scroll`
+ *     (`overflow-x:auto`, `min-width:0`) so the TABLE scrolls inside its track,
+ *     never the page. No sticky column (it fights the cramped layout).
+ *   - MOBILE (<768px): the table is hidden and each competitor renders as a
+ *     stacked `.vs-card`, read top-to-bottom with NO horizontal scroll. Each
+ *     capability is a labeled row carrying the same glyph + sr-only state label.
+ *
+ * Structure: mono eyebrow + answer-first single H1 + intro -> comparison ->
+ * legend -> closing Download CTA. Transport bar ON. Fact-based — no disparagement.
+ *
+ * All copy from src/i18n/pages/vs.ts (traceable to the product spec). Props: lang.
+ */
+import Layout from "../layouts/Layout.astro";
+import Button from "./Button.astro";
+import { localizedPath, type Locale } from "../i18n/routes";
+import { organizationWebSite, softwareApplication } from "../i18n/jsonld";
+import { vsCopy, type VsState } from "../i18n/pages/vs.ts";
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = "en" } = Astro.props;
+const path = localizedPath(lang, "vs");
+const downloadHref = localizedPath(lang, "download");
+
+const copy = vsCopy(lang);
+
+// JSON-LD: SoftwareApplication + WebSite (the /vs route ships no FAQ/HowTo).
+const jsonLd = [softwareApplication({ lang }), organizationWebSite()].filter(
+  (node): node is Record<string, unknown> => node !== null,
+);
+
+// Glyph + class map. Self-contained so the table stays declarative.
+const GLYPH: Record<VsState, string> = {
+  yes: "●",
+  no: "○",
+  cond: "◐",
+};
+const STATE_CLASS: Record<VsState, string> = {
+  yes: "vs-yes",
+  no: "vs-no",
+  cond: "vs-cond",
+};
+// Accessible text for each glyph state (screen readers don't get color/shape).
+const STATE_LABEL: Record<Locale, Record<VsState, string>> = {
+  en: { yes: "Yes", no: "No", cond: "Conditional" },
+  es: { yes: "Sí", no: "No", cond: "Condicional" },
+};
+const stateLabel = STATE_LABEL[lang];
+---
+
+<Layout
+  title={copy.title}
+  description={copy.description}
+  lang={lang}
+  path={path}
+  jsonLd={jsonLd}
+  transport={true}
+>
+  <!-- Intro: mono eyebrow + the page's single answer-first H1 -->
+  <section class="section section-glow" aria-labelledby="vs-h1">
+    <div class="container">
+      <p class="eyebrow">{copy.eyebrow}</p>
+      <h1 id="vs-h1" class="vs-heading">{copy.heading}</h1>
+      <p class="vs-intro">{copy.intro}</p>
+    </div>
+  </section>
+
+  <!-- The decisive comparison table -->
+  <section class="vs-section" aria-labelledby="vs-table-h2">
+    <div class="container">
+      <h2 id="vs-table-h2" class="vs-table-caption">{copy.tableCaption}</h2>
+
+      <!-- DESKTOP (>=768px): the real comparison table, scrolling inside its
+           own track via .vs-scroll (overflow-x:auto + min-width:0) so the TABLE
+           scrolls, never the page. Hidden on mobile in favor of .vs-cards. -->
+      <div class="vs-scroll">
+        <table class="vs-table">
+          <caption class="vs-sr-only">{copy.tableSummary}</caption>
+          <thead>
+            <tr>
+              <th scope="col" class="vs-feature-head">{copy.featureHeader}</th>
+              {
+                copy.columns.map((col, i) => (
+                  <th
+                    scope="col"
+                    class:list={["vs-col-head", { "vs-col-self": i === 0 }]}
+                  >
+                    <span class="vs-col-name">{col.name}</span>
+                    <span class="vs-col-example">{col.example}</span>
+                  </th>
+                ))
+              }
+            </tr>
+          </thead>
+          <tbody>
+            {
+              copy.rows.map((row) => (
+                <tr>
+                  <th scope="row" class="vs-feature">
+                    {row.feature}
+                  </th>
+                  {row.cells.map((cell, ci) => (
+                    <td
+                      class:list={[
+                        "vs-cell",
+                        { "vs-col-self": ci === 0 },
+                        { "vs-cell-flag": cell.flag },
+                      ]}
+                    >
+                      <span
+                        class:list={["vs-glyph", STATE_CLASS[cell.state]]}
+                        aria-hidden="true"
+                      >
+                        {GLYPH[cell.state]}
+                      </span>
+                      <span class="vs-sr-only">{stateLabel[cell.state]}:</span>
+                      <span
+                        class:list={[
+                          "vs-note",
+                          { "vs-note-flag": cell.flag },
+                        ]}
+                      >
+                        {cell.note}
+                      </span>
+                    </td>
+                  ))}
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- MOBILE (<768px): one stacked card per competitor (same data + glyphs).
+           Reads top-to-bottom, never scrolls sideways. This is a VISUAL twin of
+           the table, so it is aria-hidden — the screen reader hears the real
+           <table> above (its <caption> + the per-cell sr-only state labels carry
+           the full accessible comparison), never the comparison twice. -->
+      <div class="vs-cards" aria-hidden="true">
+        {
+          copy.columns.map((col, ci) => (
+            <article
+              class:list={["vs-card", { "vs-col-self": ci === 0 }]}
+            >
+              <header class="vs-card-head">
+                <span class="vs-col-name">{col.name}</span>
+                <span class="vs-col-example">{col.example}</span>
+              </header>
+              <dl class="vs-card-list">
+                {copy.rows.map((row) => {
+                  const cell = row.cells[ci];
+                  return (
+                    <div
+                      class:list={[
+                        "vs-card-row",
+                        { "vs-cell-flag": cell.flag },
+                      ]}
+                    >
+                      <dt class="vs-card-feature">{row.feature}</dt>
+                      <dd
+                        class:list={[
+                          "vs-card-value",
+                          { "vs-note-flag": cell.flag },
+                        ]}
+                      >
+                        <span
+                          class:list={["vs-glyph", STATE_CLASS[cell.state]]}
+                        >
+                          {GLYPH[cell.state]}
+                        </span>
+                        <span class="vs-card-note">{cell.note}</span>
+                      </dd>
+                    </div>
+                  );
+                })}
+              </dl>
+            </article>
+          ))
+        }
+      </div>
+
+      <!-- Legend -->
+      <ul class="vs-legend" role="list">
+        <li class="vs-legend-item">
+          <span class="vs-glyph vs-yes" aria-hidden="true">●</span>
+          <span>{copy.legend.yes}</span>
+        </li>
+        <li class="vs-legend-item">
+          <span class="vs-glyph vs-no" aria-hidden="true">○</span>
+          <span>{copy.legend.no}</span>
+        </li>
+        <li class="vs-legend-item">
+          <span class="vs-glyph vs-cond" aria-hidden="true">◐</span>
+          <span>{copy.legend.cond}</span>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Closing Download module -->
+  <section class="section section-glow" aria-labelledby="vs-closing-h2">
+    <div class="container closing">
+      <p class="eyebrow">{copy.closingEyebrow}</p>
+      <h2 id="vs-closing-h2" class="section-heading">{copy.closingHeading}</h2>
+      <p class="closing-body">{copy.closingBody}</p>
+      <Button variant="primary" href={downloadHref} label={copy.download} />
+    </div>
+  </section>
+</Layout>
+
+<style>
+  /* Screen-reader-only utility (visually hidden, still announced). */
+  .vs-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Intro */
+  .vs-heading {
+    font-size: var(--text-3xl);
+    margin: var(--space-3) 0 var(--space-5);
+    max-width: 18ch;
+  }
+  .vs-intro {
+    color: var(--color-text);
+    max-width: var(--measure);
+  }
+
+  /* Table section rhythm (matches .section without the glow stacking) */
+  .vs-section {
+    padding-block: clamp(2rem, 5vh, 4rem) clamp(5rem, 10vh, 8rem);
+    position: relative;
+  }
+  .vs-table-caption {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-5);
+  }
+
+  /* Desktop scroll track — the TABLE scrolls inside this box, never the page.
+     `min-width: 0` lets the flex/grid/container parent shrink so the track
+     (not the document) absorbs the overflow; `max-width: 100%` is the belt-and-
+     suspenders guarantee nothing pushes past the viewport. Hidden on mobile. */
+  .vs-scroll {
+    display: none;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    -webkit-overflow-scrolling: touch;
+  }
+  @media (min-width: 768px) {
+    .vs-scroll {
+      display: block;
+    }
+  }
+
+  /* Header cells */
+  .vs-feature-head {
+    min-width: 12rem;
+  }
+  .vs-col-head {
+    min-width: 9.5rem;
+    vertical-align: bottom;
+  }
+  .vs-col-name {
+    display: block;
+    color: var(--color-text-strong);
+    font-weight: 700;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: var(--text-sm);
+  }
+  .vs-col-example {
+    display: block;
+    margin-top: var(--space-1);
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  /* Row feature label. No sticky column — at this layout it fought the cramped
+     track and broke under white-space:nowrap. Desktop has room for the label
+     inline; mobile uses the stacked .vs-cards instead. */
+  .vs-feature {
+    color: var(--color-text);
+    font-weight: 500;
+    text-transform: none;
+    white-space: nowrap;
+  }
+
+  /* Body cells */
+  .vs-cell {
+    vertical-align: top;
+  }
+  .vs-cell-flag {
+    background: var(--color-amber-faint);
+  }
+  /* Keep the self column wash winning over a flag tint where they overlap */
+  .vs-col-self.vs-cell {
+    background: var(--color-green-faint);
+  }
+
+  .vs-glyph {
+    font-size: var(--text-lg);
+    line-height: 1;
+    display: inline-block;
+  }
+  .vs-note {
+    display: block;
+    margin-top: var(--space-1);
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    text-transform: none;
+    white-space: normal;
+  }
+  .vs-note-flag {
+    color: var(--color-amber);
+  }
+
+  /* ---- Mobile stacked cards (<768px) ----
+     One card per competitor; each capability is a labeled row read top-to-bottom.
+     Same glyphs, same notes, same self-highlight + amber flags as the table.
+     No fixed widths anywhere here, so nothing can exceed 100% of the viewport. */
+  .vs-cards {
+    display: grid;
+    gap: var(--space-6);
+    max-width: 100%;
+  }
+  @media (min-width: 768px) {
+    .vs-cards {
+      display: none;
+    }
+  }
+  .vs-card {
+    max-width: 100%;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  /* LiveAudio card carries the same self-highlight as the table column
+     (neon left border + green-faint wash). .vs-col-self brings both from
+     global.css; the wash is reasserted here so it covers the whole card. */
+  .vs-card.vs-col-self {
+    background: var(--color-green-faint);
+  }
+  .vs-card-head {
+    padding: var(--space-4) var(--space-5);
+    border-bottom: 1px solid var(--color-border-soft);
+  }
+  /* .vs-col-name / .vs-col-example are shared with the table header above. */
+
+  .vs-card-list {
+    margin: 0;
+    padding: 0;
+  }
+  .vs-card-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-4);
+    padding: var(--space-3) var(--space-5);
+    border-bottom: 1px solid var(--color-border-soft);
+  }
+  .vs-card-row:last-child {
+    border-bottom: 0;
+  }
+  /* Amber flag tint on the whole row; self wash wins where they overlap. */
+  .vs-card.vs-col-self .vs-card-row.vs-cell-flag {
+    background: var(--color-green-faint);
+  }
+  .vs-card-feature {
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .vs-card-value {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    margin: 0;
+    min-width: 0;
+    text-align: right;
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+  }
+  /* .vs-note-flag (amber) is reused for flagged card values. */
+  .vs-card-note {
+    overflow-wrap: anywhere;
+  }
+
+  /* Legend */
+  .vs-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-5);
+    margin: var(--space-5) 0 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+  .vs-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  /* Closing module (mirrors LandingPage closing) */
+  .section-heading {
+    font-size: var(--text-2xl);
+    margin: var(--space-3) 0 var(--space-5);
+    max-width: var(--measure);
+  }
+  .closing {
+    text-align: left;
+  }
+  .closing-body {
+    color: var(--color-text);
+    margin: var(--space-3) 0 var(--space-6);
+    max-width: var(--measure);
+  }
+</style>

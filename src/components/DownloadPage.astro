@@ -1,0 +1,410 @@
+---
+/**
+ * DownloadPage — /download/ body (EN at /download/, ES mirror at /es/download/).
+ *
+ * The conversion endpoint (the product spec; the design system "OS-detect
+ * Download card" / "/download/"). Page shape:
+ *
+ *   1. OS-detect terminal console (OsDetect island, client:idle) — detected OS +
+ *      giant `.btn-primary` for the matched build. BOTH Windows + Linux primary
+ *      targets render server-side first (no-JS safe); detection only re-orders /
+ *      relabels and the giant CTA is the page hero (the ONE Download/glow object).
+ *   2. Brutalist `.vs-table`-style table of ALL real v1.2.0 assets with the EXACT
+ *      URLs from the product spec — always visible, never gated by JS.
+ *   3. Amber operator-notes module — SmartScreen (More info -> Run anyway),
+ *      verify SHA256SUMS.txt, portable.marker, --update. Amber = warn/verify law.
+ *   4. Mono two-column requirements — GPU optional; CUDA driver >=525, VRAM
+ *      >=4 GiB; 8/16 GB RAM; internet first run only.
+ *   5. Closing Download module — the Download CTA is the hero of every page.
+ *
+ * JSON-LD: SoftwareApplication(downloadUrl = the Windows installer, §5) — the
+ * download endpoint variant — plus WebSite for entity grounding (§10).
+ *
+ * The single page <h1> lives HERE (the OsDetect island renders no heading).
+ * Transport bar stays on (marketing page). Props: lang.
+ */
+import Layout from "../layouts/Layout.astro";
+import Button from "./Button.astro";
+import OsDetect from "./islands/OsDetect.tsx";
+import { localizedPath, type Locale } from "../i18n/routes";
+import {
+  downloadCopy,
+  PRIMARY_ASSETS,
+  RELEASE_LATEST,
+} from "../i18n/pages/download";
+import { softwareApplication, organizationWebSite } from "../i18n/jsonld";
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = "en" } = Astro.props;
+const path = localizedPath(lang, "download");
+const downloadHref = localizedPath(lang, "download");
+
+const copy = downloadCopy(lang);
+
+// JSON-LD: the SoftwareApplication download-endpoint variant carries the real
+// v1.2.0 Windows installer as downloadUrl (§5), plus WebSite for grounding.
+const jsonLd = [
+  softwareApplication({ lang, downloadUrl: PRIMARY_ASSETS.windows.url }),
+  organizationWebSite(),
+].filter((node): node is Record<string, unknown> => node !== null);
+---
+
+<Layout
+  title={copy.title}
+  description={copy.description}
+  lang={lang}
+  path={path}
+  jsonLd={jsonLd}
+>
+  {/* 1 — OS-detect console (the page hero: detected OS + giant Download CTA) */}
+  <section class="section section-glow" aria-labelledby="dl-h1">
+    <div class="container dl-head">
+      <p class="eyebrow">{copy.consoleEyebrow}</p>
+      <h1 id="dl-h1" class="dl-title">{copy.heading}</h1>
+      <p class="dl-lede">{copy.subheading}</p>
+    </div>
+
+    <div class="container dl-console-wrap">
+      <OsDetect client:idle lang={lang} />
+    </div>
+  </section>
+
+  {/* 2 — Every real v1.2.0 asset, exact URLs, always visible (no-JS safe) */}
+  <section class="section" aria-labelledby="dl-assets-h2">
+    <div class="container dl-assets-head">
+      <p class="eyebrow">{copy.tableEyebrow}</p>
+      <h2 id="dl-assets-h2" class="dl-section-heading">{copy.tableHeading}</h2>
+    </div>
+
+    <div class="container dl-table-scroll">
+      <table class="vs-table dl-table">
+        <thead>
+          <tr>
+            <th scope="col">{copy.thAsset}</th>
+            <th scope="col">{copy.thUse}</th>
+            <th scope="col" class="dl-th-size">{copy.thSize}</th>
+            <th scope="col" class="dl-th-get">{copy.thGet}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            copy.assets.map((asset) => (
+              <tr class="dl-row">
+                <th scope="row" class="dl-cell-asset">{asset.filename}</th>
+                <td class="dl-cell-use">{asset.use}</td>
+                <td class="dl-cell-size">{asset.size}</td>
+                <td class="dl-cell-get">
+                  <a
+                    class="btn-tertiary dl-get"
+                    href={asset.url}
+                    aria-label={`${copy.getLabel} ${asset.filename}`}
+                  >
+                    {copy.getLabel}
+                    <svg
+                      class="dl-get-icon"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.75"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M7 7h10v10" />
+                      <path d="M7 17 17 7" />
+                    </svg>
+                  </a>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="container dl-latest-wrap">
+      <a class="btn-tertiary dl-latest" href={RELEASE_LATEST} rel="noopener">
+        {copy.latestLinkLabel}
+        <svg
+          class="dl-get-icon"
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.75"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M7 7h10v10" />
+          <path d="M7 17 17 7" />
+        </svg>
+      </a>
+    </div>
+  </section>
+
+  {/* 3 — Operator notes (amber = warn / verify law) */}
+  <section class="section" aria-labelledby="dl-notes-h2">
+    <div class="container dl-notes-head">
+      <p class="eyebrow">{copy.notesEyebrow}</p>
+      <h2 id="dl-notes-h2" class="dl-section-heading">{copy.notesHeading}</h2>
+    </div>
+
+    <div class="container">
+      <ul class="dl-notes-grid" role="list">
+        {
+          copy.notes.map((note) => (
+            <li class="card dl-note">
+              <div class="dl-note-head">
+                <svg
+                  class="dl-note-icon"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.75"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" />
+                  <path d="M12 9v4" />
+                  <path d="M12 17h.01" />
+                </svg>
+                <span class="pill pill-amber">{note.tag}</span>
+              </div>
+              <h3 class="dl-note-title">{note.title}</h3>
+              <p class="dl-note-body">{note.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  {/* 4 — System requirements (mono two-col) */}
+  <section class="section" aria-labelledby="dl-req-h2">
+    <div class="container dl-req-head">
+      <p class="eyebrow">{copy.reqEyebrow}</p>
+      <h2 id="dl-req-h2" class="dl-section-heading">{copy.reqHeading}</h2>
+    </div>
+
+    <div class="container dl-req-grid">
+      {
+        copy.reqCols.map((col) => (
+          <div class="console dl-req-col">
+            <div class="dl-req-col-head">{col.heading}</div>
+            <dl class="dl-req-list">
+              {col.rows.map((row) => (
+                <div class="dl-req-row">
+                  <dt class="dl-req-k">{row.k}</dt>
+                  <dd class="dl-req-v">{row.v}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  {/* 5 — Closing Download module (the Download CTA is the page hero) */}
+  <section class="section section-glow" aria-labelledby="dl-closing-h2">
+    <div class="container dl-closing">
+      <p class="eyebrow">{copy.closingEyebrow}</p>
+      <h2 id="dl-closing-h2" class="dl-closing-heading">
+        {copy.closingHeading}
+      </h2>
+      <p class="dl-closing-body">{copy.closingBody}</p>
+      <Button variant="primary" href={downloadHref} label={copy.download} />
+    </div>
+  </section>
+</Layout>
+
+<style>
+  /* Heads */
+  .dl-head {
+    max-width: var(--measure);
+  }
+  .dl-title {
+    font-size: var(--text-3xl);
+    margin: var(--space-3) 0 var(--space-4);
+  }
+  .dl-lede {
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+    margin: 0;
+  }
+  .dl-console-wrap {
+    margin-top: var(--space-8);
+  }
+
+  .dl-section-heading {
+    font-size: var(--text-2xl);
+    margin: var(--space-3) 0 0;
+    max-width: var(--measure);
+  }
+  .dl-assets-head,
+  .dl-notes-head,
+  .dl-req-head {
+    margin-bottom: var(--space-8);
+  }
+
+  /* Assets table — brutalist data grid (reuses .vs-table tokens) */
+  .dl-table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .dl-table {
+    min-width: 720px;
+  }
+  .dl-cell-asset {
+    color: var(--color-text-strong);
+    font-weight: 500;
+    text-align: left;
+    white-space: nowrap;
+  }
+  .dl-cell-use {
+    color: var(--color-text-muted);
+    min-width: 22ch;
+  }
+  .dl-cell-size {
+    color: var(--color-text);
+    text-align: right;
+    white-space: nowrap;
+  }
+  .dl-th-size {
+    text-align: right;
+  }
+  .dl-th-get,
+  .dl-cell-get {
+    text-align: right;
+    white-space: nowrap;
+  }
+  .dl-get {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .dl-get-icon {
+    display: inline-block;
+  }
+  .dl-latest-wrap {
+    margin-top: var(--space-5);
+  }
+  .dl-latest {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--text-xs);
+  }
+
+  /* Operator notes — amber accents */
+  .dl-notes-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (min-width: 640px) {
+    .dl-notes-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  .dl-note {
+    border-color: var(--color-amber-faint);
+  }
+  .dl-note-head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
+  }
+  .dl-note-icon {
+    color: var(--color-amber);
+    flex: none;
+  }
+  .dl-note-title {
+    font-size: var(--text-lg);
+    margin: 0 0 var(--space-2);
+  }
+  .dl-note-body {
+    color: var(--color-text);
+    font-size: var(--text-sm);
+    margin: 0;
+  }
+
+  /* Requirements — mono two-col */
+  .dl-req-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+  @media (min-width: 768px) {
+    .dl-req-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  .dl-req-col {
+    padding: var(--space-6);
+  }
+  .dl-req-col-head {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-green);
+    margin-bottom: var(--space-4);
+  }
+  .dl-req-list {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .dl-req-row {
+    display: grid;
+    grid-template-columns: minmax(7ch, auto) 1fr;
+    gap: var(--space-2) var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-variant-numeric: tabular-nums;
+    border-bottom: 1px solid var(--color-border-soft);
+    padding-bottom: var(--space-3);
+  }
+  .dl-req-row:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+  .dl-req-k {
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .dl-req-v {
+    color: var(--color-text);
+    margin: 0;
+  }
+
+  /* Closing module */
+  .dl-closing {
+    max-width: var(--measure);
+  }
+  .dl-closing-heading {
+    font-size: var(--text-2xl);
+    margin: var(--space-3) 0 var(--space-4);
+  }
+  .dl-closing-body {
+    color: var(--color-text);
+    margin: 0 0 var(--space-6);
+  }
+</style>

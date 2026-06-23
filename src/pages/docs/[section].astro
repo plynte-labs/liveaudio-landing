@@ -1,0 +1,22 @@
+---
+/**
+ * /docs/[section]/ (EN) — thin route wrapper.
+ *
+ * getStaticPaths emits one page per DOC_SECTION (overview, getting_started,
+ * websocket_obs, troubleshooting, config). Body + 3-col layout live in
+ * DocsPage.astro; content lives in src/i18n/pages/docs.ts. ES mirror is at
+ * src/pages/es/docs/[section].astro.
+ */
+import DocsPage from "../../components/DocsPage.astro";
+import { DOC_SECTIONS, type DocSection } from "../../i18n/pages/docs";
+
+export function getStaticPaths() {
+  return DOC_SECTIONS.map((section) => ({
+    params: { section },
+  }));
+}
+
+const { section } = Astro.params as { section: DocSection };
+---
+
+<DocsPage lang="en" section={section} />

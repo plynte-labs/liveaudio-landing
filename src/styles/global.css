@@ -1,0 +1,402 @@
+@import "tailwindcss";
+
+/* ============================================================
+   THE SIGNAL DESK — LiveAudio v1.2.0 · src/styles/global.css
+   Tailwind v4. Single source of visual truth.
+   Laws: Green = signal (never a wash) · Inter leads, Mono is the
+   instrument readout · Neon glow on Download CTA + live-dot ONLY.
+   ============================================================ */
+
+/* ---------- Self-hosted fonts (CWV + local-first brand) ----------
+   Place woff2 in /public/fonts/. Subset to latin+latin-ext for ES.
+   font-display: swap to protect LCP. */
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100 900;            /* variable */
+  font-display: swap;
+  src: url("/fonts/Inter-Variable.woff2") format("woff2");
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 100 800;            /* variable */
+  font-display: swap;
+  src: url("/fonts/JetBrainsMono-Variable.woff2") format("woff2");
+}
+
+@theme {
+  /* ---- Carbon canvas (three planes) ---- */
+  --color-bg: #05080c;             /* Carbon Black — page */
+  --color-surface: #091411;        /* Deep Emerald Black — cards/panels */
+  --color-surface-2: #0c1a15;      /* raised/inset console, payload rail, code body */
+
+  /* ---- Green = SIGNAL ---- */
+  --color-green: #10b981;          /* primary accent · 7.91:1 on carbon (AA+AAA) */
+  --color-neon: #00ff88;           /* RESERVED large/bold: live-dot, CTA edge, accent word, scanline */
+  --color-green-glow: rgba(16, 185, 129, 0.15);
+  --color-green-faint: rgba(16, 185, 129, 0.06);
+
+  /* ---- Amber = OPERATOR ATTENTION (warn/verify/timing only) ---- */
+  --color-amber: #ffb454;          /* 11.38:1 on carbon (AA+AAA) */
+  --color-amber-faint: rgba(255, 180, 84, 0.08);
+
+  /* ---- Neutral ramp (desaturated emerald-grays) ---- */
+  --color-text-strong: #f4f7f5;    /* 18.60:1 — display headlines */
+  --color-text: #e5e7eb;           /* 16.21:1 — all running body */
+  --color-text-muted: #8aa39b;     /* 7.45:1 — captions/labels/metadata (AA+AAA) */
+  --color-border: #122c22;         /* structural/instrument hairline */
+  --color-border-soft: rgba(255, 255, 255, 0.06); /* editorial divider */
+  --color-ghost: #4a5961;          /* DECORATION ONLY — never text (2.76:1) */
+
+  /* ---- Fonts ---- */
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+
+  /* ---- Fluid type scale (~1.25) ---- */
+  --text-eyebrow: 0.75rem;
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-base: 1.0625rem;
+  --text-lg: clamp(1.125rem, 0.9rem + 0.6vw, 1.25rem);
+  --text-xl: clamp(1.35rem, 1rem + 1.2vw, 1.6rem);
+  --text-2xl: clamp(1.75rem, 1.2rem + 2vw, 2.25rem);
+  --text-3xl: clamp(2.25rem, 1.4rem + 3.4vw, 3.25rem);
+  --text-display: clamp(2.5rem, 1.5rem + 5vw, 4.75rem);
+
+  /* ---- Spacing (8px base) ---- */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px; --space-4: 16px;
+  --space-5: 20px; --space-6: 24px; --space-7: 32px; --space-8: 40px;
+  --space-9: 48px; --space-10: 64px; --space-11: 80px; --space-12: 96px;
+  --space-13: 128px;
+
+  /* ---- Layout ---- */
+  --container-max: 1200px;
+  --measure: 68ch;
+  --measure-docs: 72ch;
+  --transport-bar-height: 64px;    /* fixed docked CTA height — pages reserve this so it never overlaps content */
+
+  /* ---- Radii ---- */
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+
+  /* ---- Shadows / glow (NO drop-shadow elevation) ---- */
+  --shadow-neon: 0 0 28px rgba(0, 255, 136, 0.28);   /* Download CTA + live-dot ONLY */
+  --shadow-green: 0 0 25px rgba(16, 185, 129, 0.25); /* console bloom */
+  --highlight-top: inset 0 1px 0 rgba(0, 255, 136, 0.08);
+
+  /* ---- Animation ---- */
+  --ease-mech: cubic-bezier(0.2, 0, 0.2, 1);
+  --animate-pulse-dot: pulse-dot 2s ease-in-out infinite;
+  --animate-reveal: reveal 250ms var(--ease-mech) both;
+}
+
+/* ---------- Keyframes ---------- */
+@keyframes scan {
+  from { transform: translateY(-100%); opacity: 0; }
+  20%  { opacity: 0.5; }
+  to   { transform: translateY(120%); opacity: 0; }
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.45; }
+}
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes packet-pulse {
+  from { offset-distance: 0%; }
+  to   { offset-distance: 100%; }
+}
+@keyframes caret-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* ---------- Base layer ---------- */
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    /* Global horizontal-scroll backstop. body{overflow-x:hidden} alone does NOT
+       stop the document scrolling element when a descendant overflows the
+       viewport — the page still scrolls at the html level. `clip` pins it
+       without creating a scroll container (so position:sticky/fixed children
+       keep working, unlike overflow:hidden). The real wide elements are still
+       fixed below so nothing is merely hidden. */
+    overflow-x: clip;
+  }
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: 1.7;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  h1, h2, h3 {
+    color: var(--color-text-strong);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    text-wrap: balance;
+  }
+  p { max-width: var(--measure); }
+  a { color: var(--color-green); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  code, kbd, pre, .mono {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+  /* Visible keyboard focus — every interactive element */
+  :focus-visible {
+    outline: 2px solid var(--color-green);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  ::selection {
+    background: var(--color-green);
+    color: var(--color-bg);
+  }
+  img, svg, video { display: block; max-width: 100%; }
+}
+
+/* ---------- Cyber scrollbar ---------- */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--color-green); }
+* { scrollbar-color: var(--color-border) var(--color-bg); scrollbar-width: thin; }
+
+/* ---------- Component / utility classes ---------- */
+@layer components {
+
+  /* Section rhythm — single source; do NOT override padding on element selectors */
+  .section {
+    padding-block: clamp(5rem, 10vh, 8rem);
+    position: relative;
+  }
+  .container {
+    width: 100%;
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+  }
+  @media (min-width: 768px) {
+    .container { padding-inline: var(--space-7); }
+  }
+
+  /* The ONE volumetric glow per section — static, in the gutter, behind focal */
+  .section-glow::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(60% 50% at 50% 0%, var(--color-green-glow), transparent 70%);
+    z-index: 0;
+  }
+  .section-glow > * { position: relative; z-index: 1; }
+
+  /* Glass — RESERVED for nav + transport bar only (two small surfaces) */
+  .glass {
+    background: rgba(9, 20, 17, 0.72);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--color-border-soft);
+  }
+  @supports not (backdrop-filter: blur(12px)) {
+    .glass { background: var(--color-surface); }
+  }
+  .glass-accent {
+    background: var(--color-green-faint);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--color-green);
+  }
+  @supports not (backdrop-filter: blur(12px)) {
+    .glass-accent { background: var(--color-surface); border-color: var(--color-green); }
+  }
+
+  /* Glow — neon glow is reserved sitewide for the Download CTA (.btn-primary)
+     and the .live-dot ONLY (per the design system, "two glow objects"). Both apply
+     --shadow-neon directly in their own rules, so this utility is internal/spare;
+     do NOT apply .glow-neon to any other element. Text glow and the softer
+     --shadow-green utility were removed — the hard color law forbids glow on
+     text/body, and no shipping component used a green-glow utility. */
+  .glow-neon  { box-shadow: var(--shadow-neon); }   /* Download CTA + live-dot ONLY */
+
+  /* Eyebrow / mono label */
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--text-eyebrow);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-text-muted);
+  }
+
+  /* Live signal dot */
+  .live-dot {
+    width: 8px; height: 8px; border-radius: 9999px;
+    background: var(--color-neon);
+    box-shadow: var(--shadow-neon);
+    animation: var(--animate-pulse-dot);
+    display: inline-block;
+  }
+
+  /* Blinking neon caret */
+  .caret::after {
+    content: "▌";
+    color: var(--color-neon);
+    margin-left: 0.06em;
+    animation: caret-blink 1.05s steps(1) infinite;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex; align-items: center; gap: var(--space-2);
+    min-height: 44px; padding: 0 var(--space-6);
+    border-radius: var(--radius);
+    font-weight: 600; line-height: 1;
+    transition: transform 120ms var(--ease-mech), box-shadow 120ms var(--ease-mech), background 120ms;
+  }
+  .btn-primary {                       /* Download — the ONE glow object */
+    background: var(--color-green);
+    color: var(--color-bg);
+    box-shadow: var(--shadow-neon), inset 0 0 0 1px rgba(0, 255, 136, 0.5);
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 0 38px rgba(0, 255, 136, 0.4), inset 0 0 0 1px rgba(0, 255, 136, 0.7); }
+  .btn-secondary {
+    background: transparent; color: var(--color-text);
+    border: 1px solid var(--color-border-soft);
+  }
+  .btn-secondary:hover { color: var(--color-green); border-color: var(--color-green); }
+  .btn-tertiary {
+    font-family: var(--font-mono); color: var(--color-green);
+    min-height: auto; padding: 0;
+  }
+  .btn-tertiary:hover { text-decoration: underline; }
+
+  /* Card / tile */
+  .card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-soft);
+    border-radius: var(--radius);
+    padding: var(--space-6);
+    transition: border-color 150ms;
+  }
+  .card:hover { border-color: var(--color-green); }
+  .tile {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: var(--space-7);
+    position: relative;
+  }
+  .tile:hover { border-color: var(--color-green); }
+  .tile-kicker {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+
+  /* Console / payload surfaces */
+  .console {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--highlight-top);
+  }
+  .payload-rail {
+    background: var(--color-surface-2);
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: var(--text-xs);
+    color: var(--color-text);
+    border-left: 1px solid var(--color-border);
+  }
+  .payload-rail .k { color: var(--color-text-muted); }
+  .payload-rail .v { color: var(--color-text); }
+  .payload-rail .t { color: var(--color-amber); }   /* latency / timing */
+
+  /* Code block chrome.
+     overflow:hidden clips the chrome (rounded corners); the inner <pre> owns
+     its own overflow-x:auto so long command lines scroll INSIDE the block and
+     never widen the page. min-width:0 lets it shrink inside grid/flex parents. */
+  .code-block { background: var(--color-surface-2); border: 1px solid var(--color-border); border-radius: var(--radius); overflow: hidden; min-width: 0; }
+  .code-head { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--color-border); font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-text-muted); }
+
+  /* Badge / pill */
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--font-mono); font-size: var(--text-xs); text-transform: uppercase;
+    background: var(--color-surface-2); border: 1px solid var(--color-border-soft);
+    border-radius: var(--radius-sm); padding: 4px 10px; color: var(--color-text-muted);
+    /* Tokens carry long unbreakable strings (ws://127.0.0.1:8765, arrow chains).
+       Let them break mid-string so a pill can never push the page wider than
+       the viewport on a narrow screen. */
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  .pill-amber {                         /* caveats / sim-label ONLY */
+    color: var(--color-amber);
+    border-color: var(--color-amber);
+    background: var(--color-amber-faint);
+  }
+
+  /* Comparison table (brutalist data grid) */
+  .vs-table { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .vs-table th { text-transform: uppercase; color: var(--color-text-muted); font-weight: 500; text-align: left; }
+  .vs-table th, .vs-table td { padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--color-border-soft); }
+  .vs-col-self { border-left: 1px solid var(--color-neon); background: var(--color-green-faint); }
+  .vs-yes { color: var(--color-green); }     /* ● */
+  .vs-no  { color: var(--color-ghost); }     /* ○ */
+  .vs-cond { color: var(--color-amber); }    /* ◐ */
+
+  /* Docs grid */
+  .docs-grid { display: grid; gap: var(--space-8); grid-template-columns: 1fr; }
+  @media (min-width: 1024px) {
+    .docs-grid { grid-template-columns: minmax(180px, 3fr) minmax(0, 7fr) minmax(140px, 2fr); }
+  }
+  .docs-prose { max-width: var(--measure-docs); }
+
+  /* Transport bar (docked CTA, grafted from C2) */
+  .transport-bar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: var(--space-4); padding: var(--space-3) var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+  /* Marketing pages render the fixed transport bar; reserve its height on
+     <main> so the closing Download module never sits under the bar on short
+     viewports. Toggled via .has-transport in Layout.astro (transport pages
+     only — docs/faq do NOT get this padding). */
+  main.has-transport {
+    padding-block-end: var(--transport-bar-height);
+  }
+
+  /* Sim-label helper */
+  .sim-label { font-family: var(--font-mono); font-size: var(--text-xs); color: var(--color-amber); }
+}
+
+/* ---------- Reduced motion: resolve to static composed frame ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .live-dot { opacity: 1; }
+  .caret::after { opacity: 1; }
+}

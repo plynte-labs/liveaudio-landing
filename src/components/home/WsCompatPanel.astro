@@ -1,0 +1,157 @@
+---
+/**
+ * WsCompatPanel — the WebSocket compatibility panel that REPLACES Kira
+ * (the design system, Home; the product spec).
+ *
+ * Title "Works with OBS — or any WebSocket client." + body VERBATIM from the product spec + a
+ * payload code-block + a DEAD-SIMPLE stacked flow: LiveAudio (source) →
+ * ws://127.0.0.1:8765 → OBS Browser Source + any localhost client. No motion,
+ * no grid, no absolute positioning, no offset-path — just stacked boxes that
+ * cannot break. NO Kira / official / bridge language anywhere.
+ *
+ * Props: copy = HomeCopy["ws"].
+ */
+import type { HomeCopy } from "../../i18n/pages/home";
+
+interface Props {
+  copy: HomeCopy["ws"];
+}
+
+const { copy } = Astro.props;
+---
+
+<section class="section section-glow wsp" aria-labelledby="ws-h2">
+  <div class="container">
+    <p class="eyebrow">{copy.eyebrow}</p>
+    <h2 id="ws-h2" class="wsp-heading">{copy.title}</h2>
+    <p class="wsp-body">{copy.body}</p>
+
+    <div class="wsp-grid">
+      <!-- Payload code-block (the real broadcast frame) -->
+      <figure class="code-block wsp-code">
+        <figcaption class="code-head">
+          <span class="wsp-dots" aria-hidden="true">
+            <span class="wsp-dot"></span>
+            <span class="wsp-dot"></span>
+            <span class="wsp-dot"></span>
+          </span>
+          <span class="wsp-code-tab">{copy.codeTab}</span>
+        </figcaption>
+        <pre class="wsp-pre"><code>{copy.codeLines.join("\n")}</code></pre>
+      </figure>
+
+      <!-- Signal flow: stacked boxes, an arrow + ws label between (simple). -->
+      <div class="wsp-flow" aria-hidden="true">
+        <div class="wsp-box wsp-box-source">{copy.diagram.source}</div>
+
+        <div class="wsp-step">
+          <span class="wsp-step-arrow">↓</span>
+          <span class="wsp-step-label">{copy.diagram.signal}</span>
+        </div>
+
+        <div class="wsp-box">{copy.diagram.obs}</div>
+        <div class="wsp-box">{copy.diagram.anyClient}</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .wsp-heading {
+    font-size: var(--text-2xl);
+    margin: var(--space-3) 0 var(--space-4);
+    max-width: var(--measure);
+  }
+  .wsp-body {
+    color: var(--color-text);
+    font-size: var(--text-base);
+    line-height: 1.7;
+    max-width: var(--measure);
+    margin: 0 0 var(--space-9);
+  }
+
+  .wsp-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+  @media (min-width: 1024px) {
+    .wsp-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-7);
+      align-items: start;
+    }
+  }
+
+  /* ---- Code block ---- */
+  .wsp-code {
+    margin: 0;
+  }
+  .wsp-dots {
+    display: inline-flex;
+    gap: 6px;
+  }
+  .wsp-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 9999px;
+    background: var(--color-ghost);
+  }
+  .wsp-dot:first-child {
+    background: var(--color-green);
+  }
+  .wsp-code-tab {
+    flex: 1;
+    color: var(--color-text-muted);
+  }
+  .wsp-pre {
+    margin: 0;
+    padding: var(--space-5);
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: var(--text-xs);
+    line-height: 1.7;
+    color: var(--color-text);
+  }
+
+  /* ---- Flow: just stacked boxes + an arrow row. Cannot break. ---- */
+  .wsp-flow {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+  }
+  .wsp-box {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-align: center;
+    padding: var(--space-4);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface-2);
+    color: var(--color-text);
+  }
+  .wsp-box-source {
+    border-color: var(--color-green);
+    color: var(--color-green);
+    background: var(--color-green-faint);
+  }
+  .wsp-step {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+  }
+  .wsp-step-arrow {
+    color: var(--color-green);
+    font-size: var(--text-base);
+    line-height: 1;
+  }
+</style>

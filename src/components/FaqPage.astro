@@ -1,0 +1,108 @@
+---
+/**
+ * FaqPage — /faq/ body (EN at /faq/, ES mirror at /es/faq/).
+ *
+ * The GEO citation magnet (per the product spec and the design system "/faq/"):
+ * answer-first accordion of the 7 product-spec questions, <=2 sentences each,
+ * minimal chrome, NO transport bar. Emits FAQPage JSON-LD from the SAME `items`
+ * array that renders the accordion, so structured data can never drift from the
+ * visible copy.
+ *
+ * Page shape (cross-page contract): mono eyebrow -> answer-first single H1 ->
+ * accordion -> closing Download module (the Download CTA is the page hero).
+ *
+ * Props: lang.
+ */
+import Layout from "../layouts/Layout.astro";
+import Button from "./Button.astro";
+import FaqAccordion from "./FaqAccordion.astro";
+import { localizedPath, type Locale } from "../i18n/routes";
+import { faqCopy } from "../i18n/pages/faq";
+import {
+  softwareApplication,
+  faqPage,
+  organizationWebSite,
+} from "../i18n/jsonld";
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = "en" } = Astro.props;
+const path = localizedPath(lang, "faq");
+const downloadHref = localizedPath(lang, "download");
+
+const copy = faqCopy(lang);
+
+// JSON-LD: FAQPage (the magnet) built from the SAME items the accordion renders,
+// plus SoftwareApplication + WebSite for entity grounding (per the product spec).
+const jsonLd = [
+  faqPage(copy.items),
+  softwareApplication({ lang }),
+  organizationWebSite(),
+].filter((node): node is Record<string, unknown> => node !== null);
+---
+
+<Layout
+  title={copy.title}
+  description={copy.description}
+  lang={lang}
+  path={path}
+  jsonLd={jsonLd}
+  transport={false}
+>
+  <section class="section section-glow" aria-labelledby="faq-h1">
+    <div class="container faq-head">
+      <p class="eyebrow">{copy.eyebrow}</p>
+      <h1 id="faq-h1" class="faq-title">{copy.heading}</h1>
+      <p class="faq-lede">{copy.lede}</p>
+    </div>
+
+    <div class="container faq-body">
+      <FaqAccordion items={copy.items} />
+    </div>
+  </section>
+
+  <!-- Closing Download module — the Download CTA is the hero of every page -->
+  <section class="section" aria-labelledby="faq-closing-h2">
+    <div class="container faq-closing">
+      <p class="eyebrow">{copy.closingEyebrow}</p>
+      <h2 id="faq-closing-h2" class="faq-closing-heading">
+        {copy.closingHeading}
+      </h2>
+      <p class="faq-closing-body">{copy.closingBody}</p>
+      <Button variant="primary" href={downloadHref} label={copy.download} />
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .faq-head {
+    max-width: var(--measure);
+  }
+  .faq-title {
+    font-size: var(--text-3xl);
+    margin: var(--space-3) 0 var(--space-4);
+  }
+  .faq-lede {
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+    margin: 0;
+  }
+
+  .faq-body {
+    margin-top: var(--space-9);
+    max-width: 860px;
+  }
+
+  .faq-closing-heading {
+    font-size: var(--text-2xl);
+    margin: var(--space-3) 0 var(--space-4);
+    max-width: var(--measure);
+  }
+  .faq-closing-body {
+    color: var(--color-text);
+    margin: 0 0 var(--space-6);
+    max-width: var(--measure);
+  }
+</style>

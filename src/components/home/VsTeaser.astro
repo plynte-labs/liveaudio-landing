@@ -1,0 +1,143 @@
+---
+/**
+ * VsTeaser — the mini `/vs` teaser (Comparison table + Home, per the design system).
+ *
+ * A compact `.vs-table` (mono, tabular-nums, hairline rules, no zebra) with the
+ * LiveAudio column highlighted (`.vs-col-self`). Brutalist glyphs:
+ *   ● `.vs-yes` (emerald yes) · ○ `.vs-no` (ghost no) · ◐ `.vs-cond` (amber
+ *   conditional — the loopback Windows-only row, truthful per the product spec).
+ * Closes with a tertiary link into the full `/vs/` comparison. Answer-first H2;
+ * one `.section-glow`. All copy via src/i18n/pages/home.ts.
+ *
+ * Props: copy = HomeCopy["vsTeaser"], vsHref = full comparison URL.
+ */
+import type { VsTeaserRow } from "../../i18n/pages/home";
+
+interface Props {
+  copy: {
+    eyebrow: string;
+    heading: string;
+    columns: [string, string, string];
+    rows: VsTeaserRow[];
+    /** Locale-aware accessible labels for each self-cell glyph state. */
+    srState: Record<VsTeaserRow["self"], string>;
+    cta: string;
+  };
+  vsHref: string;
+}
+
+const { copy, vsHref } = Astro.props;
+
+// Glyph + class per self-column state (brutalist data grid).
+const GLYPH: Record<VsTeaserRow["self"], { char: string; cls: string }> = {
+  yes: { char: "●", cls: "vs-yes" },
+  no: { char: "○", cls: "vs-no" },
+  cond: { char: "◐", cls: "vs-cond" },
+};
+const [colFeature, colSelf, colOther] = copy.columns;
+---
+
+<section class="section section-glow vst" aria-labelledby="vst-h2">
+  <div class="container">
+    <p class="eyebrow">{copy.eyebrow}</p>
+    <h2 id="vst-h2" class="vst-heading">{copy.heading}</h2>
+
+    <div class="vst-table-wrap">
+      <table class="vs-table">
+        <thead>
+          <tr>
+            <th scope="col">{colFeature}</th>
+            <th scope="col" class="vs-col-self vst-self-head">{colSelf}</th>
+            <th scope="col">{colOther}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            copy.rows.map((row) => {
+              const g = GLYPH[row.self];
+              return (
+                <tr>
+                  <th scope="row" class="vst-row-label">
+                    {row.label}
+                  </th>
+                  <td class="vs-col-self vst-self-cell">
+                    <span class={g.cls} aria-hidden="true">
+                      {g.char}
+                    </span>
+                    {/* SR state label — the aria-hidden glyph is never the sole
+                        carrier (mirrors the vs-sr pattern in ComparisonPage.astro). */}
+                    <span class="vs-sr-only">{copy.srState[row.self]}:</span>
+                    {row.note && (
+                      <span class="pill pill-amber vst-note">{row.note}</span>
+                    )}
+                  </td>
+                  <td class="vst-other-cell">{row.other}</td>
+                </tr>
+              );
+            })
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <p class="vst-cta">
+      <a class="btn-tertiary" href={vsHref}>{copy.cta}<span aria-hidden="true"> →</span></a>
+    </p>
+  </div>
+</section>
+
+<style>
+  /* Screen-reader-only utility (visually hidden, still announced). */
+  .vs-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .vst-heading {
+    font-size: var(--text-2xl);
+    margin: var(--space-3) 0 var(--space-8);
+    max-width: var(--measure);
+  }
+
+  /* First column sticky-able on mobile via horizontal scroll container. */
+  .vst-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+  }
+  .vs-table {
+    min-width: 520px;
+  }
+  .vst-self-head {
+    color: var(--color-green);
+  }
+  .vst-row-label {
+    font-weight: 500;
+    color: var(--color-text);
+    text-align: left;
+  }
+  .vst-self-cell {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: var(--text-lg);
+  }
+  .vst-note {
+    font-size: var(--text-xs);
+  }
+  .vst-other-cell {
+    color: var(--color-text-muted);
+  }
+
+  .vst-cta {
+    margin: var(--space-6) 0 0;
+  }
+</style>

@@ -1,0 +1,154 @@
+---
+/**
+ * FaqAccordion — THE SIGNAL DESK FAQ rows (per the design system "FAQ accordion").
+ *
+ * One native <details>/<summary> per Q&A:
+ *   - mono Q-index ("01".."07") — the instrument readout
+ *   - Inter 600 question (the human-readable product voice)
+ *   - emerald chevron-down lucide glyph that rotates 180deg when open
+ *   - answer-first body, <=2 sentences (LLM-citable)
+ *
+ * Accessibility:
+ *   - <details>/<summary> carry native disclosure semantics; the open/closed
+ *     state IS exposed to AT (no manual aria-expanded needed — the element
+ *     reports it). The chevron is decorative -> aria-hidden.
+ *   - The visible question text is the accessible name of the disclosure
+ *     control; the Q-index is decorative and hidden from AT.
+ *   - No <h*> here so the page keeps its single-H1 + contiguous heading order;
+ *     the answer-first H1 lives on the page above this list.
+ *   - Honors prefers-reduced-motion (no chevron rotation animation).
+ *
+ * Colors are tokens only (emerald chevron, off-white question, muted index,
+ * --color-text body). No hardcoded hex.
+ *
+ * Props:
+ *   items: { question, answer }[]  — the SAME array that feeds FAQPage JSON-LD.
+ */
+import type { FaqItem } from "../i18n/jsonld";
+
+interface Props {
+  items: FaqItem[];
+}
+
+const { items } = Astro.props;
+
+/** Zero-padded mono index ("01", "02", …). */
+function indexLabel(i: number): string {
+  return String(i + 1).padStart(2, "0");
+}
+---
+
+<ul class="faq-list" role="list">
+  {
+    items.map((item, i) => (
+      <li class="faq-item">
+        <details class="faq-details">
+          <summary class="faq-summary">
+            <span class="faq-index mono" aria-hidden="true">
+              {indexLabel(i)}
+            </span>
+            <span class="faq-question">{item.question}</span>
+            <svg
+              class="faq-chevron"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </summary>
+          <p class="faq-answer">{item.answer}</p>
+        </details>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .faq-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--color-border-soft);
+  }
+  .faq-item {
+    border-bottom: 1px solid var(--color-border-soft);
+  }
+
+  .faq-details {
+    /* keep the disclosure marker off; we render our own chevron */
+  }
+  .faq-details summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq-details summary::marker {
+    content: "";
+  }
+
+  .faq-summary {
+    list-style: none;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: baseline;
+    gap: var(--space-4);
+    padding-block: var(--space-5);
+    cursor: pointer;
+    /* generous tap target for the whole row */
+    min-height: 44px;
+  }
+  .faq-summary:focus-visible {
+    outline: 2px solid var(--color-green);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  .faq-index {
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+    align-self: center;
+  }
+
+  .faq-question {
+    color: var(--color-text-strong);
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: var(--text-lg);
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+  }
+  .faq-summary:hover .faq-question {
+    color: var(--color-green);
+  }
+
+  .faq-chevron {
+    color: var(--color-green);
+    align-self: center;
+    transition: transform 180ms var(--ease-mech);
+    flex-shrink: 0;
+  }
+  .faq-details[open] .faq-chevron {
+    transform: rotate(180deg);
+  }
+
+  .faq-answer {
+    color: var(--color-text);
+    font-size: var(--text-base);
+    line-height: 1.7;
+    /* align the answer under the question column, clear of the index */
+    margin: 0 0 var(--space-6);
+    padding-left: calc(2ch + var(--space-4));
+    max-width: var(--measure);
+  }
+
+  @media (max-width: 640px) {
+    .faq-answer {
+      padding-left: 0;
+    }
+  }
+</style>

@@ -1,0 +1,206 @@
+---
+/**
+ * WsDiagram — the caption signal path (reused on /obs-setup/).
+ *
+ * DEAD-SIMPLE stacked flow, identical in spirit to the Home WsCompatPanel:
+ * a source box → an arrow + ws:// signal label → the two receiver boxes
+ * (OBS Browser source, any localhost client). No grid, no SVG wire, no
+ * offset-path, no absolute positioning, no IntersectionObserver — just stacked
+ * boxes that CANNOT break. (The previous offset-path/3-column-grid version
+ * mis-rendered: the nodes piled into the left column while the SVG wire floated
+ * detached on the right, on both desktop and mobile.)
+ *
+ * Node icons are inline lucide SVG paths (stroke 1.75, 24px, currentColor,
+ * aria-hidden) — they render fine and were never the broken part. Zero JS.
+ *
+ * Color law: green = signal (source ring, primary receiver, signal label).
+ * The diagram is decorative; the surrounding section carries the text. Props
+ * supply node labels so the ES mirror reuses this component verbatim.
+ */
+
+interface Props {
+  /** Source node label (e.g. "LiveAudio"). */
+  liveaudio: string;
+  /** Primary receiver label (OBS Browser source). */
+  obs: string;
+  /** Secondary receiver label (any localhost client). */
+  client: string;
+  /** Signal line caption — the WS endpoint (ws://127.0.0.1:8765). */
+  signal: string;
+  /** Payload caption — what travels the wire (subtitle JSON). */
+  caption: string;
+  /** Decorative-region accessible label. */
+  ariaLabel?: string;
+  class?: string;
+}
+
+const {
+  liveaudio,
+  obs,
+  client,
+  signal,
+  caption,
+  ariaLabel,
+  class: className = "",
+} = Astro.props;
+---
+
+<figure class={`ws-diagram ${className}`} aria-label={ariaLabel}>
+  <div class="ws-flow" aria-hidden="true">
+    {/* Source — LiveAudio */}
+    <div class="ws-box ws-box--source">
+      <span class="ws-box-icon">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.75"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9" />
+          <path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5" />
+          <circle cx="12" cy="12" r="2" />
+          <path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5" />
+          <path d="M19.1 4.9C23 8.8 23 15.1 19.1 19" />
+        </svg>
+      </span>
+      <span class="ws-box-label">{liveaudio}</span>
+      <span class="ws-box-sub">{caption}</span>
+    </div>
+
+    {/* Signal step — arrow + ws:// endpoint */}
+    <div class="ws-step">
+      <span class="ws-step-arrow">↓</span>
+      <span class="ws-step-label">{signal}</span>
+    </div>
+
+    {/* Primary receiver — OBS Browser source */}
+    <div class="ws-box ws-box--primary">
+      <span class="ws-box-icon">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.75"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="m9 10 2 2 4-4" />
+          <rect width="20" height="14" x="2" y="3" rx="2" />
+          <path d="M12 17v4" />
+          <path d="M8 21h8" />
+        </svg>
+      </span>
+      <span class="ws-box-label">{obs}</span>
+    </div>
+
+    {/* Secondary receiver — any localhost client */}
+    <div class="ws-box">
+      <span class="ws-box-icon">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.75"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M18 16.98h-5.99c-1.1 0-1.95.94-2.48 1.9A4 4 0 0 1 2 17c.01-.7.2-1.4.57-2" />
+          <path d="m6 17 3.13-5.78c.53-.97.1-2.18-.5-3.1a4 4 0 1 1 6.89-4.06" />
+          <path d="m12 6 3.13 5.73C15.66 12.7 16.9 13 18 13a4 4 0 0 1 0 8" />
+        </svg>
+      </span>
+      <span class="ws-box-label">{client}</span>
+    </div>
+  </div>
+</figure>
+
+<style>
+  .ws-diagram {
+    margin: 0;
+  }
+
+  /* Single-column stacked flow — centered, capped so it reads as a tidy column
+     inside the wide diagram section. Cannot break: no grid, no SVG, no motion. */
+  .ws-flow {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    max-width: 460px;
+    margin-inline: auto;
+  }
+
+  .ws-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    text-align: center;
+    padding: var(--space-5) var(--space-4);
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    min-width: 0;
+  }
+  .ws-box--source {
+    border-color: var(--color-green);
+  }
+  .ws-box--primary {
+    border-color: var(--color-green);
+  }
+  .ws-box-icon {
+    color: var(--color-green);
+    display: inline-flex;
+  }
+  .ws-box:not(.ws-box--source):not(.ws-box--primary) .ws-box-icon {
+    color: var(--color-text-muted);
+  }
+  .ws-box-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-text-strong);
+    line-height: 1.2;
+    /* ES labels are longer (e.g. "Cualquier cliente en localhost") — let them
+       wrap instead of overflowing the box. */
+    overflow-wrap: anywhere;
+  }
+  .ws-box-sub {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    overflow-wrap: anywhere;
+  }
+
+  /* Signal step: down arrow + the ws:// endpoint, both emerald. */
+  .ws-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-green);
+  }
+  .ws-step-arrow {
+    font-size: var(--text-lg);
+    line-height: 1;
+  }
+  .ws-step-label {
+    /* ws://127.0.0.1:8765 is one unbreakable token — allow it to wrap so it can
+       never widen the column on a narrow viewport. */
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    text-align: center;
+  }
+</style>

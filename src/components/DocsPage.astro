@@ -1,0 +1,421 @@
+---
+/**
+ * DocsPage — body for /docs/[section]/ (EN) + /es/docs/[section]/ (ES).
+ *
+ * Renders the 3-column docs console (the design system "Docs layout" /
+ * "/docs/[section]/"):
+ *   - lg+  : sticky mono nav (3/12) · .docs-prose 72ch (7/12) · "on this page"
+ *            anchor rail (2/12). The `.docs-grid` token in global.css owns the
+ *            column template.
+ *   - <lg  : the left nav collapses into a top <details>; the right rail drops.
+ *
+ * Prose-dominant, answer-first: a mono eyebrow + the single page <h1> + an
+ * answer-first lede open the page, then the section walks `content.blocks`.
+ * Each block type maps to a palette-safe primitive — no hardcoded colors; code
+ * uses the .code-block chrome; amber callouts use the warn/verify/timing
+ * semantic only. NO transport bar on docs (Layout transport={false}).
+ *
+ * Owns the page <h1>. The route wrappers just pass `lang` + `section`.
+ *
+ * Props: lang, section.
+ */
+import Layout from "../layouts/Layout.astro";
+import DocsSidebar from "./DocsSidebar.astro";
+import { localizedPath, type Locale } from "../i18n/routes";
+import {
+  getDocSection,
+  getDocAnchors,
+  onThisPageLabel,
+  docsNavLabel,
+  type DocSection,
+} from "../i18n/pages/docs";
+
+interface Props {
+  lang?: Locale;
+  section: DocSection;
+}
+
+const { lang = "en", section } = Astro.props;
+
+const content = getDocSection(lang, section);
+const path = `${localizedPath(lang, "docs")}${section}/`;
+const baseHref = localizedPath(lang, "docs");
+
+const anchors = getDocAnchors(content);
+const railLabel = onThisPageLabel(lang);
+const navSummary = docsNavLabel(lang);
+---
+
+<Layout
+  title={content.metaTitle}
+  description={content.metaDescription}
+  lang={lang}
+  path={path}
+  transport={false}
+>
+  <section class="section docs-section" aria-labelledby="docs-h1">
+    <div class="container">
+      <div class="docs-grid">
+        <!-- Left: sticky mono section nav (lg) / <details> disclosure (mobile) -->
+        <div class="docs-rail-left">
+          <div class="docs-nav-desktop">
+            <DocsSidebar lang={lang} active={section} baseHref={baseHref} />
+          </div>
+          <details class="docs-nav-mobile">
+            <summary class="docs-nav-summary">{navSummary}</summary>
+            <DocsSidebar lang={lang} active={section} baseHref={baseHref} />
+          </details>
+        </div>
+
+        <!-- Center: prose (72ch) -->
+        <article class="docs-prose">
+          <p class="eyebrow">{content.eyebrow}</p>
+          <h1 id="docs-h1" class="docs-h1">{content.h1}</h1>
+          <p class="docs-lede">{content.lede}</p>
+
+          {
+            content.blocks.map((block) => {
+              if (block.type === "heading") {
+                return (
+                  <h2 id={block.id} class="docs-h2">
+                    {block.text}
+                  </h2>
+                );
+              }
+              if (block.type === "prose") {
+                return <p class="docs-p" set:html={block.html} />;
+              }
+              if (block.type === "list") {
+                return (
+                  <ul class="docs-ul" role="list">
+                    {block.items.map((item) => (
+                      <li set:html={item} />
+                    ))}
+                  </ul>
+                );
+              }
+              if (block.type === "table") {
+                return (
+                  <div class="docs-table-wrap">
+                    <table class="docs-table">
+                      <thead>
+                        <tr>
+                          {block.head.map((h) => (
+                            <th scope="col" set:html={h} />
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {block.rows.map((row) => (
+                          <tr>
+                            {row.map((cell) => (
+                              <td set:html={cell} />
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                );
+              }
+              if (block.type === "code") {
+                return (
+                  <div class="code-block docs-code">
+                    <div class="code-head">
+                      <span class="code-dots" aria-hidden="true">
+                        <span class="code-dot code-dot-live" />
+                        <span class="code-dot" />
+                        <span class="code-dot" />
+                      </span>
+                      <span class="code-label">{block.label}</span>
+                    </div>
+                    <pre class="code-body"><code>{block.code}</code></pre>
+                  </div>
+                );
+              }
+              if (block.type === "callout") {
+                return (
+                  <aside class="docs-callout" role="note">
+                    <span class="pill pill-amber docs-callout-flag">
+                      {block.flag}
+                    </span>
+                    <p class="docs-callout-body" set:html={block.html} />
+                  </aside>
+                );
+              }
+              return null;
+            })
+          }
+        </article>
+
+        <!-- Right: "on this page" anchor rail (lg only) -->
+        <aside class="docs-rail-right" aria-label={railLabel}>
+          <p class="docs-rail-title">{railLabel}</p>
+          <ul class="docs-rail-list" role="list">
+            {
+              anchors.map((a) => (
+                <li>
+                  <a class="docs-rail-link" href={`#${a.id}`}>
+                    {a.text}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </aside>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .docs-section {
+    padding-block: clamp(3rem, 7vh, 5rem);
+  }
+
+  /* Center prose ---------------------------------------------------- */
+  .docs-prose {
+    min-width: 0;
+  }
+  .docs-h1 {
+    font-size: var(--text-3xl);
+    margin: var(--space-3) 0 var(--space-4);
+  }
+  .docs-lede {
+    color: var(--color-text-muted);
+    font-size: var(--text-lg);
+    margin: 0 0 var(--space-9);
+    max-width: var(--measure-docs);
+  }
+  .docs-h2 {
+    font-size: var(--text-xl);
+    margin: var(--space-10) 0 var(--space-4);
+    scroll-margin-top: calc(64px + var(--space-6));
+  }
+  .docs-h2:first-of-type {
+    margin-top: var(--space-2);
+  }
+  .docs-p {
+    color: var(--color-text);
+    margin: 0 0 var(--space-4);
+    max-width: var(--measure-docs);
+  }
+  .docs-ul {
+    list-style: none;
+    margin: 0 0 var(--space-5);
+    padding: 0;
+    max-width: var(--measure-docs);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .docs-ul li {
+    position: relative;
+    padding-left: var(--space-5);
+    color: var(--color-text);
+  }
+  .docs-ul li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background: var(--color-green);
+  }
+
+  /* Inline markup inside set:html prose/cells (palette-safe). */
+  .docs-prose :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+    color: var(--color-green);
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    padding: 1px 6px;
+  }
+  .docs-prose :global(strong) {
+    color: var(--color-text-strong);
+    font-weight: 700;
+  }
+  .docs-prose :global(a) {
+    color: var(--color-green);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* Tables ---------------------------------------------------------- */
+  .docs-table-wrap {
+    margin: 0 0 var(--space-6);
+    overflow-x: auto;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+  }
+  .docs-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: var(--text-xs);
+  }
+  .docs-table th {
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+    font-weight: 500;
+    background: var(--color-surface-2);
+  }
+  .docs-table th,
+  .docs-table td {
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: top;
+  }
+  .docs-table tr:last-child td {
+    border-bottom: none;
+  }
+  .docs-table td {
+    color: var(--color-text);
+  }
+
+  /* Code blocks ----------------------------------------------------- */
+  .docs-code {
+    margin: 0 0 var(--space-6);
+  }
+  .code-dots {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .code-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 9999px;
+    background: var(--color-ghost);
+    display: inline-block;
+  }
+  .code-dot-live {
+    background: var(--color-green);
+  }
+  .code-label {
+    margin-left: var(--space-2);
+  }
+  .code-body {
+    margin: 0;
+    padding: var(--space-4) var(--space-5);
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    line-height: 1.7;
+    color: var(--color-text);
+    font-variant-numeric: tabular-nums;
+  }
+  .code-body code {
+    font-family: inherit;
+    color: inherit;
+    white-space: pre;
+  }
+
+  /* Amber operator callout (warn/verify/timing only) ---------------- */
+  .docs-callout {
+    margin: 0 0 var(--space-6);
+    max-width: var(--measure-docs);
+    background: var(--color-amber-faint);
+    border: 1px solid var(--color-amber);
+    border-radius: var(--radius);
+    padding: var(--space-4) var(--space-5);
+  }
+  .docs-callout-flag {
+    text-transform: none;
+    margin-bottom: var(--space-3);
+  }
+  .docs-callout-body {
+    margin: 0;
+    color: var(--color-text);
+    max-width: none;
+  }
+  .docs-callout :global(code) {
+    color: var(--color-amber);
+    border-color: var(--color-amber);
+  }
+
+  /* Left rail: desktop sticky nav vs mobile <details> --------------- */
+  .docs-nav-desktop {
+    display: none;
+  }
+  .docs-nav-mobile {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: var(--space-2) var(--space-4);
+  }
+  .docs-nav-summary {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-text-muted);
+    cursor: pointer;
+    padding: var(--space-2) 0;
+    list-style: none;
+  }
+  .docs-nav-summary::-webkit-details-marker {
+    display: none;
+  }
+  .docs-nav-summary::after {
+    content: "+";
+    float: right;
+    color: var(--color-green);
+  }
+  .docs-nav-mobile[open] .docs-nav-summary::after {
+    content: "−";
+  }
+
+  /* Right rail: "on this page" -------------------------------------- */
+  .docs-rail-right {
+    display: none;
+  }
+  .docs-rail-title {
+    font-family: var(--font-mono);
+    font-size: var(--text-eyebrow);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--color-text-muted);
+    margin: 0 0 var(--space-3);
+  }
+  .docs-rail-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+  }
+  .docs-rail-link {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-text-muted);
+    line-height: 1.4;
+    display: block;
+  }
+  .docs-rail-link:hover {
+    color: var(--color-green);
+    text-decoration: none;
+  }
+
+  @media (min-width: 1024px) {
+    .docs-nav-desktop {
+      display: block;
+    }
+    .docs-nav-mobile {
+      display: none;
+    }
+    .docs-rail-right {
+      display: block;
+      position: sticky;
+      top: calc(64px + var(--space-6));
+      align-self: start;
+    }
+  }
+</style>

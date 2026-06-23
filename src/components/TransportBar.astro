@@ -1,0 +1,86 @@
+---
+/**
+ * TransportBar — docked CTA (per the design system, grafted from C2).
+ *
+ * Fixed bottom on marketing pages, `.glass`, holds the .btn-primary Download +
+ * version + an OS-detect label. Collapses to a simple docked CTA on mobile
+ * (the OS label + version chip hide below md).
+ *
+ * The OS label is a small client script that swaps the placeholder for the
+ * detected platform (Windows / Linux) — purely a label, never gates the CTA.
+ *
+ * Props: lang.
+ */
+import { t } from "../i18n/ui";
+import { localizedPath, type Locale } from "../i18n/routes";
+import Button from "./Button.astro";
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = "en" } = Astro.props;
+const tt = t(lang);
+const downloadHref = localizedPath(lang, "download");
+
+const detectLabel = lang === "es" ? "Detectando SO…" : "Detecting OS…";
+const forLabel = lang === "es" ? "para" : "for";
+---
+
+<div class="transport-bar glass" data-transport-bar>
+  <div class="transport-meta">
+    <span class="live-dot" aria-hidden="true"></span>
+    <span class="pill transport-version">{tt("brand.version")}</span>
+    <span class="transport-os eyebrow" data-os-label data-for={forLabel}>
+      {detectLabel}
+    </span>
+  </div>
+  <Button
+    variant="primary"
+    href={downloadHref}
+    label={tt("cta.download")}
+    size="sm"
+    class="transport-cta"
+  />
+</div>
+
+<style>
+  .transport-meta {
+    display: none;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .transport-version {
+    text-transform: none;
+  }
+  .transport-os {
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .transport-cta {
+    flex: 1;
+    justify-content: center;
+  }
+  @media (min-width: 768px) {
+    .transport-meta {
+      display: flex;
+    }
+    .transport-cta {
+      flex: 0 0 auto;
+    }
+  }
+</style>
+
+<script is:inline define:vars={{ forLabel }}>
+  // OS-detect label only — never gates the Download CTA (full table on /download/).
+  (() => {
+    const el = document.querySelector("[data-os-label]");
+    if (!el) return;
+    const ua = navigator.userAgent || "";
+    let os = null;
+    if (/Windows/i.test(ua)) os = "Windows";
+    else if (/Linux|X11/i.test(ua) && !/Android/i.test(ua)) os = "Linux";
+    if (os) el.textContent = `${forLabel} ${os}`;
+    else el.textContent = "Windows + Linux";
+  })();
+</script>

@@ -1,0 +1,404 @@
+---
+/**
+ * ObsSetupPage — /obs-setup/ body (EN at /obs-setup/, ES mirror at /es/obs-setup/).
+ *
+ * The highest-intent, CITABLE HowTo page (the product spec; the design system
+ * "/obs-setup/"). The page answers one question with the real, verbatim OBS
+ * Browser-source flow, so it is built to be quoted by both humans and LLMs:
+ *   1. OBS → Sources → + → Browser
+ *   2. Local file → subtitulos_obs.html (in liveaudio/assets/), size 1920×200
+ *   3. Disable "Shut down source when not visible"
+ *   4. Match the WebSocket port — ws_port in config.json + ?port=XXXX (default 8765)
+ *   5. Apply changes → START SYSTEM
+ *
+ * Page shape (cross-page contract): mono eyebrow → answer-first single H1 → numbered
+ * step spine (each step shows its real artifact: a token pill + optional amber
+ * caveat) → WS signal-path diagram (WsDiagram, simple stacked flow) → WebSocket
+ * payload field reference (mono table, amber timing values) → closing Download
+ * module. Every section opens with an answer-first H2 for GEO. Transport bar ON.
+ *
+ * JSON-LD: HowTo (built 1:1 from the SAME steps array the spine renders, so the
+ * structured data can never drift from the visible copy) + SoftwareApplication +
+ * WebSite for entity grounding.
+ *
+ * All copy from src/i18n/pages/obs-setup.ts (traceable to the product spec).
+ * Colors are tokens only; amber appears ONLY in the warn/verify/timing semantic
+ * (the "shut down" caveat, the custom-port caveat, and the timing payload values).
+ *
+ * Props: lang.
+ */
+import Layout from "../layouts/Layout.astro";
+import Button from "./Button.astro";
+import WsDiagram from "./WsDiagram.astro";
+import { localizedPath, type Locale } from "../i18n/routes";
+import { obsSetupCopy } from "../i18n/pages/obs-setup";
+import { howTo, softwareApplication, organizationWebSite } from "../i18n/jsonld";
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = "en" } = Astro.props;
+const path = localizedPath(lang, "obs-setup");
+const downloadHref = localizedPath(lang, "download");
+
+const copy = obsSetupCopy(lang);
+
+/** Zero-padded mono step numeral ("01".."05") for the spine. */
+function stepNum(i: number): string {
+  return String(i + 1).padStart(2, "0");
+}
+
+// JSON-LD: HowTo built from the SAME steps that render the spine (name + text),
+// plus SoftwareApplication + WebSite. howTo() returns null on empty input, so
+// filter before handing the array to Layout.
+const jsonLd = [
+  howTo({
+    name: copy.howToName,
+    steps: copy.steps.map((step) => ({ name: step.name, text: step.text })),
+  }),
+  softwareApplication({ lang }),
+  organizationWebSite(),
+].filter((node): node is Record<string, unknown> => node !== null);
+---
+
+<Layout
+  title={copy.title}
+  description={copy.description}
+  lang={lang}
+  path={path}
+  jsonLd={jsonLd}
+  transport={true}
+>
+  <!-- Intro: mono eyebrow + the page's single answer-first H1 -->
+  <section class="section section-glow" aria-labelledby="obs-h1">
+    <div class="container obs-head">
+      <p class="eyebrow">{copy.eyebrow}</p>
+      <h1 id="obs-h1" class="obs-title">{copy.h1}</h1>
+      <p class="obs-intro">{copy.intro}</p>
+    </div>
+  </section>
+
+  <!-- The numbered Browser-source flow — vertical emerald spine -->
+  <section class="obs-steps-section" aria-labelledby="obs-steps-h2">
+    <div class="container">
+      <p class="eyebrow">{copy.stepsEyebrow}</p>
+      <h2 id="obs-steps-h2" class="obs-section-heading">{copy.stepsHeading}</h2>
+
+      <ol class="obs-steps">
+        {
+          copy.steps.map((step, i) => (
+            <li class="obs-step">
+              <div class="obs-step-num mono" aria-hidden="true">
+                {stepNum(i)}
+              </div>
+              <div class="obs-step-body">
+                <p class="tile-kicker">{step.kicker}</p>
+                <h3 class="obs-step-name">{step.name}</h3>
+                <p class="obs-step-text">{step.text}</p>
+                {(step.token || step.amber) && (
+                  <p class="obs-step-meta">
+                    {step.token && (
+                      <span class="pill">{step.token}</span>
+                    )}
+                    {step.amber && (
+                      <span class="pill pill-amber">{step.amber}</span>
+                    )}
+                  </p>
+                )}
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- The signal path — WsDiagram (simple stacked flow) -->
+  <section class="section section-glow" aria-labelledby="obs-diagram-h2">
+    <div class="container obs-diagram-wrap">
+      <p class="eyebrow">{copy.diagramEyebrow}</p>
+      <h2 id="obs-diagram-h2" class="obs-section-heading">
+        {copy.diagramHeading}
+      </h2>
+      <p class="obs-diagram-body">{copy.diagramBody}</p>
+
+      <WsDiagram
+        liveaudio={copy.diagram.liveaudio}
+        obs={copy.diagram.obs}
+        client={copy.diagram.client}
+        signal={copy.diagram.signal}
+        caption={copy.diagram.caption}
+        ariaLabel={copy.diagramHeading}
+        class="obs-diagram"
+      />
+    </div>
+  </section>
+
+  <!-- WebSocket payload field reference (mono table; timing values in amber) -->
+  <section class="obs-payload-section" aria-labelledby="obs-payload-h2">
+    <div class="container obs-payload-wrap">
+      <p class="eyebrow">{copy.payloadEyebrow}</p>
+      <h2 id="obs-payload-h2" class="obs-section-heading">
+        {copy.payloadHeading}
+      </h2>
+      <p class="obs-payload-intro">{copy.payloadIntro}</p>
+
+      <div class="obs-payload-scroll">
+        <table class="vs-table obs-payload-table">
+          <caption class="obs-sr-only">{copy.payloadIntro}</caption>
+          <thead>
+            <tr>
+              <th scope="col">{copy.payloadColField}</th>
+              <th scope="col">{copy.payloadColDesc}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              copy.payloadFields.map((row) => (
+                <tr>
+                  <th scope="row" class="obs-payload-field">
+                    {row.field}
+                  </th>
+                  <td
+                    class:list={[
+                      "obs-payload-desc",
+                      { "obs-payload-timing": row.timing },
+                    ]}
+                  >
+                    {row.desc}
+                  </td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <p class="obs-payload-note">
+        <span class="sim-label">{copy.payloadNote}</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- Closing Download module — the Download CTA is the hero of every page -->
+  <section class="section section-glow" aria-labelledby="obs-closing-h2">
+    <div class="container obs-closing">
+      <p class="eyebrow">{copy.closingEyebrow}</p>
+      <h2 id="obs-closing-h2" class="obs-closing-heading">
+        {copy.closingHeading}
+      </h2>
+      <p class="obs-closing-body">{copy.closingBody}</p>
+      <Button variant="primary" href={downloadHref} label={copy.download} />
+    </div>
+  </section>
+</Layout>
+
+<style>
+  /* Screen-reader-only utility (visually hidden, still announced). */
+  .obs-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Intro */
+  .obs-head {
+    max-width: var(--measure);
+  }
+  .obs-title {
+    font-size: var(--text-3xl);
+    margin: var(--space-3) 0 var(--space-4);
+  }
+  .obs-intro {
+    color: var(--color-text);
+    font-size: var(--text-lg);
+    margin: 0;
+    /* Embeds ws://127.0.0.1:8765 inline — allow the token to wrap. */
+    overflow-wrap: anywhere;
+  }
+
+  /* Shared section heading rhythm (matches sibling pages) */
+  .obs-section-heading {
+    font-size: var(--text-2xl);
+    margin: var(--space-3) 0 var(--space-5);
+    max-width: var(--measure);
+  }
+
+  /* Steps section — keep the glow off the spine so it stays quiet editorial */
+  .obs-steps-section {
+    padding-block: clamp(2rem, 5vh, 4rem) clamp(5rem, 10vh, 8rem);
+    position: relative;
+  }
+
+  /* Numbered step spine — vertical emerald rail down the left of the numerals */
+  .obs-steps {
+    list-style: none;
+    margin: var(--space-7) 0 0;
+    padding: 0;
+    position: relative;
+  }
+  /* The spine: a single emerald hairline running through the numeral column */
+  .obs-steps::before {
+    content: "";
+    position: absolute;
+    left: calc(1.5rem - 0.5px);
+    top: var(--space-4);
+    bottom: var(--space-8);
+    width: 1px;
+    background: linear-gradient(
+      to bottom,
+      var(--color-green),
+      var(--color-border)
+    );
+    opacity: 0.6;
+  }
+
+  .obs-step {
+    display: grid;
+    grid-template-columns: 3rem 1fr;
+    gap: var(--space-5);
+    padding-block: var(--space-6);
+    align-items: start;
+  }
+  .obs-step:not(:last-child) {
+    border-bottom: 1px solid var(--color-border-soft);
+  }
+
+  /* The printed numeral sits ON the spine, on the page plane (covers the line) */
+  .obs-step-num {
+    position: relative;
+    z-index: 1;
+    width: 3rem;
+    height: 3rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-lg);
+    color: var(--color-green);
+    background: var(--color-surface);
+    border: 1px solid var(--color-green);
+    border-radius: var(--radius-sm);
+  }
+
+  .obs-step-body {
+    min-width: 0;
+  }
+  .obs-step-name {
+    font-size: var(--text-lg);
+    line-height: 1.3;
+    margin: var(--space-1) 0 var(--space-2);
+    color: var(--color-text-strong);
+  }
+  .obs-step-text {
+    color: var(--color-text);
+    margin: 0;
+    max-width: var(--measure);
+    /* Step prose embeds long unbreakable literals (%LOCALAPPDATA%\LiveAudio\data,
+       ~/.local/share/liveaudio/data, ws://127.0.0.1:8765). Break them mid-token
+       so they wrap instead of forcing a horizontal scroll on narrow screens. */
+    overflow-wrap: anywhere;
+  }
+  .obs-step-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: var(--space-4) 0 0;
+    max-width: none;
+  }
+  /* Tokens are code-like — keep their literal casing (port, filename, size) */
+  .obs-step-meta .pill {
+    text-transform: none;
+  }
+
+  @media (max-width: 640px) {
+    .obs-step {
+      grid-template-columns: 2.5rem 1fr;
+      gap: var(--space-4);
+    }
+    .obs-step-num {
+      width: 2.5rem;
+      height: 2.5rem;
+    }
+    .obs-steps::before {
+      left: calc(1.25rem - 0.5px);
+    }
+  }
+
+  /* Diagram section */
+  .obs-diagram-wrap {
+    max-width: 920px;
+  }
+  .obs-diagram-body {
+    color: var(--color-text);
+    margin: 0 0 var(--space-7);
+    max-width: var(--measure);
+  }
+
+  /* Payload reference section */
+  .obs-payload-section {
+    padding-block: clamp(2rem, 5vh, 4rem) clamp(5rem, 10vh, 8rem);
+    position: relative;
+  }
+  .obs-payload-wrap {
+    max-width: 920px;
+  }
+  .obs-payload-intro {
+    color: var(--color-text);
+    margin: 0 0 var(--space-6);
+    max-width: var(--measure);
+  }
+
+  /* The TABLE scrolls on narrow viewports, never the page */
+  .obs-payload-scroll {
+    overflow-x: auto;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    -webkit-overflow-scrolling: touch;
+  }
+  .obs-payload-table {
+    min-width: 32rem;
+  }
+  /* Field column reads like code — lowercase, literal */
+  .obs-payload-field {
+    color: var(--color-green);
+    font-weight: 500;
+    text-transform: none;
+    white-space: nowrap;
+  }
+  .obs-payload-desc {
+    color: var(--color-text);
+    text-transform: none;
+    white-space: normal;
+  }
+  /* Timing fields carry the amber warn/verify/timing semantic */
+  .obs-payload-timing {
+    color: var(--color-amber);
+  }
+
+  .obs-payload-note {
+    margin: var(--space-5) 0 0;
+    max-width: var(--measure);
+  }
+  .obs-payload-note .sim-label {
+    line-height: 1.6;
+  }
+
+  /* Closing module (mirrors sibling pages) */
+  .obs-closing-heading {
+    font-size: var(--text-2xl);
+    margin: var(--space-3) 0 var(--space-4);
+    max-width: var(--measure);
+  }
+  .obs-closing-body {
+    color: var(--color-text);
+    margin: 0 0 var(--space-6);
+    max-width: var(--measure);
+  }
+</style>

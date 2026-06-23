@@ -1,0 +1,177 @@
+---
+/**
+ * Layout — the single full <head> + page shell for every route.
+ *
+ * Head responsibilities:
+ *   - charset + viewport
+ *   - per-page <title> + meta description (lang-aware, from props)
+ *   - absolute canonical from Astro.site + the page path
+ *   - hreflang alternates en / es / x-default (= en) via altLangPath
+ *   - Open Graph + Twitter summary_large_image (og:image -> /og.png absolute)
+ *   - preload the two self-hosted variable fonts
+ *   - JSON-LD injected from the `jsonLd` prop (array of plain objects)
+ *   - import global.css, skip-link to #main, Vercel Analytics
+ *
+ * Body shell: Header -> main#main (slot) -> Footer -> TransportBar (unless
+ * transport === false).
+ *
+ * Props:
+ *   title, description, lang (default "en"), path, jsonLd (default []),
+ *   transport (default true), ogTitle, ogDescription.
+ */
+import "../styles/global.css";
+import Analytics from "@vercel/analytics/astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import TransportBar from "../components/TransportBar.astro";
+import { t } from "../i18n/ui";
+import { altLangPath, type Locale } from "../i18n/routes";
+
+interface Props {
+  title: string;
+  description: string;
+  lang?: Locale;
+  path?: string;
+  jsonLd?: Record<string, unknown>[];
+  transport?: boolean;
+  ogTitle?: string;
+  ogDescription?: string;
+}
+
+const {
+  title,
+  description,
+  lang = "en",
+  path,
+  jsonLd = [],
+  transport = true,
+  ogTitle,
+  ogDescription,
+} = Astro.props;
+
+const tt = t(lang);
+
+// Resolve the current logical path. Prefer the explicit prop; fall back to the
+// actual request pathname so canonical/hreflang are always correct.
+const currentPath = path ?? Astro.url.pathname;
+
+// Absolute URLs from the configured site (astro.config.mjs `site`).
+const site = Astro.site ?? new URL("https://liveaudio.opencohost.com");
+const canonical = new URL(currentPath, site).href;
+const ogImage = new URL("/og.png", site).href;
+
+// hreflang alternates. EN lives at the bare path, ES at its mirror; x-default
+// points at the EN canonical (default locale).
+const altPath = altLangPath(lang, currentPath);
+const enPath = lang === "en" ? currentPath : altPath;
+const esPath = lang === "es" ? currentPath : altPath;
+const enHref = new URL(enPath, site).href;
+const esHref = new URL(esPath, site).href;
+
+const ogT = ogTitle ?? title;
+const ogD = ogDescription ?? description;
+
+// Serialize JSON-LD nodes (guard against empties).
+const ldNodes = (jsonLd ?? []).filter(Boolean);
+
+const skipHref = "#main";
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+
+    <!-- hreflang alternates -->
+    <link rel="alternate" hreflang="en" href={enHref} />
+    <link rel="alternate" hreflang="es" href={esHref} />
+    <link rel="alternate" hreflang="x-default" href={enHref} />
+
+    <!-- Icons -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="LiveAudio" />
+    <meta property="og:locale" content={lang === "es" ? "es_ES" : "en_US"} />
+    <meta property="og:title" content={ogT} />
+    <meta property="og:description" content={ogD} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={ogT} />
+    <meta name="twitter:description" content={ogD} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- Preload self-hosted variable fonts (LCP) -->
+    <link
+      rel="preload"
+      href="/fonts/Inter-Variable.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/JetBrainsMono-Variable.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <!-- JSON-LD -->
+    {
+      ldNodes.map((node) => (
+        <script
+          type="application/ld+json"
+          set:html={JSON.stringify(node)}
+        />
+      ))
+    }
+
+    <Analytics />
+  </head>
+  <body>
+    <a class="skip-link" href={skipHref}>{tt("a11y.skipToContent")}</a>
+
+    <Header lang={lang} path={currentPath} />
+
+    <main id="main" class:list={{ "has-transport": transport !== false }}>
+      <slot />
+    </main>
+
+    <Footer lang={lang} path={currentPath} />
+
+    {transport !== false && <TransportBar lang={lang} />}
+
+    <style>
+      .skip-link {
+        position: absolute;
+        left: var(--space-3);
+        top: var(--space-3);
+        transform: translateY(-200%);
+        z-index: 100;
+        background: var(--color-green);
+        color: var(--color-bg);
+        font-family: var(--font-mono);
+        font-size: var(--text-xs);
+        padding: var(--space-2) var(--space-4);
+        border-radius: var(--radius-sm);
+        transition: transform 120ms var(--ease-mech);
+      }
+      .skip-link:focus {
+        transform: translateY(0);
+        text-decoration: none;
+      }
+    </style>
+  </body>
+</html>

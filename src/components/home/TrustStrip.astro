@@ -1,0 +1,58 @@
+---
+/**
+ * TrustStrip — full-bleed thin bar of `.pill` code-chips (per the design system).
+ *
+ * "100% local · MIT open-source · Windows + Linux · No cloud · No API key"
+ * (trust strip from the product spec, verbatim per locale). Wraps on mobile, never
+ * horizontal-scrolls. The whole bar is a labelled list; the label is visually
+ * hidden but read by assistive tech so the strip is not an orphan list.
+ *
+ * Props: items (the trust chips), label (accessible name for the list).
+ */
+interface Props {
+  items: string[];
+  label: string;
+}
+
+const { items, label } = Astro.props;
+---
+
+<section class="trust" aria-label={label}>
+  <ul class="container trust-list" role="list">
+    {
+      items.map((item) => (
+        <li class="pill trust-pill">
+          <span class="trust-dot" aria-hidden="true" />
+          {item}
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .trust {
+    border-block: 1px solid var(--color-border-soft);
+    background: var(--color-surface);
+    padding-block: var(--space-5);
+  }
+  .trust-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-3);
+    margin: 0;
+    list-style: none;
+  }
+  .trust-pill {
+    color: var(--color-text-muted);
+  }
+  /* Emerald signal dot — green = signal law; decorative, aria-hidden. */
+  .trust-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background: var(--color-green);
+    display: inline-block;
+  }
+</style>
