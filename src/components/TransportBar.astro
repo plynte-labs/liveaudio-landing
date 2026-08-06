@@ -60,6 +60,20 @@ const forLabel = lang === "es" ? "para" : "for";
   .transport-cta {
     flex: 1;
     justify-content: center;
+    min-width: 0;
+    white-space: nowrap;
+  }
+  .transport-cta span {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  @media (max-width: 767px) {
+    .transport-bar {
+      box-sizing: border-box;
+      min-block-size: var(--transport-bar-height);
+    }
   }
   @media (min-width: 768px) {
     .transport-meta {

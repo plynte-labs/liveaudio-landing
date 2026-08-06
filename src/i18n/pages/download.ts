@@ -1,7 +1,7 @@
 /**
  * Download page copy + asset data — single bilingual source for both locales.
  *
- * Every product fact / URL / size traces to the product spec (real v1.2.0
+ * Every product fact / URL / size traces to the product spec (real v1.2.5
  * assets, system requirements) and the operator notes (SmartScreen /
  * portable.marker / --update). Sizes and filenames are the REAL released
  * artifacts — never invent or round differently.
@@ -13,7 +13,7 @@ import type { Locale } from "../routes";
 
 /** Base for every release asset (from the product spec). */
 export const RELEASE_BASE =
-  "https://github.com/plynte-labs/LiveAudio/releases/download/v1.2.0";
+  "https://github.com/plynte-labs/LiveAudio/releases/download/v1.2.5";
 /** Always-latest redirect (from the product spec). */
 export const RELEASE_LATEST =
   "https://github.com/plynte-labs/LiveAudio/releases/latest";
@@ -38,15 +38,15 @@ export interface PrimaryAsset {
 export const PRIMARY_ASSETS: Record<Os, PrimaryAsset> = {
   windows: {
     os: "windows",
-    filename: "LiveAudio-Setup-1.2.0.exe",
-    url: `${RELEASE_BASE}/LiveAudio-Setup-1.2.0.exe`,
-    size: "~35.8 MB",
+    filename: "LiveAudio-Setup-1.2.5.exe",
+    url: `${RELEASE_BASE}/LiveAudio-Setup-1.2.5.exe`,
+    size: "35,817,683 bytes (35.82 MB)",
   },
   linux: {
     os: "linux",
-    filename: "LiveAudio-1.2.0-linux-x64.tar.gz",
-    url: `${RELEASE_BASE}/LiveAudio-1.2.0-linux-x64.tar.gz`,
-    size: "~46.3 MB",
+    filename: "LiveAudio-1.2.5-linux-x64.tar.gz",
+    url: `${RELEASE_BASE}/LiveAudio-1.2.5-linux-x64.tar.gz`,
+    size: "46,308,210 bytes (46.31 MB)",
   },
 };
 
@@ -107,12 +107,12 @@ export interface DownloadCopy {
 }
 
 const EN: DownloadCopy = {
-  title: "Download LiveAudio v1.2.0 — Windows & Linux (free)",
+  title: "Download LiveAudio v1.2.5 — Windows & Linux (free)",
   description:
-    "Download LiveAudio v1.2.0 free for Windows and Linux. Real v1.2.0 assets: Windows installer, Linux tarball, pip wheel, source, checksums. 100% local, MIT open-source.",
+    "Download LiveAudio v1.2.5 free for Windows and Linux. Real v1.2.5 assets: Windows installer, Linux tarball, pip wheel, source, checksums. 100% local, MIT open-source.",
 
-  consoleEyebrow: "// download · v1.2.0",
-  heading: "Download LiveAudio v1.2.0.",
+  consoleEyebrow: "// download · v1.2.5",
+  heading: "Download LiveAudio v1.2.5.",
   subheading:
     "Free & open-source (MIT). No subscription, no API key. Pick your platform — both builds and every release asset are listed in full below.",
   detecting: "Detecting OS…",
@@ -124,7 +124,7 @@ const EN: DownloadCopy = {
   downloadVerb: "Download",
   latestLinkLabel: "Always-latest release",
 
-  tableEyebrow: "// all v1.2.0 assets",
+  tableEyebrow: "// all v1.2.5 assets",
   tableHeading: "Every release artifact, with exact URLs.",
   thAsset: "asset",
   thUse: "platform / use",
@@ -133,27 +133,27 @@ const EN: DownloadCopy = {
   getLabel: "get",
   assets: [
     {
-      filename: "LiveAudio-Setup-1.2.0.exe",
-      url: `${RELEASE_BASE}/LiveAudio-Setup-1.2.0.exe`,
-      size: "~35.8 MB",
+      filename: "LiveAudio-Setup-1.2.5.exe",
+      url: `${RELEASE_BASE}/LiveAudio-Setup-1.2.5.exe`,
+      size: "35,817,683 bytes (35.82 MB)",
       use: "Windows installer (primary)",
     },
     {
-      filename: "LiveAudio-1.2.0-linux-x64.tar.gz",
-      url: `${RELEASE_BASE}/LiveAudio-1.2.0-linux-x64.tar.gz`,
-      size: "~46.3 MB",
+      filename: "LiveAudio-1.2.5-linux-x64.tar.gz",
+      url: `${RELEASE_BASE}/LiveAudio-1.2.5-linux-x64.tar.gz`,
+      size: "46,308,210 bytes (46.31 MB)",
       use: "Linux x86_64 — extract, run ./liveaudio-launcher (needs libportaudio2)",
     },
     {
-      filename: "liveaudio-1.2.0-py3-none-any.whl",
-      url: `${RELEASE_BASE}/liveaudio-1.2.0-py3-none-any.whl`,
-      size: "~0.29 MB",
+      filename: "liveaudio-1.2.5-py3-none-any.whl",
+      url: `${RELEASE_BASE}/liveaudio-1.2.5-py3-none-any.whl`,
+      size: "306,462 bytes (306.46 kB)",
       use: "pip wheel (advanced)",
     },
     {
-      filename: "liveaudio-src-1.2.0.zip",
-      url: `${RELEASE_BASE}/liveaudio-src-1.2.0.zip`,
-      size: "~0.35 MB",
+      filename: "liveaudio-src-1.2.5.zip",
+      url: `${RELEASE_BASE}/liveaudio-src-1.2.5.zip`,
+      size: "360,586 bytes (360.59 kB)",
       use: "source",
     },
     {
@@ -230,16 +230,16 @@ const EN: DownloadCopy = {
   closingHeading: "Free, local, and yours in one download.",
   closingBody:
     "No account, no API key, no per-minute cost. Grab the build above, run it, and your captions stream to OBS over a local WebSocket — fully offline after the first run.",
-  download: "Download LiveAudio v1.2.0 (free)",
+  download: "Download LiveAudio v1.2.5 (free)",
 };
 
 const ES: DownloadCopy = {
-  title: "Descargar LiveAudio v1.2.0 — Windows y Linux (gratis)",
+  title: "Descargar LiveAudio v1.2.5 — Windows y Linux (gratis)",
   description:
-    "Descargá LiveAudio v1.2.0 gratis para Windows y Linux. Assets reales de v1.2.0: instalador de Windows, tarball de Linux, wheel pip, código fuente, checksums. 100% local, código abierto MIT.",
+    "Descargá LiveAudio v1.2.5 gratis para Windows y Linux. Assets reales de v1.2.5: instalador de Windows, tarball de Linux, wheel pip, código fuente, checksums. 100% local, código abierto MIT.",
 
-  consoleEyebrow: "// descargar · v1.2.0",
-  heading: "Descargar LiveAudio v1.2.0.",
+  consoleEyebrow: "// descargar · v1.2.5",
+  heading: "Descargar LiveAudio v1.2.5.",
   subheading:
     "Gratis y de código abierto (MIT). Sin suscripción, sin API key. Elegí tu plataforma — ambas versiones y cada asset del release están listados por completo abajo.",
   detecting: "Detectando SO…",
@@ -251,7 +251,7 @@ const ES: DownloadCopy = {
   downloadVerb: "Descargar",
   latestLinkLabel: "Versión siempre más reciente",
 
-  tableEyebrow: "// todos los assets v1.2.0",
+  tableEyebrow: "// todos los assets v1.2.5",
   tableHeading: "Cada artefacto del release, con URLs exactas.",
   thAsset: "asset",
   thUse: "plataforma / uso",
@@ -260,27 +260,27 @@ const ES: DownloadCopy = {
   getLabel: "obtener",
   assets: [
     {
-      filename: "LiveAudio-Setup-1.2.0.exe",
-      url: `${RELEASE_BASE}/LiveAudio-Setup-1.2.0.exe`,
-      size: "~35.8 MB",
+      filename: "LiveAudio-Setup-1.2.5.exe",
+      url: `${RELEASE_BASE}/LiveAudio-Setup-1.2.5.exe`,
+      size: "35,817,683 bytes (35.82 MB)",
       use: "Instalador de Windows (primario)",
     },
     {
-      filename: "LiveAudio-1.2.0-linux-x64.tar.gz",
-      url: `${RELEASE_BASE}/LiveAudio-1.2.0-linux-x64.tar.gz`,
-      size: "~46.3 MB",
+      filename: "LiveAudio-1.2.5-linux-x64.tar.gz",
+      url: `${RELEASE_BASE}/LiveAudio-1.2.5-linux-x64.tar.gz`,
+      size: "46,308,210 bytes (46.31 MB)",
       use: "Linux x86_64 — extraé y ejecutá ./liveaudio-launcher (necesita libportaudio2)",
     },
     {
-      filename: "liveaudio-1.2.0-py3-none-any.whl",
-      url: `${RELEASE_BASE}/liveaudio-1.2.0-py3-none-any.whl`,
-      size: "~0.29 MB",
+      filename: "liveaudio-1.2.5-py3-none-any.whl",
+      url: `${RELEASE_BASE}/liveaudio-1.2.5-py3-none-any.whl`,
+      size: "306,462 bytes (306.46 kB)",
       use: "wheel pip (avanzado)",
     },
     {
-      filename: "liveaudio-src-1.2.0.zip",
-      url: `${RELEASE_BASE}/liveaudio-src-1.2.0.zip`,
-      size: "~0.35 MB",
+      filename: "liveaudio-src-1.2.5.zip",
+      url: `${RELEASE_BASE}/liveaudio-src-1.2.5.zip`,
+      size: "360,586 bytes (360.59 kB)",
       use: "código fuente",
     },
     {
@@ -357,7 +357,7 @@ const ES: DownloadCopy = {
   closingHeading: "Gratis, local y tuyo en una sola descarga.",
   closingBody:
     "Sin cuenta, sin API key, sin costo por minuto. Descargá la versión de arriba, ejecutala y tus subtítulos van a OBS por un WebSocket local — sin conexión después de la primera ejecución.",
-  download: "Descargar LiveAudio v1.2.0 (gratis)",
+  download: "Descargar LiveAudio v1.2.5 (gratis)",
 };
 
 export function downloadCopy(lang: Locale): DownloadCopy {

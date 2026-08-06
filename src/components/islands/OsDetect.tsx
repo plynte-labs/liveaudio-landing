@@ -84,7 +84,7 @@ export default function OsDetect({ lang = "en" }: Props) {
           <span className="osd-dot" />
           <span className="osd-dot" />
         </span>
-        <span className="osd-tab">liveaudio · v1.2.0</span>
+        <span className="osd-tab">liveaudio · v1.2.5</span>
         <span className="osd-status" aria-live="polite">
           <span className="live-dot" aria-hidden="true" />
           {statusText}

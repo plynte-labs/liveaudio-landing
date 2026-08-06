@@ -6,7 +6,7 @@
  * ~28 Spanish literals: preset names Rápido/Balanceado, "Esperando audio",
  * device names, "[PANTALLA CONGELADA...]", etc.).
  *
- * Fact-checked against the product spec (v1.2.0):
+ * Fact-checked against the product spec and v1.2.5 release notes:
  *   - Profiles: Fast / Balanced / Quality / Stable Streaming. FPS-aware,
  *     never "no FPS drops". Stable Streaming = "reduces GPU
  *     load while gaming" — no third-party game name.
@@ -198,7 +198,7 @@ export const features: Record<Lang, FeaturesStrings> = {
     models: {
       title: "Whisper model footprint",
       description:
-        "tiny, base, small, and turbo trade resource footprint for accuracy. Documented install footprint is ~400 MB CPU / ~2.5 GB CUDA; per-model VRAM below is illustrative.",
+        "tiny, base, small, and turbo trade resource footprint for accuracy. v1.2.5 loads cached local ASR models immediately without prior network waits; per-model VRAM below is illustrative.",
       kicker: "// models",
       vramLabel: "GPU VRAM footprint",
       computeLabel: "Inference compute",
@@ -273,7 +273,7 @@ export const features: Record<Lang, FeaturesStrings> = {
     vad: {
       title: "Silero VAD gate",
       description:
-        "Silero VAD trims silence and non-speech so Whisper only runs on real voice. v1.2.0 adds a configurable onset pre-roll and VAD threshold.",
+        "Silero VAD trims silence and non-speech so Whisper only runs on real voice. The gate includes a configurable onset pre-roll and VAD threshold.",
       kicker: "// silero vad",
       speechLabel: "Normal speech",
       speechSub: "16 kHz voice stream",
@@ -343,7 +343,7 @@ export const features: Record<Lang, FeaturesStrings> = {
     models: {
       title: "Huella de los modelos Whisper",
       description:
-        "tiny, base, small y turbo cambian huella de recursos por precisión. La huella de instalación documentada es ~400 MB en CPU / ~2.5 GB en CUDA; la VRAM por modelo de abajo es ilustrativa.",
+        "tiny, base, small y turbo cambian huella de recursos por precisión. La v1.2.5 carga de inmediato los modelos ASR locales en caché sin las esperas de red anteriores; la VRAM por modelo de abajo es ilustrativa.",
       kicker: "// modelos",
       vramLabel: "Huella de VRAM en GPU",
       computeLabel: "Cómputo de inferencia",
@@ -418,7 +418,7 @@ export const features: Record<Lang, FeaturesStrings> = {
     vad: {
       title: "Filtro Silero VAD",
       description:
-        "Silero VAD recorta el silencio y el ruido para que Whisper solo corra con voz real. v1.2.0 agrega un pre-roll de inicio y un umbral VAD configurables.",
+        "Silero VAD recorta el silencio y el ruido para que Whisper solo corra con voz real. El filtro incluye un pre-roll de inicio y un umbral VAD configurables.",
       kicker: "// silero vad",
       speechLabel: "Voz normal",
       speechSub: "Stream de voz a 16 kHz",

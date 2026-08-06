@@ -9,7 +9,7 @@
  *      giant `.btn-primary` for the matched build. BOTH Windows + Linux primary
  *      targets render server-side first (no-JS safe); detection only re-orders /
  *      relabels and the giant CTA is the page hero (the ONE Download/glow object).
- *   2. Brutalist `.vs-table`-style table of ALL real v1.2.0 assets with the EXACT
+ *   2. Brutalist `.vs-table`-style table of ALL real v1.2.5 assets with the EXACT
  *      URLs from the product spec — always visible, never gated by JS.
  *   3. Amber operator-notes module — SmartScreen (More info -> Run anyway),
  *      verify SHA256SUMS.txt, portable.marker, --update. Amber = warn/verify law.
@@ -45,7 +45,7 @@ const downloadHref = localizedPath(lang, "download");
 const copy = downloadCopy(lang);
 
 // JSON-LD: the SoftwareApplication download-endpoint variant carries the real
-// v1.2.0 Windows installer as downloadUrl (§5), plus WebSite for grounding.
+// v1.2.5 Windows installer as downloadUrl (§5), plus WebSite for grounding.
 const jsonLd = [
   softwareApplication({ lang, downloadUrl: PRIMARY_ASSETS.windows.url }),
   organizationWebSite(),
@@ -72,7 +72,7 @@ const jsonLd = [
     </div>
   </section>
 
-  {/* 2 — Every real v1.2.0 asset, exact URLs, always visible (no-JS safe) */}
+  {/* 2 — Every real v1.2.5 asset, exact URLs, always visible (no-JS safe) */}
   <section class="section" aria-labelledby="dl-assets-h2">
     <div class="container dl-assets-head">
       <p class="eyebrow">{copy.tableEyebrow}</p>
