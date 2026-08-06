@@ -1,0 +1,154 @@
+---
+/**
+ * HeroProductProof — static, product-grounded Home hero.
+ *
+ * The hero keeps the page's only h1 and primary conversion paths while using a
+ * real LiveAudio application mark rather than an interactive/simulated console.
+ */
+interface Props {
+  copy: {
+    eyebrow: string;
+    titleA: string;
+    accent: string;
+    titleATail: string;
+    titleB: string;
+    subtitle: string;
+    download: string;
+    how: string;
+    microTrust: string[];
+    proofAlt: string;
+  };
+  downloadHref: string;
+  gettingStartedHref: string;
+}
+
+const { copy, downloadHref, gettingStartedHref } = Astro.props;
+const productMark = "/media/liveaudio-v1.2.5/liveaudio-product-mark.webp";
+---
+
+<section class="section section-glow hero" aria-labelledby="hero-h1">
+  <div class="container hero-grid">
+    <div class="hero-content">
+      <p class="eyebrow hero-eyebrow">
+        <span class="live-dot" aria-hidden="true"></span>
+        {copy.eyebrow}
+      </p>
+
+      <h1 id="hero-h1" class="hero-title">
+        <span>
+          {copy.titleA}<span class="hero-accent">{copy.accent}</span>{copy.titleATail}
+        </span>
+        <span class="hero-title-muted">{copy.titleB}</span>
+      </h1>
+
+      <p class="hero-subtitle">{copy.subtitle}</p>
+
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href={downloadHref}>{copy.download}</a>
+        <a class="btn btn-secondary" href={gettingStartedHref}>{copy.how} <span aria-hidden="true">→</span></a>
+      </div>
+
+      <ul class="hero-trust" role="list">
+        {
+          copy.microTrust.map((item) => (
+            <li>{item}</li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <figure class="hero-proof">
+      <img
+        src={productMark}
+        width="252"
+        height="232"
+        alt={copy.proofAlt}
+        decoding="async"
+        fetchpriority="high"
+      />
+    </figure>
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding-block: clamp(3rem, 8vh, 6rem) clamp(4rem, 9vh, 7rem);
+  }
+  .hero-grid {
+    display: grid;
+    gap: var(--space-9);
+    align-items: center;
+  }
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin: 0 0 var(--space-5);
+  }
+  .hero-title {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin: 0 0 var(--space-5);
+    font-size: clamp(2.125rem, 1.275rem + 4.25vw, 4.0375rem);
+  }
+  .hero-accent { color: var(--color-neon); }
+  .hero-title-muted {
+    color: var(--color-text-muted);
+    font-weight: 500;
+  }
+  .hero-subtitle {
+    margin: 0 0 var(--space-7);
+    color: var(--color-text);
+    font-size: calc(var(--text-lg) * 0.85);
+    line-height: 1.6;
+  }
+  .hero-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-bottom: var(--space-6);
+  }
+  .hero-trust {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3) var(--space-4);
+    margin: 0;
+    padding: 0;
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    list-style: none;
+  }
+  .hero-trust li::before {
+    content: "·";
+    margin-right: var(--space-2);
+    color: var(--color-green);
+  }
+  .hero-proof {
+    display: grid;
+    justify-items: center;
+    justify-self: center;
+    gap: var(--space-4);
+    margin: 0;
+    padding: var(--space-4);
+    width: fit-content;
+    max-width: 100%;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    box-shadow: var(--highlight-top);
+  }
+  .hero-proof img {
+    width: min(320px, 78vw);
+    height: auto;
+    border-radius: var(--radius-sm);
+  }
+  @media (min-width: 960px) {
+    .hero-grid {
+      grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+      gap: var(--space-10);
+    }
+    .hero-proof { padding: var(--space-5); }
+  }
+</style>
