@@ -167,7 +167,7 @@ const en: ObsSetupCopy = {
   closingHeading: "Get LiveAudio and wire up OBS today.",
   closingBody:
     "Free & open-source (MIT). No subscription, no API key. You only pay your own electricity — hardware not included. Windows and Linux.",
-  download: "Download LiveAudio v1.2.0 (free)",
+  download: "Download LiveAudio v1.2.5 (free)",
   downloadHref: localizedPath("en", "download"),
 
   howToName: "Add LiveAudio captions to OBS",
@@ -257,7 +257,7 @@ const es: ObsSetupCopy = {
   closingHeading: "Descarga LiveAudio y configura OBS hoy.",
   closingBody:
     "Gratis y de código abierto (MIT). Sin suscripción, sin API key. Solo pagas tu propia electricidad — el hardware no está incluido. Windows y Linux.",
-  download: "Descargar LiveAudio v1.2.0 (gratis)",
+  download: "Descargar LiveAudio v1.2.5 (gratis)",
   downloadHref: localizedPath("es", "download"),
 
   howToName: "Agregar subtítulos de LiveAudio a OBS",

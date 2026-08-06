@@ -115,9 +115,9 @@ export interface GettingStartedCopy {
 }
 
 const EN: GettingStartedCopy = {
-  title: "Getting started — activate LiveAudio v1.2.0 (Windows & Linux)",
+  title: "Getting started — activate LiveAudio v1.2.5 (Windows & Linux)",
   description:
-    "Activate LiveAudio v1.2.0: install the app or run from source with uv, let the first run provision Python + deps, auto-detect your GPU, pick a profile, and START SYSTEM. Windows and Linux, 100% local.",
+    "Activate LiveAudio v1.2.5: install the app or run from source with uv, let the first run provision Python + deps, auto-detect your GPU, pick a profile, and START SYSTEM. Windows and Linux, 100% local.",
   eyebrow: "// getting-started",
   h1: "Activate LiveAudio in four real steps.",
   intro:
@@ -133,14 +133,14 @@ const EN: GettingStartedCopy = {
         {
           kicker: "// installer",
           title: "Installer (recommended)",
-          body: "Windows: download LiveAudio-Setup-1.2.0.exe and run it. Linux: download the tarball, extract it, and run ./liveaudio-launcher. No Python to install — the app provisions its own Python 3.11.",
+          body: "Windows: download LiveAudio-Setup-1.2.5.exe and run it. Linux: download the tarball, extract it, and run ./liveaudio-launcher. No Python to install — the app provisions its own Python 3.11.",
           code: {
             tab: "linux x86_64",
             lines: [
               { kind: "comment", text: "# Linux: extract and launch" },
               {
                 kind: "command",
-                text: "tar -xzf LiveAudio-1.2.0-linux-x64.tar.gz",
+                text: "tar -xzf LiveAudio-1.2.5-linux-x64.tar.gz",
               },
               { kind: "command", text: "./liveaudio-launcher" },
             ],
@@ -220,17 +220,17 @@ const EN: GettingStartedCopy = {
   closingHeading: "Have the app yet?",
   closingBody:
     "Free & open-source (MIT). No subscription, no API key. You only pay your own electricity — hardware not included.",
-  download: "Download LiveAudio v1.2.0 (free)",
-  howToName: "Get started with LiveAudio v1.2.0",
+  download: "Download LiveAudio v1.2.5 (free)",
+  howToName: "Get started with LiveAudio v1.2.5",
   timelineLabel: "Activation steps",
   detectLabel: "GPU auto-detect ladder",
   profilesLabel: "Profiles",
 };
 
 const ES: GettingStartedCopy = {
-  title: "Primeros pasos — activa LiveAudio v1.2.0 (Windows y Linux)",
+  title: "Primeros pasos — activa LiveAudio v1.2.5 (Windows y Linux)",
   description:
-    "Activa LiveAudio v1.2.0: instala la app o ejecuta desde el código con uv, deja que la primera ejecución provisione Python y dependencias, detecte la GPU, elige un perfil e INICIAR SISTEMA. Windows y Linux, 100% local.",
+    "Activa LiveAudio v1.2.5: instala la app o ejecuta desde el código con uv, deja que la primera ejecución provisione Python y dependencias, detecte la GPU, elige un perfil e INICIAR SISTEMA. Windows y Linux, 100% local.",
   eyebrow: "// primeros-pasos",
   h1: "Activa LiveAudio en cuatro pasos reales.",
   intro:
@@ -246,14 +246,14 @@ const ES: GettingStartedCopy = {
         {
           kicker: "// instalador",
           title: "Instalador (recomendado)",
-          body: "Windows: descarga LiveAudio-Setup-1.2.0.exe y ejecútalo. Linux: descarga el tarball, extráelo y ejecuta ./liveaudio-launcher. No hay que instalar Python — la app provisiona su propio Python 3.11.",
+          body: "Windows: descarga LiveAudio-Setup-1.2.5.exe y ejecútalo. Linux: descarga el tarball, extráelo y ejecuta ./liveaudio-launcher. No hay que instalar Python — la app provisiona su propio Python 3.11.",
           code: {
             tab: "linux x86_64",
             lines: [
               { kind: "comment", text: "# Linux: extraer y ejecutar" },
               {
                 kind: "command",
-                text: "tar -xzf LiveAudio-1.2.0-linux-x64.tar.gz",
+                text: "tar -xzf LiveAudio-1.2.5-linux-x64.tar.gz",
               },
               { kind: "command", text: "./liveaudio-launcher" },
             ],
@@ -337,8 +337,8 @@ const ES: GettingStartedCopy = {
   closingHeading: "¿Todavía no tienes la app?",
   closingBody:
     "Gratis y de código abierto (MIT). Sin suscripción, sin API key. Solo pagas tu propia electricidad — el hardware no está incluido.",
-  download: "Descargar LiveAudio v1.2.0 (gratis)",
-  howToName: "Empieza con LiveAudio v1.2.0",
+  download: "Descargar LiveAudio v1.2.5 (gratis)",
+  howToName: "Empieza con LiveAudio v1.2.5",
   timelineLabel: "Pasos de activación",
   detectLabel: "Escalera de detección de GPU",
   profilesLabel: "Perfiles",

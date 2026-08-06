@@ -9,7 +9,7 @@
  * lucide SVG with currentColor (emerald active). All copy from the product spec
  * via src/i18n/pages/home.ts. Answer-first H2; one `.section-glow`.
  *
- * Props: copy = HomeCopy["pipeline"].
+ * Props: copy = HomeCopy["pipeline"], docsHref.
  */
 import type { PipelineStage } from "../../i18n/pages/home";
 
@@ -19,10 +19,12 @@ interface Props {
     heading: string;
     intro: string;
     stages: PipelineStage[];
+    docsLabel: string;
   };
+  docsHref: string;
 }
 
-const { copy } = Astro.props;
+const { copy, docsHref } = Astro.props;
 
 // Inline lucide path data (stroke 1.75, 24px, currentColor) keyed by concept.
 const ICON_PATHS: Record<PipelineStage["icon"], string> = {
@@ -37,9 +39,14 @@ const ICON_PATHS: Record<PipelineStage["icon"], string> = {
 
 <section class="section section-glow pipe" aria-labelledby="pipe-h2">
   <div class="container">
-    <p class="eyebrow">{copy.eyebrow}</p>
-    <h2 id="pipe-h2" class="pipe-heading">{copy.heading}</h2>
-    <p class="pipe-intro">{copy.intro}</p>
+    <header class="pipe-header">
+      <p class="eyebrow">{copy.eyebrow}</p>
+      <h2 id="pipe-h2" class="pipe-heading">{copy.heading}</h2>
+      <div class="pipe-intro-row">
+        <p class="pipe-intro">{copy.intro}</p>
+        <a class="btn-tertiary pipe-docs" href={docsHref}>{copy.docsLabel} <span aria-hidden="true">→</span></a>
+      </div>
+    </header>
 
     <ol class="pipe-list" role="list">
       {
@@ -80,11 +87,20 @@ const ICON_PATHS: Record<PipelineStage["icon"], string> = {
     margin: var(--space-3) 0 var(--space-4);
     max-width: var(--measure);
   }
+  .pipe-header { margin-bottom: var(--space-7); }
+  .pipe-intro-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-4);
+    margin: 0;
+  }
   .pipe-intro {
     color: var(--color-text-muted);
     font-size: var(--text-base);
-    margin: 0 0 var(--space-9);
+    margin: 0;
   }
+  .pipe-docs { font-size: var(--text-sm); }
 
   .pipe-list {
     list-style: none;
@@ -168,5 +184,24 @@ const ICON_PATHS: Record<PipelineStage["icon"], string> = {
     border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
     padding: 4px 10px;
+  }
+  @media (min-width: 960px) {
+    .pipe-header {
+      display: grid;
+      grid-template-columns: 4fr 8fr;
+      column-gap: var(--space-8);
+    }
+    .pipe-header .eyebrow { grid-column: 1 / -1; }
+    .pipe-heading { grid-column: 1; }
+    .pipe-intro-row { grid-column: 2; align-self: end; }
+    .pipe-list {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-5);
+    }
+    .pipe-step { display: block; }
+    .pipe-spine { flex-direction: row; margin-bottom: var(--space-4); }
+    .pipe-spine::after { height: 1px; width: auto; margin: 0; }
+    .pipe-body { padding-bottom: 0; }
   }
 </style>

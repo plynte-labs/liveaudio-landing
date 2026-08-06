@@ -50,7 +50,7 @@ const en: FaqPageCopy = {
     "Answers about LiveAudio: is it 100% local, does it run on Linux, is it free and open-source (MIT), do you need a GPU or an API key, what is the latency, and how it differs from cloud APIs and OBS caption plugins.",
   eyebrow: "// faq",
   heading: "Answers about local, free, real-time captions.",
-  lede: "Short, source-backed answers to the questions people ask before downloading LiveAudio v1.2.0.",
+  lede: "Short, source-backed answers to the questions people ask before downloading LiveAudio v1.2.5.",
   items: [
     {
       question: "Is it really 100% local?",
@@ -93,7 +93,7 @@ const en: FaqPageCopy = {
   closingHeading: "Ready when your answers are.",
   closingBody:
     "Free & open-source (MIT). No subscription, no API key. You only pay your own electricity — hardware not included.",
-  download: "Download LiveAudio v1.2.0 (free)",
+  download: "Download LiveAudio v1.2.5 (free)",
 };
 
 const es: FaqPageCopy = {
@@ -102,7 +102,7 @@ const es: FaqPageCopy = {
     "Respuestas sobre LiveAudio: si es 100% local, si funciona en Linux, si es gratis y de código abierto (MIT), si necesitas GPU o API key, cuál es la latencia y en qué se diferencia de las APIs en la nube y los plugins de subtítulos de OBS.",
   eyebrow: "// faq",
   heading: "Respuestas sobre subtítulos locales, gratuitos y en tiempo real.",
-  lede: "Respuestas breves y verificables a las preguntas habituales antes de descargar LiveAudio v1.2.0.",
+  lede: "Respuestas breves y verificables a las preguntas habituales antes de descargar LiveAudio v1.2.5.",
   items: [
     {
       question: "¿De verdad es 100% local?",
@@ -145,7 +145,7 @@ const es: FaqPageCopy = {
   closingHeading: "Listo cuando tengas tus respuestas.",
   closingBody:
     "Gratis y de código abierto (MIT). Sin suscripción, sin API key. Solo pagas tu propia electricidad — el hardware no está incluido.",
-  download: "Descargar LiveAudio v1.2.0 (gratis)",
+  download: "Descargar LiveAudio v1.2.5 (gratis)",
 };
 
 const TABLE: Record<Locale, FaqPageCopy> = { en, es };

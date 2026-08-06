@@ -14,7 +14,7 @@ import {
 import { features, type Lang } from "../../i18n/islands/features";
 
 /**
- * FeaturesGrid — six interactive sandboxes, one per real LiveAudio v1.2.0 control
+ * FeaturesGrid — six interactive sandboxes, one per released LiveAudio control
  * (the design system, "Feature tiles / sandboxes"). Ported from the OLD
  * src/features/landing/components/FeaturesGrid.tsx, which hardcoded ~28 Spanish
  * literals. ALL copy now comes from src/i18n/islands/features.ts via `lang`, so
@@ -31,7 +31,7 @@ import { features, type Lang } from "../../i18n/islands/features";
  *
  * Color law: green = signal, amber = warn/verify/timing/sim ONLY, body text only
  * off-white / muted. No hardcoded hex — tokens only. Scoped <style> mirrors the
- * HeroSignalDesk pattern.
+ * Signal Desk pattern.
  */
 
 type Preset = "fast" | "balanced" | "quality" | "stable";
@@ -84,7 +84,7 @@ export default function FeaturesGrid({ lang = "en" }: Props) {
     tabRefs.current[idx]?.focus();
   };
   const onTabKeyDown = (e: React.KeyboardEvent, idx: number) => {
-    let next: number | null = null;
+    let next: number;
     switch (e.key) {
       case "ArrowRight":
       case "ArrowDown":

@@ -59,7 +59,7 @@ export interface BentoTile {
     | "captions";
   /** when true the tile spans two columns in the bento grid */
   wide?: boolean;
-  /** optional "new in v1.2.0" pill rendered on the tile */
+  /** optional contextual pill rendered on the tile */
   badge?: string;
 }
 
@@ -77,6 +77,19 @@ export interface HomeCopy {
   /** <head> title + meta description (per-locale) */
   meta: { title: string; description: string };
 
+  hero: {
+    eyebrow: string;
+    titleA: string;
+    accent: string;
+    titleATail: string;
+    titleB: string;
+    subtitle: string;
+    download: string;
+    how: string;
+    microTrust: string[];
+    proofAlt: string;
+  };
+
   trust: { label: string; items: string[] };
 
   demo: {
@@ -88,7 +101,7 @@ export interface HomeCopy {
     heading: string;
     /** one-line lead caption above the video */
     lead: string;
-    /** honest caption under the video (real capture, version, EN-UI note) */
+    /** honest caption under the video (real capture, EN-UI note) */
     captionReal: string;
     /** toggle label when the video is paused (action: press to play) */
     play: string;
@@ -111,6 +124,16 @@ export interface HomeCopy {
     heading: string;
     intro: string;
     stages: PipelineStage[];
+    docsLabel: string;
+  };
+
+  paths: {
+    eyebrow: string;
+    heading: string;
+    lead: string;
+    tour: { title: string; body: string; cta: string };
+    start: { title: string; body: string; cta: string };
+    obs: { title: string; body: string; cta: string; docs: string };
   };
 
   ws: {
@@ -184,6 +207,20 @@ const en: HomeCopy = {
       "Free, open-source (MIT) app that generates real-time Whisper speech captions 100% locally and streams them to OBS over a local WebSocket. Windows and Linux.",
   },
 
+  hero: {
+    eyebrow: "PLYNTE LIVEAUDIO v1.2.5 - WINDOWS & LINUX",
+    titleA: "Real-time ",
+    accent: "local",
+    titleATail: " captions for your OBS.",
+    titleB: "No cloud, no subscription, no API key.",
+    subtitle:
+      "LiveAudio is a free, open-source (MIT) app that generates real-time Whisper speech captions 100% locally and streams them to OBS over a local WebSocket. v1.2.5 loads cached local ASR models immediately, avoids prior network waits, and falls back to CPU if CUDA fails.",
+    download: "Download LiveAudio v1.2.5 (free)",
+    how: "How it works",
+    microTrust: ["100% local", "MIT open-source", "Windows + Linux"],
+    proofAlt: "LiveAudio product mark with the LiveAudio name and Plynte attribution.",
+  },
+
   trust: {
     label: "What LiveAudio guarantees",
     items: [
@@ -200,11 +237,11 @@ const en: HomeCopy = {
     badge: "real capture",
     heading: "See LiveAudio running live.",
     lead: "A real screen recording of the app generating captions — not a mockup.",
-    captionReal: "Real capture — LiveAudio v1.2.0, unedited.",
+    captionReal: "Real capture — LiveAudio interface, unedited.",
     play: "Play",
     pause: "Pause",
     videoAriaLabel:
-      "Silent screen recording of LiveAudio v1.2.0 generating real-time captions and broadcasting them to OBS.",
+      "Silent screen recording of the LiveAudio interface generating real-time captions and broadcasting them to OBS.",
   },
 
   objections: {
@@ -235,39 +272,62 @@ const en: HomeCopy = {
 
   pipeline: {
     eyebrow: "// the signal path",
-    heading: "From microphone to OBS in four stages.",
+    heading: "From microphone to OBS, locally.",
     intro:
-      "In plain terms: LiveAudio listens to your voice, turns speech into text on the spot, and sends those captions to OBS — all on your own machine. That speech-to-text engine (ASR, automatic speech recognition) runs locally in four stages, kept steady by isolated processes, an audio ring buffer and automatic reconnection.",
+      "Capture audio, keep real speech, decode it locally, then send captions to OBS. Read the docs when you need the implementation details.",
+    docsLabel: "Read the signal-path docs",
     stages: [
       {
         n: "01",
         icon: "mic",
         title: "Capture",
-        body: "Grab a physical microphone or system audio (WASAPI loopback on Windows; mic on Linux). The ring buffer keeps audio flowing even under load.",
+        body: "Choose a microphone or supported system audio input.",
         artifact: "mic · system loopback (windows)",
       },
       {
         n: "02",
         icon: "audio-waveform",
         title: "Gate",
-        body: "Silero VAD trims silence with a configurable onset pre-roll and VAD threshold, so Whisper only decodes real speech.",
+        body: "Silero VAD keeps silence out before Whisper decodes.",
         artifact: "silero-vad · onset pre-roll + threshold",
       },
       {
         n: "03",
         icon: "cpu",
         title: "Decode",
-        body: "This is where speech becomes text. Whisper transcribes in real time — tiny, base, small or turbo — on CPU or optional CUDA. A hallucination blacklist filters junk text.",
+        body: "Whisper turns speech into text on CPU or optional CUDA.",
         artifact: "whisper · tiny / base / small / turbo",
       },
       {
         n: "04",
         icon: "share-2",
         title: "Broadcast",
-        body: "The captions go straight to OBS over a local connection — clean subtitle JSON that OBS or any app on your computer can read. Sub-second to ~1 s, tunable per profile. (The exact address is in small print below.)",
+        body: "Local subtitle JSON reaches OBS or another localhost client.",
         artifact: "ws://127.0.0.1:8765",
       },
     ],
+  },
+
+  paths: {
+    eyebrow: "// choose a path",
+    heading: "See the product, install it, or wire it into OBS.",
+    lead: "The home page gives you the decision. These routes carry the details without making you scroll through every possible configuration.",
+    tour: {
+      title: "Product Tour",
+      body: "Walk through real released-app states, from first run to diagnostics.",
+      cta: "Open the tour",
+    },
+    start: {
+      title: "Getting Started",
+      body: "Install, choose a profile, and start the local caption engine.",
+      cta: "Start setup",
+    },
+    obs: {
+      title: "OBS Setup & Docs",
+      body: "Connect the local subtitle output to OBS, then keep the technical reference nearby.",
+      cta: "Set up OBS",
+      docs: "Browse docs",
+    },
   },
 
   ws: {
@@ -304,7 +364,7 @@ const en: HomeCopy = {
         body: "The OBS overlay adds an adaptive vertical “ribbon” subtitle buffer, with improved subtitle legibility and capped reveal-animation timing.",
         icon: "captions",
         wide: true,
-        badge: "new in v1.2.0",
+        badge: "adaptive overlay",
       },
       {
         kicker: "// hot-swap",
@@ -413,7 +473,7 @@ const en: HomeCopy = {
     eyebrow: "// download",
     heading: "Local captions in your OBS in minutes.",
     body: "Free & open-source (MIT). No subscription, no API key. You only pay your own electricity — hardware not included.",
-    download: "Download LiveAudio v1.2.0 (free)",
+    download: "Download LiveAudio v1.2.5 (free)",
     secondary: "How it works",
   },
 };
@@ -423,6 +483,20 @@ const es: HomeCopy = {
     title: "LiveAudio — Subtítulos locales en tiempo real para OBS",
     description:
       "App gratuita y de código abierto (MIT) que genera subtítulos de voz Whisper en tiempo real 100% en tu equipo y los envía a OBS por un WebSocket local. Windows y Linux.",
+  },
+
+  hero: {
+    eyebrow: "PLYNTE LIVEAUDIO v1.2.5 - WINDOWS Y LINUX",
+    titleA: "Subtítulos ",
+    accent: "locales",
+    titleATail: " en tiempo real para tu OBS.",
+    titleB: "Sin nube, sin suscripción, sin API key.",
+    subtitle:
+      "LiveAudio es una app gratuita y de código abierto (MIT) que genera subtítulos de voz Whisper en tiempo real, 100% en tu equipo, y los envía a OBS por un WebSocket local. La v1.2.5 carga de inmediato los modelos ASR locales en caché, evita las esperas de red anteriores y usa CPU si CUDA falla.",
+    download: "Descargar LiveAudio v1.2.5 (gratis)",
+    how: "Cómo funciona",
+    microTrust: ["100% local", "Código abierto MIT", "Windows + Linux"],
+    proofAlt: "Marca del producto LiveAudio con el nombre LiveAudio y la atribución a Plynte.",
   },
 
   trust: {
@@ -441,11 +515,11 @@ const es: HomeCopy = {
     badge: "captura real",
     heading: "Mira LiveAudio funcionando en vivo.",
     lead: "Una grabación real de la app generando subtítulos — no es una maqueta.",
-    captionReal: "Captura real — LiveAudio v1.2.0, sin ediciones. Interfaz en inglés.",
+    captionReal: "Captura real de la interfaz de LiveAudio, sin ediciones. Interfaz en inglés.",
     play: "Reproducir",
     pause: "Pausar",
     videoAriaLabel:
-      "Grabación de pantalla sin audio de LiveAudio v1.2.0 generando subtítulos en tiempo real y enviándolos a OBS.",
+      "Grabación de pantalla sin audio de la interfaz de LiveAudio generando subtítulos en tiempo real y enviándolos a OBS.",
   },
 
   objections: {
@@ -476,39 +550,62 @@ const es: HomeCopy = {
 
   pipeline: {
     eyebrow: "// el camino de la señal",
-    heading: "Del micrófono a OBS en cuatro etapas.",
+    heading: "Del micrófono a OBS, localmente.",
     intro:
-      "En palabras simples: LiveAudio escucha tu voz, convierte el habla en texto al instante y envía esos subtítulos a OBS — todo en tu propio equipo. Ese motor de voz a texto (ASR, reconocimiento de voz automático) corre localmente en cuatro etapas, estable gracias a procesos aislados, un búfer de audio en anillo y reconexión automática.",
+      "Captura audio, conserva la voz real, la decodifica localmente y envía subtítulos a OBS. Consulta la documentación cuando necesites los detalles de implementación.",
+    docsLabel: "Leer la documentación del flujo",
     stages: [
       {
         n: "01",
         icon: "mic",
         title: "Captura",
-        body: "Toma un micrófono físico o el audio del sistema (loopback WASAPI en Windows; micrófono en Linux). El búfer en anillo mantiene el audio fluyendo bajo carga.",
+        body: "Elige un micrófono o una entrada de audio del sistema compatible.",
         artifact: "micrófono · loopback del sistema (windows)",
       },
       {
         n: "02",
         icon: "audio-waveform",
         title: "Filtra",
-        body: "Silero VAD recorta el silencio con un pre-roll de inicio y un umbral configurables, para que Whisper solo decodifique voz real.",
+        body: "Silero VAD deja fuera el silencio antes de que Whisper decodifique.",
         artifact: "silero-vad · pre-roll de inicio + umbral",
       },
       {
         n: "03",
         icon: "cpu",
         title: "Decodifica",
-        body: "Acá el habla se vuelve texto. Whisper transcribe en tiempo real — tiny, base, small o turbo — en CPU o CUDA opcional. Una blacklist de alucinaciones filtra texto basura.",
+        body: "Whisper convierte el habla en texto en CPU o CUDA opcional.",
         artifact: "whisper · tiny / base / small / turbo",
       },
       {
         n: "04",
         icon: "share-2",
         title: "Emite",
-        body: "Los subtítulos van directo a OBS por una conexión local — JSON limpio que OBS o cualquier app de tu computadora puede leer. Menos de un segundo hasta ~1 s, ajustable por perfil. (La dirección exacta está en letra chica abajo.)",
+        body: "El JSON de subtítulos local llega a OBS u otro cliente en localhost.",
         artifact: "ws://127.0.0.1:8765",
       },
     ],
+  },
+
+  paths: {
+    eyebrow: "// elige un camino",
+    heading: "Conoce el producto, instálalo o conéctalo a OBS.",
+    lead: "La página de inicio te ayuda a decidir. Estas rutas llevan los detalles sin obligarte a recorrer cada configuración posible.",
+    tour: {
+      title: "Tour del producto",
+      body: "Recorre estados reales de la app publicada, desde el primer inicio hasta el diagnóstico.",
+      cta: "Abrir el tour",
+    },
+    start: {
+      title: "Primeros pasos",
+      body: "Instala, elige un perfil e inicia el motor local de subtítulos.",
+      cta: "Empezar la configuración",
+    },
+    obs: {
+      title: "Configuración de OBS y docs",
+      body: "Conecta la salida local de subtítulos a OBS y conserva la referencia técnica cerca.",
+      cta: "Configurar OBS",
+      docs: "Ver docs",
+    },
   },
 
   ws: {
@@ -545,7 +642,7 @@ const es: HomeCopy = {
         body: "El overlay de OBS suma un búfer de subtítulos en “cinta” vertical adaptable, con mejor legibilidad de los subtítulos y un tiempo de animación de aparición acotado.",
         icon: "captions",
         wide: true,
-        badge: "nuevo en v1.2.0",
+        badge: "overlay adaptable",
       },
       {
         kicker: "// hot-swap",
@@ -654,7 +751,7 @@ const es: HomeCopy = {
     eyebrow: "// descargar",
     heading: "Subtítulos locales en tu OBS en minutos.",
     body: "Gratis y de código abierto (MIT). Sin suscripción, sin API key. Solo pagas tu propia electricidad — el hardware no está incluido.",
-    download: "Descargar LiveAudio v1.2.0 (gratis)",
+    download: "Descargar LiveAudio v1.2.5 (gratis)",
     secondary: "Cómo funciona",
   },
 };

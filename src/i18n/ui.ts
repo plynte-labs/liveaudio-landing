@@ -14,6 +14,7 @@ export const ui = {
     "a11y.skipToContent": "Skip to content",
 
     // Nav labels (mono lowercase links in the header)
+    "nav.productTour": "product-tour",
     "nav.download": "download",
     "nav.gettingStarted": "getting-started",
     "nav.obsSetup": "obs-setup",
@@ -25,14 +26,14 @@ export const ui = {
     "nav.openMenu": "Open menu",
 
     // Common buttons / CTAs (chrome-level; page heroes own their own copy)
-    "cta.download": "Download LiveAudio v1.2.0 (free)",
+    "cta.download": "Download LiveAudio v1.2.5 (free)",
     "cta.github": "GitHub",
     "cta.copy": "Copy",
     "cta.copied": "copied",
 
     // Brand / version
     "brand.name": "LiveAudio",
-    "brand.version": "v1.2.0",
+    "brand.version": "v1.2.5",
 
     // Footer columns
     "footer.tagline": "100% local · MIT open-source",
@@ -43,7 +44,7 @@ export const ui = {
     "footer.resources.releases": "Releases",
     "footer.resources.llms": "llms.txt",
     "footer.resources.checksums": "SHA256SUMS",
-    "footer.legal": "© Plynte · LiveAudio v1.2.0 · MIT · Windows + Linux",
+    "footer.legal": "© Plynte · LiveAudio v1.2.5 · MIT · Windows + Linux",
 
     // Language toggle
     "lang.en": "EN",
@@ -56,6 +57,7 @@ export const ui = {
     "a11y.skipToContent": "Saltar al contenido",
 
     // Nav labels (mono lowercase links in the header)
+    "nav.productTour": "tour-del-producto",
     "nav.download": "descargar",
     "nav.gettingStarted": "primeros-pasos",
     "nav.obsSetup": "configurar-obs",
@@ -67,14 +69,14 @@ export const ui = {
     "nav.openMenu": "Abrir menú",
 
     // Common buttons / CTAs
-    "cta.download": "Descargar LiveAudio v1.2.0 (gratis)",
+    "cta.download": "Descargar LiveAudio v1.2.5 (gratis)",
     "cta.github": "GitHub",
     "cta.copy": "Copiar",
     "cta.copied": "copiado",
 
     // Brand / version
     "brand.name": "LiveAudio",
-    "brand.version": "v1.2.0",
+    "brand.version": "v1.2.5",
 
     // Footer columns
     "footer.tagline": "100% local · Código abierto MIT",
@@ -85,7 +87,7 @@ export const ui = {
     "footer.resources.releases": "Versiones",
     "footer.resources.llms": "llms.txt",
     "footer.resources.checksums": "SHA256SUMS",
-    "footer.legal": "© Plynte · LiveAudio v1.2.0 · MIT · Windows + Linux",
+    "footer.legal": "© Plynte · LiveAudio v1.2.5 · MIT · Windows + Linux",
 
     // Language toggle
     "lang.en": "EN",

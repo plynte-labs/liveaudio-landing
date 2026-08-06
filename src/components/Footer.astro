@@ -4,9 +4,10 @@
  *
  * Carbon, 1px top border, 3 columns:
  *   1. wordmark + MIT/local tagline + live-dot
- *   2. nav mirror (download / getting-started / obs-setup / docs / faq / vs)
+ *   2. product links (product tour / download / getting-started / obs-setup /
+ *      docs / faq / vs)
  *   3. resources (GitHub / releases / llms.txt / SHA256SUMS)
- * Mono micro-row `© Plynte · LiveAudio v1.2.0 · MIT · Windows + Linux` + en/es
+ * Mono micro-row `© Plynte · LiveAudio v1.2.5 · MIT · Windows + Linux` + en/es
  * toggle. No newsletter / no social.
  *
  * Props: lang, path (current path — used for the language toggle alternate).
@@ -25,9 +26,10 @@ const tt = t(lang);
 const REPO_URL = "https://github.com/plynte-labs/LiveAudio";
 const RELEASES_URL = `${REPO_URL}/releases`;
 const CHECKSUMS_URL =
-  "https://github.com/plynte-labs/LiveAudio/releases/download/v1.2.0/SHA256SUMS.txt";
+  "https://github.com/plynte-labs/LiveAudio/releases/download/v1.2.5/SHA256SUMS.txt";
 
 const navItems = [
+  { seg: "product-tour", label: tt("nav.productTour") },
   { seg: "download", label: tt("nav.download") },
   { seg: "getting-started", label: tt("nav.gettingStarted") },
   { seg: "obs-setup", label: tt("nav.obsSetup") },
@@ -117,7 +119,7 @@ const otherLangLabel = lang === "en" ? tt("lang.es") : tt("lang.en");
   .site-footer {
     border-top: 1px solid var(--color-border);
     padding-block: var(--space-11) var(--space-9);
-    margin-bottom: 64px; /* clear the fixed transport bar */
+    margin-bottom: var(--transport-bar-height); /* clear the fixed transport bar */
   }
   .footer-grid {
     display: grid;

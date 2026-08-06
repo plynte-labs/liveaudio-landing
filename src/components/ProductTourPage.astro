@@ -1,0 +1,211 @@
+---
+import Layout from "../layouts/Layout.astro";
+import type { Locale } from "../i18n/routes";
+import { productTourCopy } from "../i18n/pages/product-tour";
+
+interface Props { lang?: Locale; }
+
+const { lang = "en" } = Astro.props;
+const copy = productTourCopy(lang);
+const media = "/media/liveaudio-v1.2.5";
+const imageById = {
+  live: { src: `${media}/live-panel-caption-output.webp`, width: 1477, height: 368 },
+  "first-run": { src: `${media}/setup-initial-screen.webp`, width: 973, height: 602 },
+  workspace: { src: `${media}/workspace-live-panel-and-settings.webp`, width: 1916, height: 982 },
+  engine: { src: `${media}/settings-performance.webp`, width: 412, height: 976 },
+  captions: { src: `${media}/settings-subtitles-and-websocket.webp`, width: 407, height: 718 },
+  advanced: { src: `${media}/settings-advanced-controls.webp`, width: 372, height: 612 },
+  diagnostics: { src: `${media}/diagnostics-log.webp`, width: 1477, height: 343 },
+} as const;
+const chapters = copy.chapters.map((chapter) => ({ ...chapter, ...imageById[chapter.id] }));
+---
+
+<Layout title={copy.meta.title} description={copy.meta.description} lang={lang} transport={true}>
+  <section class="section section-glow tour-hero" aria-labelledby="tour-h1">
+    <div class="container tour-heading-grid">
+      <p class="eyebrow">{copy.eyebrow}</p>
+      <h1 id="tour-h1">{copy.heading}</h1>
+      <div class="tour-hero-copy">
+        <p>{copy.lead}</p>
+        <p class="tour-authentic"><span class="live-dot" aria-hidden="true"></span>{copy.authenticity}</p>
+        <p class="tour-note">{copy.setupNote}</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="tour-main">
+    {
+      chapters.map((chapter, index) => (
+        <article class:list={["tour-chapter", `is-${chapter.layout}`, `is-${chapter.id}`, index % 2 === 1 && "is-reversed"]}>
+          <div class="container tour-chapter-grid">
+            <header class="tour-chapter-copy">
+              <p class="eyebrow">{chapter.eyebrow}</p>
+              <h2>{chapter.title}</h2>
+              <p>{chapter.body}</p>
+            </header>
+            <button
+              class="tour-media"
+              type="button"
+              data-tour-trigger
+              data-index={index}
+              aria-label={`${copy.open}: ${chapter.title}`}
+            >
+              <img
+                src={chapter.src}
+                width={chapter.width}
+                height={chapter.height}
+                alt={chapter.alt}
+                loading={index === 0 ? "eager" : "lazy"}
+                decoding="async"
+              />
+              <span class="tour-open">{copy.open}</span>
+            </button>
+          </div>
+        </article>
+      ))
+    }
+  </div>
+
+  <dialog class="tour-dialog" aria-label={copy.dialogLabel} data-tour-dialog>
+    <div class="tour-dialog-shell">
+      <div class="tour-dialog-tools">
+        <p class="eyebrow" data-dialog-kicker></p>
+        <button type="button" class="tour-dialog-close" data-tour-close>{copy.close}</button>
+      </div>
+      <h2 id="tour-dialog-title" data-dialog-title></h2>
+      <div class="tour-dialog-image-wrap">
+        <img data-dialog-image alt="" />
+      </div>
+      <div class="tour-dialog-nav" aria-label={copy.dialogLabel}>
+        <button type="button" class="btn btn-secondary" data-tour-previous>{copy.previous}</button>
+        <span class="tour-dialog-count" data-dialog-count></span>
+        <button type="button" class="btn btn-secondary" data-tour-next>{copy.next}</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script is:inline define:vars={{ chapters }}>
+    (() => {
+      const dialog = document.querySelector("[data-tour-dialog]");
+      if (!(dialog instanceof HTMLDialogElement)) return;
+      const triggers = Array.from(document.querySelectorAll("[data-tour-trigger]"));
+      const close = dialog.querySelector("[data-tour-close]");
+      const previous = dialog.querySelector("[data-tour-previous]");
+      const next = dialog.querySelector("[data-tour-next]");
+      const image = dialog.querySelector("[data-dialog-image]");
+      const title = dialog.querySelector("[data-dialog-title]");
+      const kicker = dialog.querySelector("[data-dialog-kicker]");
+      const count = dialog.querySelector("[data-dialog-count]");
+      let active = 0;
+      let opener = null;
+      let closing = false;
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+      const render = () => {
+        const chapter = chapters[active];
+        if (!(image instanceof HTMLImageElement) || !chapter) return;
+        image.src = chapter.src;
+        image.width = chapter.width;
+        image.height = chapter.height;
+        image.alt = chapter.alt;
+        if (title) title.textContent = chapter.title;
+        if (kicker) kicker.textContent = chapter.eyebrow;
+        if (count) count.textContent = `${active + 1} / ${chapters.length}`;
+        if (previous instanceof HTMLButtonElement) previous.disabled = active === 0;
+        if (next instanceof HTMLButtonElement) next.disabled = active === chapters.length - 1;
+      };
+      const closeWithMotion = () => {
+        if (closing || !dialog.open) return;
+        if (prefersReducedMotion.matches) {
+          dialog.close();
+          return;
+        }
+        closing = true;
+        dialog.classList.add("is-closing");
+        const onAnimEnd = (event) => {
+          if (event.target !== dialog) return;
+          dialog.removeEventListener("animationend", onAnimEnd);
+          if (dialog.open) dialog.close();
+        };
+        dialog.addEventListener("animationend", onAnimEnd);
+        // Safety fallback: force-close after animation duration + buffer
+        setTimeout(() => { if (dialog.open && closing) dialog.close(); }, 220);
+      };
+      const open = (index, trigger) => {
+        active = index;
+        opener = trigger;
+        closing = false;
+        dialog.classList.remove("is-closing");
+        render();
+        dialog.showModal();
+        close?.focus();
+      };
+      triggers.forEach((trigger) => trigger.addEventListener("click", () => open(Number(trigger.dataset.index), trigger)));
+      close?.addEventListener("click", closeWithMotion);
+      previous?.addEventListener("click", () => { if (active > 0) { active -= 1; render(); } });
+      next?.addEventListener("click", () => { if (active < chapters.length - 1) { active += 1; render(); } });
+      dialog.addEventListener("click", (event) => { if (event.target === dialog) closeWithMotion(); });
+      dialog.addEventListener("cancel", (event) => { event.preventDefault(); closeWithMotion(); });
+      dialog.addEventListener("wheel", (event) => { event.preventDefault(); event.stopPropagation(); closeWithMotion(); }, { passive: false });
+      dialog.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") { event.preventDefault(); closeWithMotion(); return; }
+        if (event.key === "ArrowLeft" && active > 0) { event.preventDefault(); active -= 1; render(); }
+        if (event.key === "ArrowRight" && active < chapters.length - 1) { event.preventDefault(); active += 1; render(); }
+      });
+      dialog.addEventListener("close", () => {
+        dialog.classList.remove("is-closing");
+        closing = false;
+        opener?.focus();
+        opener = null;
+      });
+    })();
+  </script>
+</Layout>
+
+<style>
+  .tour-heading-grid { display: grid; gap: var(--space-4); }
+  .tour-heading-grid h1 { margin: 0; font-size: var(--text-3xl); max-width: 15ch; }
+  .tour-hero-copy { max-width: 64ch; }
+  .tour-hero-copy p { margin: 0; color: var(--color-text-muted); }
+  .tour-authentic { display: inline-flex; align-items: center; gap: var(--space-2); margin-top: var(--space-5) !important; color: var(--color-green) !important; font-family: var(--font-mono); font-size: var(--text-xs); letter-spacing: .08em; text-transform: uppercase; }
+  .tour-note { margin-top: var(--space-3) !important; font-size: var(--text-sm); }
+  .tour-main { padding-bottom: var(--space-11); }
+  .tour-chapter { padding-block: var(--space-10); border-top: 1px solid var(--color-border-soft); }
+  .tour-chapter-grid { display: grid; gap: var(--space-7); align-items: center; }
+  .tour-chapter-copy h2 { margin: var(--space-3) 0 var(--space-4); font-size: var(--text-2xl); }
+  .tour-chapter-copy > p:last-child { margin: 0; color: var(--color-text-muted); max-width: 60ch; }
+  .tour-media { position: relative; display: block; width: 100%; padding: 0; overflow: hidden; border: 1px solid var(--color-border); border-radius: var(--radius-sm); background: var(--color-surface-2); color: var(--color-text); cursor: zoom-in; text-align: left; }
+  .tour-media:hover { border-color: var(--color-green); }
+  .tour-media img { width: 100%; height: auto; }
+  .tour-open { display: inline-block; padding: var(--space-3) var(--space-4); color: var(--color-green); font-family: var(--font-mono); font-size: var(--text-xs); }
+  .tour-dialog { width: min(1180px, calc(100vw - var(--space-6))); height: calc(100dvh - var(--space-6)); max-height: calc(100dvh - var(--space-6)); margin: auto; padding: 0; overflow: hidden; border: 1px solid var(--color-border); border-radius: var(--radius); background: var(--color-surface); color: var(--color-text); }
+  .tour-dialog::backdrop { background: rgba(5, 8, 12, .86); }
+  .tour-dialog[open] { animation: tour-dialog-in 160ms ease-out both; }
+  .tour-dialog.is-closing { animation: tour-dialog-out 160ms ease-in both; pointer-events: none; }
+  .tour-dialog-shell { display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; gap: var(--space-4); height: 100%; min-height: 0; overflow: hidden; padding: var(--space-5); }
+  .tour-dialog-tools, .tour-dialog-nav { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+  .tour-dialog-tools .eyebrow { margin: 0; }
+  .tour-dialog-close { border: 0; background: transparent; color: var(--color-green); font: inherit; font-family: var(--font-mono); font-size: var(--text-xs); cursor: pointer; }
+  .tour-dialog h2 { margin: 0; font-size: var(--text-xl); }
+  .tour-dialog-image-wrap { display: flex; min-height: 0; overflow: hidden; align-items: center; justify-content: center; border: 1px solid var(--color-border); background: var(--color-bg); border-radius: var(--radius-sm); }
+  .tour-dialog-image-wrap img { display: block; width: auto; height: auto; max-width: 100%; max-height: 100%; object-fit: contain; flex-shrink: 0; }
+  .tour-dialog-count { color: var(--color-text-muted); font-family: var(--font-mono); font-size: var(--text-xs); }
+  @keyframes tour-dialog-in { from { opacity: 0; transform: translateY(var(--space-3)); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes tour-dialog-out { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(var(--space-3)); } }
+  @media (min-width: 768px) {
+    .tour-heading-grid { grid-template-columns: 4fr 8fr; column-gap: var(--space-8); }
+    .tour-heading-grid .eyebrow { grid-column: 1 / -1; }
+    .tour-heading-grid h1 { grid-column: 1; }
+    .tour-hero-copy { grid-column: 2; }
+    .tour-chapter.is-split .tour-chapter-grid { grid-template-columns: minmax(0, 5fr) minmax(280px, 4fr); }
+    .tour-chapter.is-split.is-reversed .tour-chapter-copy { order: 2; }
+    .tour-chapter.is-split.is-reversed .tour-media { order: 1; }
+    .tour-chapter.is-engine .tour-media,
+    .tour-chapter.is-captions .tour-media,
+    .tour-chapter.is-advanced .tour-media { width: min(100%, 280px); justify-self: center; }
+    .tour-chapter.is-wide .tour-chapter-grid { grid-template-columns: 4fr 8fr; }
+    .tour-chapter.is-wide .tour-chapter-copy { grid-column: 1; }
+    .tour-chapter.is-wide .tour-media { grid-column: 1 / -1; }
+  }
+  @media (prefers-reduced-motion: reduce) { .tour-media, .tour-dialog { animation: none; transition: none; } }
+</style>

@@ -16,7 +16,7 @@ export const GET: APIRoute = ({ site }) => {
 
   const body = `# LiveAudio
 
-> LiveAudio is a free, open-source (MIT) desktop app that generates real-time Whisper speech captions 100% locally and streams them to OBS over a local WebSocket (ws://127.0.0.1:8765). It runs on Windows and Linux. No cloud, no API key, no per-minute cost. Current release: v1.2.0.
+> LiveAudio is a free, open-source (MIT) desktop app that generates real-time Whisper speech captions 100% locally and streams them to OBS over a local WebSocket (ws://127.0.0.1:8765). It runs on Windows and Linux. No cloud, no API key, no per-minute cost. Current release: v1.2.5.
 
 Key facts:
 - 100% local processing; no telemetry. Internet is needed only on first run to download Python, dependencies, and models — fully offline afterward.
@@ -31,7 +31,7 @@ Key facts:
 ## Pages
 
 - [Home](${u("/")}): What LiveAudio is, who it's for, and the conversion funnel — real-time local captions for OBS on Windows and Linux.
-- [Download](${u("/download/")}): Real v1.2.0 assets (Windows installer .exe, Linux x64 tarball, pip wheel, source, checksums), OS detection, SmartScreen and checksum notes, and system requirements.
+- [Download](${u("/download/")}): Real v1.2.5 assets (Windows installer .exe, Linux x64 tarball, pip wheel, source, checksums), OS detection, SmartScreen and checksum notes, and system requirements.
 - [Getting started](${u("/getting-started/")}): Activation walkthrough — graphical installer vs. uv for developers, first-run download, GPU auto-detect, and profiles.
 - [OBS setup](${u("/obs-setup/")}): Step-by-step OBS Browser Source guide — add the subtitulos_obs.html overlay at 1920×200, disable "Shut down source when not visible", and set the WebSocket port.
 

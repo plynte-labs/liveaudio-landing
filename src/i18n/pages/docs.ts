@@ -486,8 +486,8 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       {
         type: "list",
         items: [
-          "<strong>Windows:</strong> <code>LiveAudio-Setup-1.2.0.exe</code> (graphical installer).",
-          "<strong>Linux:</strong> <code>LiveAudio-1.2.0-linux-x64.tar.gz</code> — extract, then run <code>./liveaudio-launcher</code>.",
+          "<strong>Windows:</strong> <code>LiveAudio-Setup-1.2.5.exe</code> (graphical installer).",
+          "<strong>Linux:</strong> <code>LiveAudio-1.2.5-linux-x64.tar.gz</code> — extract, then run <code>./liveaudio-launcher</code>.",
         ],
       },
       {
@@ -1453,8 +1453,8 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       {
         type: "list",
         items: [
-          "<strong>Windows:</strong> <code>LiveAudio-Setup-1.2.0.exe</code> (instalador gráfico).",
-          "<strong>Linux:</strong> <code>LiveAudio-1.2.0-linux-x64.tar.gz</code> — extrae y ejecuta <code>./liveaudio-launcher</code>.",
+          "<strong>Windows:</strong> <code>LiveAudio-Setup-1.2.5.exe</code> (instalador gráfico).",
+          "<strong>Linux:</strong> <code>LiveAudio-1.2.5-linux-x64.tar.gz</code> — extrae y ejecuta <code>./liveaudio-launcher</code>.",
         ],
       },
       {

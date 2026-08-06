@@ -1,8 +1,8 @@
 ---
 /**
  * LiveDemo — "Live Demo" section. A REAL, unedited screen capture of LiveAudio
- * v1.2.0 (a trust signal vs the clearly-labeled "simulated" sandboxes). Kept
- * deliberately simple: a native <video controls autoplay muted loop> — the
+ * release (a trust signal vs the clearly-labeled "simulated" sandboxes). Kept
+ * deliberately simple: a native <video controls> — the
  * browser's own player, so it always works. The Hero owns the page <h1>; this
  * section uses an <h2>. Zero React. Tokens/classes only. Props: lang.
  */
@@ -19,9 +19,11 @@ const copy = homeCopy(lang).demo;
 
 <section class="section section-glow demo" aria-labelledby="demo-h2">
   <div class="container">
-    <p class="eyebrow">{copy.eyebrow}</p>
-    <h2 id="demo-h2" class="demo-heading">{copy.heading}</h2>
-    <p class="demo-lead">{copy.lead}</p>
+    <header class="demo-head">
+      <p class="eyebrow">{copy.eyebrow}</p>
+      <h2 id="demo-h2" class="demo-heading">{copy.heading}</h2>
+      <p class="demo-lead">{copy.lead}</p>
+    </header>
 
     <!-- Real-capture trust badge: neon live-dot = SIGNAL (real/live), not amber. -->
     <p class="pill demo-badge">
@@ -35,9 +37,6 @@ const copy = homeCopy(lang).demo;
         class="demo-video"
         poster="/demo/liveaudio-demo-poster.jpg"
         controls
-        autoplay
-        muted
-        loop
         playsinline
         preload="metadata"
         aria-label={copy.videoAriaLabel}
@@ -61,6 +60,16 @@ const copy = homeCopy(lang).demo;
     line-height: 1.7;
     max-width: var(--measure);
     margin: 0 0 var(--space-4);
+  }
+  @media (min-width: 768px) {
+    .demo-head {
+      display: grid;
+      grid-template-columns: 4fr 8fr;
+      column-gap: var(--space-8);
+    }
+    .demo-head .eyebrow { grid-column: 1 / -1; }
+    .demo-heading { grid-column: 1; }
+    .demo-lead { grid-column: 2; align-self: end; }
   }
   .demo-badge {
     margin: 0 0 var(--space-7);

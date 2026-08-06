@@ -228,6 +228,9 @@ const {
   }
   .mobilenav-links {
     padding-block: var(--space-7);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
   }
   .mobilenav-links ul {
     list-style: none;
@@ -318,6 +321,14 @@ const {
       "[data-mobilenav-close]",
     );
     if (!trigger || !drawer || !closeBtn) return;
+
+    // Portal the drawer to <body> so it escapes the header's backdrop-filter
+    // stacking context. backdrop-filter creates a new stacking context that
+    // clips position:fixed descendants to the element's bounds — meaning the
+    // drawer would only show within the 64px header area.
+    if (drawer.parentElement !== document.body) {
+      document.body.appendChild(drawer);
+    }
 
     let open = false;
     let inerted: Element[] = [];

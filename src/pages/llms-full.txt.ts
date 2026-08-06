@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 
 /**
- * llms-full.txt — expanded, concatenated reference of LiveAudio v1.2.0 facts.
+ * llms-full.txt — expanded, concatenated reference of LiveAudio v1.2.5 facts.
  *
  * A single plain-text document an LLM can ingest to answer questions about the
  * product without crawling every page. Every claim is traceable to
@@ -9,15 +9,15 @@ import type { APIRoute } from "astro";
  */
 export const GET: APIRoute = ({ site }) => {
   const base = (site ?? new URL("https://liveaudio.opencohost.com")).href.replace(/\/$/, "");
-  const REL = "https://github.com/plynte-labs/LiveAudio/releases/download/v1.2.0";
+  const REL = "https://github.com/plynte-labs/LiveAudio/releases/download/v1.2.5";
 
-  const body = `# LiveAudio — Full Reference (v1.2.0)
+  const body = `# LiveAudio — Full Reference (v1.2.5)
 
 > LiveAudio is a free, open-source (MIT) desktop app that generates real-time Whisper speech captions 100% locally and streams them to OBS over a local WebSocket. It runs on Windows and Linux. No cloud, no API key, no per-minute cost.
 
 Canonical site: ${base}/
 Source: https://github.com/plynte-labs/LiveAudio (MIT)
-Release: v1.2.0 (published 2026-06-20)
+Release: v1.2.5
 
 ---
 
@@ -59,15 +59,15 @@ A real-time, local automatic-speech-recognition (ASR) engine for streamers and c
 - Disk: ~400 MB (CPU) / ~2.5 GB (CUDA) for app + dependencies, plus model storage.
 - Internet: first run only (downloads Python + dependencies + models); fully offline afterward.
 
-## Downloads — real v1.2.0 assets
+## Downloads — real v1.2.5 assets
 
 Base URL: ${REL}/
 Always-latest: https://github.com/plynte-labs/LiveAudio/releases/latest
 
-- Windows installer (primary), ~35.8 MB: ${REL}/LiveAudio-Setup-1.2.0.exe
-- Linux x64 tarball (extract, run ./liveaudio-launcher; needs libportaudio2), ~46.3 MB: ${REL}/LiveAudio-1.2.0-linux-x64.tar.gz
-- pip wheel (advanced), ~0.29 MB: ${REL}/liveaudio-1.2.0-py3-none-any.whl
-- Source, ~0.35 MB: ${REL}/liveaudio-src-1.2.0.zip
+- Windows installer (primary), 35,817,683 bytes (35.82 MB): ${REL}/LiveAudio-Setup-1.2.5.exe
+- Linux x64 tarball (extract, run ./liveaudio-launcher; needs libportaudio2), 46,308,210 bytes (46.31 MB): ${REL}/LiveAudio-1.2.5-linux-x64.tar.gz
+- pip wheel (advanced), 306,462 bytes (306.46 kB): ${REL}/liveaudio-1.2.5-py3-none-any.whl
+- Source, 360,586 bytes (360.59 kB): ${REL}/liveaudio-src-1.2.5.zip
 - CPU requirements (pip escape hatch): ${REL}/requirements-cpu.txt
 - CUDA 12.1 requirements (pip escape hatch): ${REL}/requirements-cu121.txt
 - Checksums: ${REL}/SHA256SUMS.txt
