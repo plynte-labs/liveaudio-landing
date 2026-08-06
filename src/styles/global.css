@@ -74,7 +74,7 @@
   --container-max: 1200px;
   --measure: 68ch;
   --measure-docs: 72ch;
-  --transport-bar-height: 64px;    /* fixed docked CTA height — pages reserve this so it never overlaps content */
+  --transport-bar-height: calc(68px + env(safe-area-inset-bottom)); /* CTA height + iOS safe area, reserved by marketing pages */
 
   /* ---- Radii ---- */
   --radius-sm: 8px;
@@ -137,7 +137,10 @@
     font-family: var(--font-sans);
     font-size: var(--text-base);
     line-height: 1.7;
-    overflow-x: hidden;
+    /* overflow-x is handled by html { overflow-x: clip } above — clip prevents
+       horizontal scroll without creating a scroll container, so position:sticky
+       on the header keeps working. overflow-x:hidden here would create a new
+       scroll container and break sticky in Firefox / Safari. */
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
@@ -375,6 +378,7 @@
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
     display: flex; align-items: center; justify-content: space-between;
     gap: var(--space-4); padding: var(--space-3) var(--space-6);
+    padding-block-end: calc(var(--space-3) + env(safe-area-inset-bottom));
     border-top: 1px solid var(--color-border);
   }
   /* Marketing pages render the fixed transport bar; reserve its height on
@@ -383,6 +387,13 @@
      only — docs/faq do NOT get this padding). */
   main.has-transport {
     padding-block-end: var(--transport-bar-height);
+  }
+  /* On narrow viewports the transport CTA returns to document flow. A fixed
+     dock permanently covers useful reading space and can obscure hero or tour
+     content while the user scrolls. Desktop keeps the persistent dock. */
+  @media (max-width: 767px) {
+    .transport-bar { position: static; }
+    main.has-transport { padding-block-end: 0; }
   }
 
   /* Sim-label helper */

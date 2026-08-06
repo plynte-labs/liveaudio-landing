@@ -2,9 +2,9 @@
 /**
  * Header / Nav — THE SIGNAL DESK sticky glass nav (per the design system).
  *
- * Left:   wordmark `LiveAudio` (Inter 800) + mono `v1.2.0` pill + neon live-dot.
- * Center: mono lowercase links (download / getting-started / obs-setup / docs /
- *         faq / vs); active link carries a `>` caret + emerald color.
+ * Left:   wordmark `LiveAudio` (Inter 800) + mono release pill + neon live-dot.
+ * Center: mono lowercase links (product-tour / getting-started / obs-setup /
+ *         docs); active link carries a `>` caret + emerald color.
  * Right:  persistent .btn-primary Download + GitHub icon link + en/es toggle.
  * Mobile: the desktop center/right collapse; the vanilla MobileNav takes over.
  *
@@ -27,12 +27,10 @@ const REPO_URL = "https://github.com/plynte-labs/LiveAudio";
 
 // Logical segments -> localized href + label. Order per the design system.
 const navItems = [
-  { seg: "download", label: tt("nav.download") },
+  { seg: "product-tour", label: tt("nav.productTour") },
   { seg: "getting-started", label: tt("nav.gettingStarted") },
   { seg: "obs-setup", label: tt("nav.obsSetup") },
   { seg: "docs/overview", label: tt("nav.docs") },
-  { seg: "faq", label: tt("nav.faq") },
-  { seg: "vs", label: tt("nav.vs") },
 ].map((item) => ({
   ...item,
   href: localizedPath(lang, item.seg),
