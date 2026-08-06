@@ -404,9 +404,24 @@ const navSummary = docsNavLabel(lang);
     text-decoration: none;
   }
 
+  /* Mobile: the details nav sticks below the header so it doesn't scroll away */
+  .docs-rail-left {
+    position: sticky;
+    top: calc(64px + var(--space-2));
+    align-self: start;
+    z-index: 10;
+  }
+
   @media (min-width: 1024px) {
+    .docs-rail-left {
+      top: calc(64px + var(--space-6));
+      max-height: calc(100dvh - 64px - var(--space-9));
+    }
     .docs-nav-desktop {
       display: block;
+      max-height: inherit;
+      overflow-y: auto;
+      overscroll-behavior: contain;
     }
     .docs-nav-mobile {
       display: none;
