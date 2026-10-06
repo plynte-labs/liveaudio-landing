@@ -24,6 +24,7 @@ const { lang = "en", path = "/" } = Astro.props;
 const tt = t(lang);
 
 const REPO_URL = "https://github.com/plynte-labs/LiveAudio";
+const RELEASE_TAG_URL = `${REPO_URL}/releases/tag/v1.2.6`;
 
 // Logical segments -> localized href + label. Order per the design system.
 const navItems = [
@@ -60,11 +61,21 @@ const mobileLinks = navItems.map(({ href, label }) => ({ href, label }));
 <header class="site-header glass" data-header>
   <nav class="container site-nav" aria-label="Primary">
     <!-- Brand -->
-    <a class="brand" href={homeHref} aria-label={tt("brand.name")}>
-      <span class="brand-name">{tt("brand.name")}</span>
-      <span class="pill brand-version">{tt("brand.version")}</span>
+    <div class="brand">
+      <a class="brand-link" href={homeHref} aria-label={tt("brand.name")}>
+        <span class="brand-name">{tt("brand.name")}</span>
+      </a>
+      <a
+        class="pill brand-version"
+        href={RELEASE_TAG_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={tt("brand.versionLinkLabel")}
+      >
+        {tt("brand.version")}
+      </a>
       <span class="live-dot" aria-hidden="true"></span>
-    </a>
+    </div>
 
     <!-- Center nav (desktop) -->
     <ul class="nav-links" role="list">
@@ -174,7 +185,13 @@ const mobileLinks = navItems.map(({ href, label }) => ({ href, label }));
     color: var(--color-text-strong);
     flex: 0 0 auto;
   }
-  .brand:hover {
+  .brand-link {
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-text-strong);
+    text-decoration: none;
+  }
+  .brand-link:hover {
     text-decoration: none;
   }
   .brand-name {
@@ -186,6 +203,14 @@ const mobileLinks = navItems.map(({ href, label }) => ({ href, label }));
     text-transform: none;
     /* sit closer to the wordmark than to the live-dot */
     margin-inline-start: calc(var(--space-1) * -1);
+    transition:
+      color 120ms var(--ease-mech),
+      border-color 120ms var(--ease-mech);
+  }
+  .brand-version:hover {
+    color: var(--color-green);
+    border-color: var(--color-green);
+    text-decoration: none;
   }
 
   /* Center links — a discrete control group centered between brand and

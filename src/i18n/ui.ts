@@ -27,7 +27,7 @@ export const ui = {
     "nav.openMenu": "Open menu",
 
     // Common buttons / CTAs (chrome-level; page heroes own their own copy)
-    "cta.download": "Download LiveAudio v1.2.5 (free)",
+    "cta.download": "Download LiveAudio v1.2.6 (free)",
     "cta.github": "GitHub",
     "cta.copy": "Copy",
     "cta.copied": "copied",
@@ -46,7 +46,7 @@ export const ui = {
     "footer.resources.releases": "Releases",
     "footer.resources.llms": "llms.txt",
     "footer.resources.checksums": "SHA256SUMS",
-    "footer.legal": "© Plynte · LiveAudio v1.2.5 · MIT · Windows + Linux",
+    "footer.legal": "© Plynte · LiveAudio v1.2.6 · MIT · Windows + Linux",
     "footer.privacy": "Privacy Policy",
     "footer.terms": "Terms of Service",
 
@@ -74,7 +74,7 @@ export const ui = {
     "nav.openMenu": "Abrir menú",
 
     // Common buttons / CTAs
-    "cta.download": "Descargar LiveAudio v1.2.5 (gratis)",
+    "cta.download": "Descargar LiveAudio v1.2.6 (gratis)",
     "cta.github": "GitHub",
     "cta.copy": "Copiar",
     "cta.copied": "copiado",
@@ -93,7 +93,7 @@ export const ui = {
     "footer.resources.releases": "Versiones",
     "footer.resources.llms": "llms.txt",
     "footer.resources.checksums": "SHA256SUMS",
-    "footer.legal": "© Plynte · LiveAudio v1.2.5 · MIT · Windows + Linux",
+    "footer.legal": "© Plynte · LiveAudio v1.2.6 · MIT · Windows + Linux",
     "footer.privacy": "Política de Privacidad",
     "footer.terms": "Términos del Servicio",
 
