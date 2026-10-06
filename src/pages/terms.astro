@@ -1,0 +1,153 @@
+---
+/**
+ * Terms of Service (EN) — /terms/
+ *
+ * Defines:
+ *   1. Acceptance of terms for website and desktop application
+ *   2. MIT open-source license grant and rights
+ *   3. Desktop app usage and local execution responsibilities
+ *   4. Streaming & OBS broadcast compliance
+ *   5. Disclaimer of warranties ("AS IS")
+ *   6. Limitation of liability
+ */
+import LegalPage from "../components/LegalPage.astro";
+import { localizedPath } from "../i18n/routes";
+
+const path = localizedPath("en", "terms");
+---
+
+<LegalPage
+  title="Terms of Service — LiveAudio"
+  description="Terms of Service for LiveAudio desktop application and liveaudio.opencohost.com website. Open-source MIT licensing, warranty disclaimers, and terms of use."
+  eyebrow="AGREEMENT · LEGAL"
+  heading="Terms of Service"
+  lastUpdated="Last updated: October 2026"
+  badge="MIT OPEN SOURCE"
+  lang="en"
+  path={path}
+>
+  <h2>1. Agreement to Terms</h2>
+  <p>
+    By accessing or using the website at <code>liveaudio.opencohost.com</code> ("Website"), or by downloading, installing,
+    or using the LiveAudio desktop application ("Software"), you agree to be bound by these Terms of Service. If you do not agree
+    to all terms and conditions stated herein, please do not access the Website or use the Software.
+  </p>
+
+  <h2>2. Open Source License (MIT License)</h2>
+  <p>
+    The LiveAudio desktop application, its source code, and associated documentation are released as free and open-source software
+    under the terms of the <strong>MIT License</strong>.
+  </p>
+
+  <div class="callout-signal">
+    <h3>The MIT License</h3>
+    <p>
+      Copyright (c) 2026 Plynte Labs and LiveAudio Contributors
+    </p>
+    <p>
+      Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation
+      files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy,
+      modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software
+      is furnished to do so, subject to the following conditions:
+    </p>
+    <p>
+      The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+    </p>
+  </div>
+
+  <h2>3. Desktop Application Usage & Requirements</h2>
+  <p>
+    LiveAudio executes speech recognition models locally on user-provided computing hardware (Windows and Linux). You acknowledge and agree that:
+  </p>
+  <ul>
+    <li>
+      <strong>Hardware Capacity:</strong> You are solely responsible for ensuring your system meets the hardware requirements
+      (CPU instruction support, RAM, and GPU VRAM) needed to execute your chosen Whisper model size without thermal or stability issues.
+    </li>
+    <li>
+      <strong>Third-Party Model Weights:</strong> While LiveAudio provides tools to fetch compatible Whisper GGML model binaries,
+      the original Whisper neural network architecture is developed by OpenAI. Model weights are subject to their respective open weights licenses.
+    </li>
+    <li>
+      <strong>Local WebSocket Endpoint:</strong> LiveAudio exposes an unencrypted local WebSocket stream (default: <code>ws://127.0.0.1:8765</code>)
+      for local OBS browser docks or overlay integration. You are responsible for ensuring that this port is not inadvertently forwarded or exposed
+      to untrusted networks.
+    </li>
+  </ul>
+
+  <h2>4. Streaming, Broadcasting & Audio Recording Compliance</h2>
+  <p>
+    When using LiveAudio to generate captions during live broadcasts, podcast recordings, or public streams (via OBS Studio or any other mixer):
+  </p>
+  <ul>
+    <li>
+      <strong>Consent and Wiretapping Laws:</strong> You are solely responsible for obtaining any necessary consent from speakers, co-hosts,
+      and guests in compliance with applicable federal, state, and local audio recording and privacy laws (including one-party or all-party consent requirements).
+    </li>
+    <li>
+      <strong>Platform Compliance:</strong> You are responsible for ensuring that your broadcast captions comply with the community guidelines,
+      terms of service, and accessibility rules of your chosen streaming platforms (e.g., Twitch, YouTube, Kick).
+    </li>
+  </ul>
+
+  <h2>5. Disclaimer of Warranties</h2>
+  <div class="callout-amber">
+    <h3>Warranty Disclaimer</h3>
+    <p>
+      THE SOFTWARE AND WEBSITE ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+      TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NONINFRINGEMENT.
+    </p>
+    <p>
+      IN NO EVENT SHALL THE AUTHORS, COPYRIGHT HOLDERS, OR PLYNTE LABS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY,
+      WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+      OR OTHER DEALINGS IN THE SOFTWARE.
+    </p>
+  </div>
+  <p>
+    Without limiting the foregoing, we do not warrant that:
+  </p>
+  <ul>
+    <li>The Software or Website will be error-free, bug-free, or operate without interruption.</li>
+    <li>Automated speech recognition will achieve 100% transcription accuracy across all accents, background noise levels, or linguistic variations.</li>
+    <li>The Software will prevent any regulatory penalties or broadcast compliance infringements.</li>
+  </ul>
+
+  <h2>6. Limitation of Liability</h2>
+  <p>
+    To the maximum extent permitted by applicable law, in no event shall Plynte Labs, its contributors, or affiliates be liable for any direct,
+    indirect, incidental, special, consequential, or punitive damages, including without limitation:
+  </p>
+  <ul>
+    <li>Loss of stream revenue, viewer donations, or advertising income.</li>
+    <li>Corrupted live streams, dropped audio frames, or broadcasting interruptions.</li>
+    <li>Hardware overheating or system instability resulting from intensive GPU/CPU model inference.</li>
+    <li>Any unauthorized access to, alteration of, or misuse of your local WebSocket transmissions caused by third-party software on your device.</li>
+  </ul>
+
+  <h2>7. Website Terms of Use</h2>
+  <p>
+    When using <code>liveaudio.opencohost.com</code>, you agree not to:
+  </p>
+  <ul>
+    <li>Engage in automated scraping, denial-of-service attacks, or actions that compromise site stability.</li>
+    <li>Attempt to bypass Content-Security-Policy (CSP) headers or inject malicious scripts.</li>
+    <li>Misrepresent your affiliation with LiveAudio, Plynte Labs, or our open-source maintainers.</li>
+  </ul>
+
+  <h2>8. Modifications to Terms</h2>
+  <p>
+    We reserve the right to revise or update these Terms of Service at any time. When updates occur, we will modify the "Last updated" date
+    at the top of this document. Continued use of the Website or Software after any changes indicates your acceptance of the revised terms.
+  </p>
+
+  <h2>9. Governing Law & Project Inquiries</h2>
+  <p>
+    These Terms shall be interpreted in accordance with the laws governing open-source software distributions.
+    For questions regarding licensing or commercial collaborations, please contact:
+  </p>
+  <ul>
+    <li><strong>Email:</strong> <a href="mailto:contact@opencohost.com">contact@opencohost.com</a></li>
+    <li><strong>GitHub Repository:</strong> <a href="https://github.com/plynte-labs/LiveAudio" target="_blank" rel="noopener noreferrer">github.com/plynte-labs/LiveAudio</a></li>
+    <li><strong>Organization:</strong> Plynte Labs</li>
+  </ul>
+</LegalPage>

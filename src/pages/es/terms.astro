@@ -1,0 +1,154 @@
+---
+/**
+ * Términos del Servicio (ES) — /es/terms/
+ *
+ * Define:
+ *   1. Aceptación de los términos para el sitio web y la aplicación
+ *   2. Licencia de código abierto MIT
+ *   3. Uso y requisitos de la aplicación de escritorio
+ *   4. Cumplimiento normativo en transmisiones con OBS
+ *   5. Exención de garantías ("TAL CUAL")
+ *   6. Limitación de responsabilidad
+ */
+import LegalPage from "../../components/LegalPage.astro";
+import { localizedPath } from "../../i18n/routes";
+
+const path = localizedPath("es", "terms");
+---
+
+<LegalPage
+  title="Términos del Servicio — LiveAudio"
+  description="Términos del Servicio para la aplicación de escritorio LiveAudio y el sitio web liveaudio.opencohost.com. Licencia de código abierto MIT, exención de garantías y términos de uso."
+  eyebrow="ACUERDO · LEGAL"
+  heading="Términos del Servicio"
+  lastUpdated="Última actualización: Octubre 2026"
+  badge="CÓDIGO ABIERTO MIT"
+  lang="es"
+  path={path}
+>
+  <h2>1. Aceptación de los Términos</h2>
+  <p>
+    Al acceder o utilizar el sitio web en <code>liveaudio.opencohost.com</code> ("Sitio Web"), o al descargar, instalar
+    o utilizar la aplicación de escritorio LiveAudio ("Software"), usted acepta regirse por estos Términos del Servicio.
+    Si no está de acuerdo con todas las condiciones aquí establecidas, le solicitamos que se abstenga de utilizar el Sitio Web o el Software.
+  </p>
+
+  <h2>2. Licencia de Código Abierto (Licencia MIT)</h2>
+  <p>
+    La aplicación de escritorio LiveAudio, su código fuente y la documentación asociada se distribuyen como software libre y de código abierto
+    bajo los términos de la <strong>Licencia MIT</strong>.
+  </p>
+
+  <div class="callout-signal">
+    <h3>La Licencia MIT</h3>
+    <p>
+      Copyright (c) 2026 Plynte Labs y Colaboradores de LiveAudio
+    </p>
+    <p>
+      Por la presente se concede permiso, libre de cargos, a cualquier persona que obtenga una copia de este software y de los archivos
+      de documentación asociados (el "Software"), para utilizar el Software sin restricción, incluyendo sin limitación los derechos a
+      usar, copiar, modificar, fusionar, publicar, distribuir, sublicenciar y/o vender copias del Software, y a permitir a las personas
+      a las que se les proporcione el Software a hacer lo mismo, sujeto a las siguientes condiciones:
+    </p>
+    <p>
+      El aviso de copyright anterior y este aviso de permiso se incluirán en todas las copias o partes sustanciales del Software.
+    </p>
+  </div>
+
+  <h2>3. Uso de la Aplicación de Escritorio y Requisitos del Sistema</h2>
+  <p>
+    LiveAudio ejecuta modelos de reconocimiento de voz de forma local en el hardware provisto por el usuario (Windows y Linux).
+    Usted reconoce y acepta que:
+  </p>
+  <ul>
+    <li>
+      <strong>Capacidad de Hardware:</strong> Usted es el único responsable de asegurar que su equipo disponga de los requisitos técnicos
+      (instrucciones de CPU, memoria RAM y memoria VRAM de GPU) necesarios para ejecutar el modelo Whisper seleccionado de forma estable.
+    </li>
+    <li>
+      <strong>Modelos de Inteligencia Artificial:</strong> Aunque LiveAudio facilita la descarga de binarios compatibles con Whisper en formato GGML,
+      la arquitectura de red neuronal Whisper original pertenece a OpenAI. Los pesos se rigen por sus respectivas licencias de pesos abiertos.
+    </li>
+    <li>
+      <strong>Punto de Enlace WebSocket Local:</strong> LiveAudio emite un flujo WebSocket sin cifrar (por defecto: <code>ws://127.0.0.1:8765</code>)
+      para la integración con paneles y fuentes de navegador en OBS Studio. Usted es responsable de garantizar que este puerto no sea redirigido
+      involuntariamente a redes no confiables o públicas.
+    </li>
+  </ul>
+
+  <h2>4. Transmisión en Vivo, Grabación y Consentimiento de Audio</h2>
+  <p>
+    Al utilizar LiveAudio para generar subtítulos durante emisiones en directo, podcasts o transmisiones públicas (mediante OBS Studio u otro mezclador):
+  </p>
+  <ul>
+    <li>
+      <strong>Consentimiento de Grabación:</strong> Es su entera responsabilidad obtener cualquier consentimiento requerido de los oradores,
+      colaboradores o invitados, de conformidad con las normativas locales y nacionales aplicables sobre grabación de audio y privacidad.
+    </li>
+    <li>
+      <strong>Normas de Plataforma:</strong> Es su responsabilidad verificar que los subtítulos generados cumplan las pautas de comunidad,
+      términos de servicio y requisitos de accesibilidad de sus plataformas de transmisión (por ejemplo, Twitch, YouTube, Kick).
+    </li>
+  </ul>
+
+  <h2>5. Exención de Garantías</h2>
+  <div class="callout-amber">
+    <h3>Exención de Responsabilidad y Garantías</h3>
+    <p>
+      EL SOFTWARE Y EL SITIO WEB SE PROPORCIONAN "TAL CUAL", SIN GARANTÍA DE NINGÚN TIPO, EXPRESA O IMPLÍCITA, INCLUYENDO PERO SIN LIMITARSE
+      A GARANTÍAS DE COMERCIABILIDAD, IDONEIDAD PARA UN PROPÓSITO PARTICULAR, TITULARIDAD Y NO INFRACCIÓN.
+    </p>
+    <p>
+      EN NINGÚN CASO LOS AUTORES, TITULARES DEL COPYRIGHT O PLYNTE LABS SERÁN RESPONSABLES DE NINGUNA RECLAMACIÓN, DAÑO U OTRA RESPONSABILIDAD,
+      YA SEA EN UNA ACCIÓN DE CONTRATO, AGRAVIO O DE OTRO TIPO, QUE SURJA DE, FUERA DE O EN CONEXIÓN CON EL SOFTWARE O EL USO U OTROS TRATOS EN EL SOFTWARE.
+    </p>
+  </div>
+  <p>
+    Sin limitar lo anterior, no garantizamos que:
+  </p>
+  <ul>
+    <li>El Software o Sitio Web funcionen sin interrupciones, retrasos o errores imprevistos.</li>
+    <li>La transcripción automática por voz alcance una precisión del 100% en todos los acentos, idiomas o entornos ruidosos.</li>
+    <li>El Software evite sanciones regulatorias o infracciones de accesibilidad de terceros.</li>
+  </ul>
+
+  <h2>6. Limitación de Responsabilidad</h2>
+  <p>
+    En la medida máxima permitida por la ley aplicable, Plynte Labs, sus desarrolladores y colaboradores no serán responsables por daños directos,
+    indirectos, incidentales o emergentes, incluidos entre otros:
+  </p>
+  <ul>
+    <li>Pérdida de ingresos por transmisión, patrocinios o donaciones de audiencia.</li>
+    <li>Transmisiones interrumpidas o pérdidas de fotogramas de subtítulos durante directos.</li>
+    <li>Sobrecalentamiento o inestabilidad del sistema ocasionado por el uso intensivo de GPU o CPU durante la inferencia.</li>
+    <li>Acceso indebido a su WebSocket local generado por software de terceros no autorizado en su computadora.</li>
+  </ul>
+
+  <h2>7. Condiciones de Uso del Sitio Web</h2>
+  <p>
+    Al navegar en <code>liveaudio.opencohost.com</code>, usted se compromete a:
+  </p>
+  <ul>
+    <li>No realizar ataques de denegación de servicio, extracción masiva automatizada no autorizada ni poner en peligro la infraestructura.</li>
+    <li>No intentar eludir los encabezados de Content-Security-Policy (CSP) ni inyectar código dañino.</li>
+    <li>No usurpar la identidad ni declarar afiliaciones falsas con LiveAudio o Plynte Labs.</li>
+  </ul>
+
+  <h2>8. Modificaciones de los Términos</h2>
+  <p>
+    Nos reservamos el derecho de modificar estos Términos del Servicio en cualquier momento. Al actualizarse, se reflejará en la fecha de
+    "Última actualización" en la parte superior. El uso continuado del Sitio Web o Software tras dichos cambios constituye la aceptación íntegra
+    de los nuevos términos.
+  </p>
+
+  <h2>9. Legislación Aplicable y Contacto</h2>
+  <p>
+    Estos términos se interpretan según las prácticas y normativas estándar de software de código abierto.
+    Para cualquier consulta legal o de licencia, puede contactarnos:
+  </p>
+  <ul>
+    <li><strong>Correo electrónico:</strong> <a href="mailto:contact@opencohost.com">contact@opencohost.com</a></li>
+    <li><strong>Repositorio GitHub:</strong> <a href="https://github.com/plynte-labs/LiveAudio" target="_blank" rel="noopener noreferrer">github.com/plynte-labs/LiveAudio</a></li>
+    <li><strong>Organización:</strong> Plynte Labs</li>
+  </ul>
+</LegalPage>

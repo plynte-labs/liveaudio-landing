@@ -1,0 +1,237 @@
+---
+/**
+ * LegalPage — reusable layout shell for Privacy Policy and Terms of Service.
+ *
+ * Designed to strictly adhere to THE SIGNAL DESK design system:
+ *   - Dark carbon canvas, subtle top radial glow
+ *   - Clean prose column (measure-docs ~72ch)
+ *   - Mono eyebrow + timestamps + instrument badges
+ *   - Standardized styled callouts (green for local privacy guarantee, amber for disclaimers)
+ *   - transport={false} to provide unobstructed reading flow
+ */
+import Layout from "../layouts/Layout.astro";
+import type { Locale } from "../i18n/routes";
+
+interface Props {
+  title: string;
+  description: string;
+  eyebrow: string;
+  heading: string;
+  lastUpdated: string;
+  badge?: string;
+  lang?: Locale;
+  path: string;
+}
+
+const {
+  title,
+  description,
+  eyebrow,
+  heading,
+  lastUpdated,
+  badge,
+  lang = "en",
+  path,
+} = Astro.props;
+---
+
+<Layout
+  title={title}
+  description={description}
+  lang={lang}
+  path={path}
+  transport={false}
+>
+  <div class="legal-page">
+    <header class="section section-glow legal-header">
+      <div class="container legal-container">
+        <p class="eyebrow">{eyebrow}</p>
+        <h1 class="legal-title">{heading}</h1>
+        <div class="legal-meta">
+          <span class="pill">{lastUpdated}</span>
+          {badge && <span class="pill pill-signal">{badge}</span>}
+        </div>
+      </div>
+    </header>
+
+    <main class="section legal-body">
+      <div class="container legal-container">
+        <article class="legal-article">
+          <slot />
+        </article>
+      </div>
+    </main>
+  </div>
+</Layout>
+
+<style>
+  .legal-page {
+    position: relative;
+  }
+
+  .legal-header {
+    padding-top: clamp(3rem, 6vh, 5rem);
+    padding-bottom: clamp(2rem, 4vh, 3.5rem);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .legal-container {
+    max-width: var(--measure-docs);
+  }
+
+  .legal-title {
+    font-size: var(--text-3xl);
+    line-height: 1.1;
+    margin: var(--space-3) 0 var(--space-4);
+    letter-spacing: -0.03em;
+  }
+
+  .legal-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .pill-signal {
+    color: var(--color-green);
+    border-color: rgba(16, 185, 129, 0.4);
+    background: var(--color-green-faint);
+  }
+
+  .legal-body {
+    padding-top: clamp(2.5rem, 5vh, 4rem);
+    padding-bottom: clamp(4rem, 8vh, 6rem);
+  }
+
+  .legal-article :global(h2) {
+    font-size: var(--text-xl);
+    color: var(--color-text-strong);
+    margin-top: var(--space-10);
+    margin-bottom: var(--space-4);
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--color-border-soft);
+  }
+
+  .legal-article :global(h2:first-of-type) {
+    margin-top: 0;
+  }
+
+  .legal-article :global(h3) {
+    font-size: var(--text-lg);
+    color: var(--color-text-strong);
+    margin-top: var(--space-7);
+    margin-bottom: var(--space-3);
+  }
+
+  .legal-article :global(p) {
+    color: var(--color-text);
+    font-size: var(--text-base);
+    line-height: 1.75;
+    margin-bottom: var(--space-5);
+  }
+
+  .legal-article :global(ul) {
+    list-style-type: disc;
+    padding-left: var(--space-6);
+    margin-bottom: var(--space-5);
+  }
+
+  .legal-article :global(li) {
+    color: var(--color-text);
+    margin-bottom: var(--space-2);
+    line-height: 1.65;
+  }
+
+  .legal-article :global(a) {
+    color: var(--color-green);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .legal-article :global(a:hover) {
+    color: var(--color-neon);
+  }
+
+  .legal-article :global(code) {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    padding: 2px 6px;
+    border-radius: var(--radius-sm);
+    color: var(--color-text-strong);
+  }
+
+  .legal-article :global(.callout-signal) {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-green);
+    border-radius: var(--radius);
+    padding: var(--space-5) var(--space-6);
+    margin: var(--space-6) 0;
+  }
+
+  .legal-article :global(.callout-signal h3) {
+    margin-top: 0;
+    color: var(--color-green);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .legal-article :global(.callout-signal p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .legal-article :global(.callout-amber) {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-amber);
+    border-radius: var(--radius);
+    padding: var(--space-5) var(--space-6);
+    margin: var(--space-6) 0;
+  }
+
+  .legal-article :global(.callout-amber h3) {
+    margin-top: 0;
+    color: var(--color-amber);
+  }
+
+  .legal-article :global(.callout-amber p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .legal-article :global(.table-wrap) {
+    overflow-x: auto;
+    margin: var(--space-6) 0;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+  }
+
+  .legal-article :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+  }
+
+  .legal-article :global(th),
+  .legal-article :global(td) {
+    padding: var(--space-3) var(--space-4);
+    border-bottom: 1px solid var(--color-border-soft);
+    text-align: left;
+  }
+
+  .legal-article :global(th) {
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    font-weight: 500;
+    background: var(--color-surface-2);
+  }
+
+  .legal-article :global(tr:last-child td) {
+    border-bottom: none;
+  }
+</style>

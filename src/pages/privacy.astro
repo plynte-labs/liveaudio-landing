@@ -1,0 +1,184 @@
+---
+/**
+ * Privacy Policy (EN) — /privacy/
+ *
+ * Discloses:
+ *   1. 100% Local Whisper Processing guarantee for the LiveAudio desktop app
+ *   2. Microsoft Clarity integration (heatmaps, session replay, _clck, _clsk, privacy statement link)
+ *   3. Vercel Analytics & Speed Insights
+ *   4. Data rights and contact information
+ */
+import LegalPage from "../components/LegalPage.astro";
+import { localizedPath } from "../i18n/routes";
+
+const path = localizedPath("en", "privacy");
+---
+
+<LegalPage
+  title="Privacy Policy — LiveAudio"
+  description="Privacy Policy for LiveAudio and liveaudio.opencohost.com. Learn about our 100% local audio processing architecture, website analytics, and Microsoft Clarity integration."
+  eyebrow="COMPLIANCE · LEGAL"
+  heading="Privacy Policy"
+  lastUpdated="Last updated: October 2026"
+  badge="100% LOCAL PROCESSING"
+  lang="en"
+  path={path}
+>
+  <div class="callout-signal">
+    <h3>
+      <span class="live-dot" aria-hidden="true"></span>
+      100% Local Audio Processing Guarantee
+    </h3>
+    <p>
+      LiveAudio is engineered from the ground up as a <strong>local-first desktop application</strong>.
+      All speech recognition, audio capture, and Whisper AI inference execute strictly on your device's
+      local hardware (CPU or CUDA/Vulkan GPU). <strong>No audio, speech, or transcription data is ever sent to,
+      relayed through, or stored on external cloud servers, remote APIs, or third-party databases.</strong>
+    </p>
+  </div>
+
+  <h2>1. Overview and Scope</h2>
+  <p>
+    This Privacy Policy explains how Plynte Labs ("we", "us", or "our") handles information in connection with:
+  </p>
+  <ul>
+    <li>
+      <strong>The LiveAudio Desktop Application:</strong> The downloadable software for Windows and Linux that provides
+      real-time Whisper captions via local WebSocket.
+    </li>
+    <li>
+      <strong>The LiveAudio Website:</strong> The marketing and documentation site hosted at <code>liveaudio.opencohost.com</code>.
+    </li>
+  </ul>
+
+  <h2>2. LiveAudio Desktop Application</h2>
+  <p>
+    The LiveAudio desktop software does not collect, record, transmit, or monetize your personal information or audio streams:
+  </p>
+  <ul>
+    <li>
+      <strong>Zero Audio Transmission:</strong> Audio captured from your microphone or desktop loopback is processed
+      in memory on your machine and immediately discarded after transcription frames are generated.
+    </li>
+    <li>
+      <strong>Local Model Inference:</strong> Whisper model weights (e.g., GGML / GGUF binaries) are stored on your local
+      drive and run entirely on local processor cores or graphics accelerators.
+    </li>
+    <li>
+      <strong>Local-Only WebSocket:</strong> LiveAudio broadcasts transcription events over a local WebSocket server
+      binding by default to <code>127.0.0.1:8765</code>. This connection is strictly local to your workstation and is never exposed
+      to the public internet unless you explicitly configure remote network tunneling on your own infrastructure.
+    </li>
+    <li>
+      <strong>No Telemetry or Phone-Home:</strong> The application does not contain background analytics trackers, usage telemetry,
+      or automated crash-reporting daemons that send data to our servers.
+    </li>
+  </ul>
+
+  <h2>3. Website Information Collection & Analytics</h2>
+  <p>
+    When you browse <code>liveaudio.opencohost.com</code>, we collect limited usage metrics to monitor site performance,
+    diagnose broken links, and optimize documentation. We do not require account registration, and we do not collect personal
+    identifiers like names, physical addresses, or financial details.
+  </p>
+
+  <h3>Microsoft Clarity Integration</h3>
+  <p>
+    We partner with Microsoft Clarity and Microsoft Advertising to capture how you use and interact with our website through
+    behavioral metrics, heatmaps, and session replay to improve and market our products and services. Website usage data is
+    captured using first- and third-party cookies and other tracking technologies to determine the popularity of products and services
+    and online activity. Additionally, we use this information for site optimization, fraud and security purposes, and advertising.
+  </p>
+  <p>
+    Microsoft Clarity sets the following first-party cookies in your browser:
+  </p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Cookie</th>
+          <th>Provider</th>
+          <th>Duration</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>_clck</code></td>
+          <td>Microsoft Clarity</td>
+          <td>1 year</td>
+          <td>Persists the unique Clarity user ID and browser settings across page navigation on the same domain.</td>
+        </tr>
+        <tr>
+          <td><code>_clsk</code></td>
+          <td>Microsoft Clarity</td>
+          <td>1 day</td>
+          <td>Connects individual page views into a single recorded session and tracks user interaction flow.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>
+    Clarity records user interactions such as mouse clicks, mouse movements, scrolling, and aggregate viewport dimensions.
+    Sensitive text inputs and confidential form fields are automatically masked by Clarity prior to transmission.
+    For more details on how Microsoft collects and processes your data, please review the
+    <a href="https://privacy.microsoft.com/privacystatement" target="_blank" rel="noopener noreferrer">Microsoft Privacy Statement</a>.
+  </p>
+
+  <h3>Vercel Analytics & Speed Insights</h3>
+  <p>
+    Our website uses Vercel Analytics and Speed Insights to measure aggregate Core Web Vitals (such as Largest Contentful Paint,
+    Interaction to Next Paint, and Cumulative Layout Shift) and page delivery performance. Vercel Analytics is designed to be privacy-preserving:
+    it operates without persistent tracking cookies, does not collect personal data, and processes visitor requests using temporary,
+    anonymized IP hashes.
+  </p>
+
+  <h2>4. Cookies & Tracking Management</h2>
+  <p>
+    You can manage, restrict, or delete cookies at any time through your web browser preferences. Most modern browsers allow you to:
+  </p>
+  <ul>
+    <li>Block third-party cookies or all cookies altogether.</li>
+    <li>Delete existing cookies upon closing your browser session.</li>
+    <li>Use private browsing or incognito windows to prevent long-term tracking.</li>
+  </ul>
+  <p>
+    You can also learn how to opt out of Microsoft personalized advertising by visiting the
+    <a href="https://account.microsoft.com/privacy/ad-settings" target="_blank" rel="noopener noreferrer">Microsoft Ad Settings page</a>.
+  </p>
+
+  <h2>5. Data Retention & Security</h2>
+  <p>
+    Aggregated website analytics data is retained in accordance with Microsoft Clarity's standard data retention policies
+    (typically 30 to 90 days for session recordings). We protect the website infrastructure using strict Content-Security-Policy (CSP) headers,
+    enforced HTTPS encryption (TLS 1.3), and immutable asset hashing.
+  </p>
+
+  <h2>6. Open Source Code Transparency</h2>
+  <p>
+    Because LiveAudio is an open-source project licensed under the MIT License, our application code is publicly auditable.
+    You can inspect the entire audio pipeline, WebSocket server implementation, and Whisper inference engine in our
+    <a href="https://github.com/plynte-labs/LiveAudio" target="_blank" rel="noopener noreferrer">GitHub repository</a>
+    to verify that no audio or private telemetry leaves your computer.
+  </p>
+
+  <h2>7. Your Privacy Rights</h2>
+  <p>
+    Depending on your location (including the European Economic Area, the UK, and California), you may have rights under applicable data protection
+    laws (such as GDPR or CCPA/CPRA), including the right to request access to, correction of, or deletion of personal data collected about you.
+    Because we do not store customer profiles or collect identifiable personal records on our site, we may require additional contextual information
+    to identify any relevant anonymized analytics records.
+  </p>
+
+  <h2>8. Contact Us</h2>
+  <p>
+    If you have any questions, feedback, or concerns regarding this Privacy Policy or our local-first privacy practices, please contact us:
+  </p>
+  <ul>
+    <li><strong>Email:</strong> <a href="mailto:contact@opencohost.com">contact@opencohost.com</a></li>
+    <li><strong>Project Issues:</strong> <a href="https://github.com/plynte-labs/LiveAudio/issues" target="_blank" rel="noopener noreferrer">github.com/plynte-labs/LiveAudio/issues</a></li>
+    <li><strong>Organization:</strong> Plynte Labs</li>
+  </ul>
+</LegalPage>

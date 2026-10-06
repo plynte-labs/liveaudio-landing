@@ -14,6 +14,7 @@ export const ui = {
     "a11y.skipToContent": "Skip to content",
 
     // Nav labels (mono lowercase links in the header)
+    "nav.home": "Home",
     "nav.productTour": "product-tour",
     "nav.download": "download",
     "nav.gettingStarted": "getting-started",
@@ -33,7 +34,8 @@ export const ui = {
 
     // Brand / version
     "brand.name": "LiveAudio",
-    "brand.version": "v1.2.5",
+    "brand.version": "v1.2.6",
+    "brand.versionLinkLabel": "View LiveAudio v1.2.6 release",
 
     // Footer columns
     "footer.tagline": "100% local · MIT open-source",
@@ -45,6 +47,8 @@ export const ui = {
     "footer.resources.llms": "llms.txt",
     "footer.resources.checksums": "SHA256SUMS",
     "footer.legal": "© Plynte · LiveAudio v1.2.5 · MIT · Windows + Linux",
+    "footer.privacy": "Privacy Policy",
+    "footer.terms": "Terms of Service",
 
     // Language toggle
     "lang.en": "EN",
@@ -57,6 +61,7 @@ export const ui = {
     "a11y.skipToContent": "Saltar al contenido",
 
     // Nav labels (mono lowercase links in the header)
+    "nav.home": "Inicio",
     "nav.productTour": "tour-del-producto",
     "nav.download": "descargar",
     "nav.gettingStarted": "primeros-pasos",
@@ -76,7 +81,8 @@ export const ui = {
 
     // Brand / version
     "brand.name": "LiveAudio",
-    "brand.version": "v1.2.5",
+    "brand.version": "v1.2.6",
+    "brand.versionLinkLabel": "Ver versión de LiveAudio v1.2.6",
 
     // Footer columns
     "footer.tagline": "100% local · Código abierto MIT",
@@ -88,6 +94,8 @@ export const ui = {
     "footer.resources.llms": "llms.txt",
     "footer.resources.checksums": "SHA256SUMS",
     "footer.legal": "© Plynte · LiveAudio v1.2.5 · MIT · Windows + Linux",
+    "footer.privacy": "Política de Privacidad",
+    "footer.terms": "Términos del Servicio",
 
     // Language toggle
     "lang.en": "EN",

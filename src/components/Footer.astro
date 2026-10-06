@@ -48,6 +48,8 @@ const resources = [
 const homeHref = localizedPath(lang, "");
 const altHref = altLangPath(lang, path);
 const otherLangLabel = lang === "en" ? tt("lang.es") : tt("lang.en");
+const privacyHref = localizedPath(lang, "privacy");
+const termsHref = localizedPath(lang, "terms");
 ---
 
 <footer class="site-footer">
@@ -102,15 +104,22 @@ const otherLangLabel = lang === "en" ? tt("lang.es") : tt("lang.en");
 
     <!-- Micro-row -->
     <div class="footer-micro">
-      <p class="footer-legal eyebrow">{tt("footer.legal")}</p>
-      <a
-        class="lang-toggle pill"
-        href={altHref}
-        hreflang={lang === "en" ? "es" : "en"}
-        aria-label={`${tt("lang.label")}: ${tt("lang.switchTo")} (${otherLangLabel})`}
-      >
-        {otherLangLabel}
-      </a>
+       <div class="footer-legal-wrap">
+         <p class="footer-legal eyebrow">{tt("footer.legal")}</p>
+         <div class="footer-legal-links">
+           <a class="footer-link" href={privacyHref}>{tt("footer.privacy")}</a>
+           <span class="footer-legal-sep" aria-hidden="true">·</span>
+           <a class="footer-link" href={termsHref}>{tt("footer.terms")}</a>
+         </div>
+       </div>
+       <a
+         class="lang-toggle pill"
+         href={altHref}
+         hreflang={lang === "en" ? "es" : "en"}
+         aria-label={`${tt("lang.label")}: ${tt("lang.switchTo")} (${otherLangLabel})`}
+       >
+         {otherLangLabel}
+       </a>
     </div>
   </div>
 </footer>
@@ -182,6 +191,21 @@ const otherLangLabel = lang === "en" ? tt("lang.es") : tt("lang.en");
     margin: 0;
     text-transform: none;
     letter-spacing: 0;
+  }
+  .footer-legal-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+  }
+  .footer-legal-links {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+  .footer-legal-sep {
+    color: var(--color-border-soft);
+    font-size: var(--text-xs);
   }
   .lang-toggle {
     color: var(--color-text-muted);
