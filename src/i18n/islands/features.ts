@@ -6,7 +6,7 @@
  * ~28 Spanish literals: preset names Rápido/Balanceado, "Esperando audio",
  * device names, "[PANTALLA CONGELADA...]", etc.).
  *
- * Fact-checked against the product spec and v1.2.6 release notes:
+ * Fact-checked against the product spec and v1.2.7 release notes:
  *   - Profiles: Fast / Balanced / Quality / Stable Streaming. FPS-aware,
  *     never "no FPS drops". Stable Streaming = "reduces GPU
  *     load while gaming" — no third-party game name.
@@ -198,7 +198,7 @@ export const features: Record<Lang, FeaturesStrings> = {
     models: {
       title: "Whisper model footprint",
       description:
-        "tiny, base, small, and turbo trade resource footprint for accuracy. v1.2.6 loads cached local ASR models immediately without prior network waits; per-model VRAM below is illustrative.",
+        "tiny, base, small, and turbo trade resource footprint for accuracy. v1.2.7 loads cached local ASR models immediately without prior network waits; per-model VRAM below is illustrative.",
       kicker: "// models",
       vramLabel: "GPU VRAM footprint",
       computeLabel: "Inference compute",
@@ -343,7 +343,7 @@ export const features: Record<Lang, FeaturesStrings> = {
     models: {
       title: "Huella de los modelos Whisper",
       description:
-        "tiny, base, small y turbo cambian huella de recursos por precisión. La v1.2.6 carga de inmediato los modelos ASR locales en caché sin las esperas de red anteriores; la VRAM por modelo de abajo es ilustrativa.",
+        "tiny, base, small y turbo cambian huella de recursos por precisión. La v1.2.7 carga de inmediato los modelos ASR locales en caché sin las esperas de red anteriores; la VRAM por modelo de abajo es ilustrativa.",
       kicker: "// modelos",
       vramLabel: "Huella de VRAM en GPU",
       computeLabel: "Cómputo de inferencia",

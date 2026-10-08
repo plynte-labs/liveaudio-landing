@@ -208,14 +208,14 @@ const en: HomeCopy = {
   },
 
   hero: {
-    eyebrow: "PLYNTE LIVEAUDIO v1.2.6 - WINDOWS & LINUX",
+    eyebrow: "PLYNTE LIVEAUDIO v1.2.7 - WINDOWS & LINUX",
     titleA: "Real-time ",
     accent: "local",
     titleATail: " captions for your OBS.",
     titleB: "No cloud, no subscription, no API key.",
     subtitle:
-      "LiveAudio is a free, open-source (MIT) app that generates real-time Whisper speech captions 100% locally and streams them to OBS over a local WebSocket. v1.2.6 loads cached local ASR models immediately, avoids prior network waits, and falls back to CPU if CUDA fails.",
-    download: "Download LiveAudio v1.2.6 (free)",
+      "LiveAudio is a free, open-source (MIT) app that generates real-time Whisper speech captions 100% locally and streams them to OBS over a local WebSocket. v1.2.7 loads cached local ASR models immediately, avoids prior network waits, and falls back to CPU if CUDA fails.",
+    download: "Download LiveAudio v1.2.7 (free)",
     how: "How it works",
     microTrust: ["100% local", "MIT open-source", "Windows + Linux"],
     proofAlt: "LiveAudio product mark with the LiveAudio name and Plynte attribution.",
@@ -473,7 +473,7 @@ const en: HomeCopy = {
     eyebrow: "// download",
     heading: "Local captions in your OBS in minutes.",
     body: "Free & open-source (MIT). No subscription, no API key. You only pay your own electricity — hardware not included.",
-    download: "Download LiveAudio v1.2.6 (free)",
+    download: "Download LiveAudio v1.2.7 (free)",
     secondary: "How it works",
   },
 };
@@ -486,14 +486,14 @@ const es: HomeCopy = {
   },
 
   hero: {
-    eyebrow: "PLYNTE LIVEAUDIO v1.2.6 - WINDOWS Y LINUX",
+    eyebrow: "PLYNTE LIVEAUDIO v1.2.7 - WINDOWS Y LINUX",
     titleA: "Subtítulos ",
     accent: "locales",
     titleATail: " en tiempo real para tu OBS.",
     titleB: "Sin nube, sin suscripción, sin API key.",
     subtitle:
-      "LiveAudio es una app gratuita y de código abierto (MIT) que genera subtítulos de voz Whisper en tiempo real, 100% en tu equipo, y los envía a OBS por un WebSocket local. La v1.2.6 carga de inmediato los modelos ASR locales en caché, evita las esperas de red anteriores y usa CPU si CUDA falla.",
-    download: "Descargar LiveAudio v1.2.6 (gratis)",
+      "LiveAudio es una app gratuita y de código abierto (MIT) que genera subtítulos de voz Whisper en tiempo real, 100% en tu equipo, y los envía a OBS por un WebSocket local. La v1.2.7 carga de inmediato los modelos ASR locales en caché, evita las esperas de red anteriores y usa CPU si CUDA falla.",
+    download: "Descargar LiveAudio v1.2.7 (gratis)",
     how: "Cómo funciona",
     microTrust: ["100% local", "Código abierto MIT", "Windows + Linux"],
     proofAlt: "Marca del producto LiveAudio con el nombre LiveAudio y la atribución a Plynte.",
@@ -751,7 +751,7 @@ const es: HomeCopy = {
     eyebrow: "// descargar",
     heading: "Subtítulos locales en tu OBS en minutos.",
     body: "Gratis y de código abierto (MIT). Sin suscripción, sin API key. Solo pagas tu propia electricidad — el hardware no está incluido.",
-    download: "Descargar LiveAudio v1.2.6 (gratis)",
+    download: "Descargar LiveAudio v1.2.7 (gratis)",
     secondary: "Cómo funciona",
   },
 };

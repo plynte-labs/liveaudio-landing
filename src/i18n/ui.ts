@@ -27,15 +27,15 @@ export const ui = {
     "nav.openMenu": "Open menu",
 
     // Common buttons / CTAs (chrome-level; page heroes own their own copy)
-    "cta.download": "Download LiveAudio v1.2.6 (free)",
+    "cta.download": "Download LiveAudio v1.2.7 (free)",
     "cta.github": "GitHub",
     "cta.copy": "Copy",
     "cta.copied": "copied",
 
     // Brand / version
     "brand.name": "LiveAudio",
-    "brand.version": "v1.2.6",
-    "brand.versionLinkLabel": "View LiveAudio v1.2.6 release",
+    "brand.version": "v1.2.7",
+    "brand.versionLinkLabel": "View LiveAudio v1.2.7 release",
 
     // Footer columns
     "footer.tagline": "100% local · MIT open-source",
@@ -46,7 +46,7 @@ export const ui = {
     "footer.resources.releases": "Releases",
     "footer.resources.llms": "llms.txt",
     "footer.resources.checksums": "SHA256SUMS",
-    "footer.legal": "© Plynte · LiveAudio v1.2.6 · MIT · Windows + Linux",
+    "footer.legal": "© Plynte · LiveAudio v1.2.7 · MIT · Windows + Linux",
     "footer.privacy": "Privacy Policy",
     "footer.terms": "Terms of Service",
 
@@ -74,15 +74,15 @@ export const ui = {
     "nav.openMenu": "Abrir menú",
 
     // Common buttons / CTAs
-    "cta.download": "Descargar LiveAudio v1.2.6 (gratis)",
+    "cta.download": "Descargar LiveAudio v1.2.7 (gratis)",
     "cta.github": "GitHub",
     "cta.copy": "Copiar",
     "cta.copied": "copiado",
 
     // Brand / version
     "brand.name": "LiveAudio",
-    "brand.version": "v1.2.6",
-    "brand.versionLinkLabel": "Ver versión de LiveAudio v1.2.6",
+    "brand.version": "v1.2.7",
+    "brand.versionLinkLabel": "Ver versión de LiveAudio v1.2.7",
 
     // Footer columns
     "footer.tagline": "100% local · Código abierto MIT",
@@ -93,7 +93,7 @@ export const ui = {
     "footer.resources.releases": "Versiones",
     "footer.resources.llms": "llms.txt",
     "footer.resources.checksums": "SHA256SUMS",
-    "footer.legal": "© Plynte · LiveAudio v1.2.6 · MIT · Windows + Linux",
+    "footer.legal": "© Plynte · LiveAudio v1.2.7 · MIT · Windows + Linux",
     "footer.privacy": "Política de Privacidad",
     "footer.terms": "Términos del Servicio",
 
