@@ -1,10 +1,12 @@
 ---
 /**
- * LiveDemo — "Live Demo" section. A REAL, unedited screen capture of LiveAudio
- * release (a trust signal vs the clearly-labeled "simulated" sandboxes). Kept
- * deliberately simple: a native <video controls> — the
- * browser's own player, so it always works. The Hero owns the page <h1>; this
- * section uses an <h2>. Zero React. Tokens/classes only. Props: lang.
+ * LiveDemo — "Live Demo" section. Leads with the CURRENT v1.5.0 (Rust + Tauri 2)
+ * product screenshot; the old screen recording stays below, explicitly badged
+ * as the deprecated Python version until a Tauri video exists (trust signal
+ * stays honest: current UI first, archive clearly labeled). Native
+ * <video controls> for the archive — the browser's own player, so it always
+ * works. The Hero owns the page <h1>; this section uses an <h2>. Zero React.
+ * Tokens/classes only. Props: lang.
  */
 import type { Locale } from "../../i18n/routes";
 import { homeCopy } from "../../i18n/pages/home";
@@ -31,8 +33,27 @@ const copy = homeCopy(lang).demo;
       {copy.badge}
     </p>
 
-    <!-- Native player in the hero console frame. Simple = robust. -->
+    <!-- Current v1.5.0 interface first (no Tauri video yet). -->
     <figure class="console demo-frame">
+      <img
+        class="demo-image"
+        src="/media/liveaudio-v1.5.0/v1-5-0-avanzado.webp"
+        width="1917"
+        height="1013"
+        alt={copy.imageAlt}
+        loading="lazy"
+        decoding="async"
+      />
+      <figcaption class="demo-caption">{copy.imageCaption}</figcaption>
+    </figure>
+
+    <!-- Archived recording: explicitly the deprecated Python version. -->
+    <p class="pill pill-amber demo-legacy-badge">
+      {copy.legacyBadge}
+    </p>
+
+    <!-- Native player in the hero console frame. Simple = robust. -->
+    <figure class="console demo-frame demo-legacy">
       <video
         class="demo-video"
         poster="/demo/liveaudio-demo-poster.jpg"
@@ -43,7 +64,7 @@ const copy = homeCopy(lang).demo;
       >
         <source src="/demo/liveaudio-demo.mp4" type="video/mp4" />
       </video>
-      <figcaption class="demo-caption">{copy.captionReal}</figcaption>
+      <figcaption class="demo-caption">{copy.legacyCaption}</figcaption>
     </figure>
   </div>
 </section>
@@ -73,6 +94,19 @@ const copy = homeCopy(lang).demo;
   }
   .demo-badge {
     margin: 0 0 var(--space-7);
+  }
+  .demo-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius);
+    background: var(--color-surface-2);
+  }
+  .demo-legacy-badge {
+    margin: var(--space-8) 0 var(--space-5);
+  }
+  .demo-legacy {
+    opacity: 0.92;
   }
   /* Console frame around the video — reuses the hero `.console` treatment. */
   .demo-frame {

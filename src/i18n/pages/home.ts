@@ -99,10 +99,16 @@ export interface HomeCopy {
     badge: string;
     /** answer-first H2 */
     heading: string;
-    /** one-line lead caption above the video */
+    /** one-line lead caption above the demo figures */
     lead: string;
-    /** honest caption under the video (real capture, EN-UI note) */
-    captionReal: string;
+    /** alt text for the current v1.5.0 product screenshot */
+    imageAlt: string;
+    /** caption under the v1.5.0 screenshot (marks it as the current UI) */
+    imageCaption: string;
+    /** amber pill marking the old recording as the deprecated Python version */
+    legacyBadge: string;
+    /** caption under the archived video (deprecated version + new video soon) */
+    legacyCaption: string;
     /** toggle label when the video is paused (action: press to play) */
     play: string;
     /** toggle label when the video is playing (action: press to pause) */
@@ -236,8 +242,13 @@ const en: HomeCopy = {
     eyebrow: "LIVE DEMO",
     badge: "real capture",
     heading: "See LiveAudio running live.",
-    lead: "A real screen recording of the app generating captions — not a mockup.",
-    captionReal: "Real capture — LiveAudio interface, unedited.",
+    lead: "The current v1.5.0 interface in one screenshot — plus an archived recording of the deprecated Python version below.",
+    imageAlt:
+      "LiveAudio v1.5.0 desktop showing the Advanced tab with Whisper turbo on CUDA, voice-activity tuning, live subtitle feed and OBS Studio integration.",
+    imageCaption: "v1.5.0 (Rust + Tauri 2) — the current interface.",
+    legacyBadge: "archived capture · deprecated Python version",
+    legacyCaption:
+      "Archived recording of the deprecated Python version — the v1.5.0 screenshot above is current. A new Tauri video is coming soon.",
     play: "Play",
     pause: "Pause",
     videoAriaLabel:
@@ -514,8 +525,13 @@ const es: HomeCopy = {
     eyebrow: "DEMO EN VIVO",
     badge: "captura real",
     heading: "Mira LiveAudio funcionando en vivo.",
-    lead: "Una grabación real de la app generando subtítulos — no es una maqueta.",
-    captionReal: "Captura real de la interfaz de LiveAudio, sin ediciones. Interfaz en inglés.",
+    lead: "La interfaz actual v1.5.0 en una captura — más una grabación archivada de la versión Python obsoleta abajo.",
+    imageAlt:
+      "Escritorio de LiveAudio v1.5.0 con la pestaña Avanzado: Whisper turbo en CUDA, ajuste de actividad de voz, feed de subtítulos en vivo e integración con OBS Studio.",
+    imageCaption: "v1.5.0 (Rust + Tauri 2) — la interfaz actual.",
+    legacyBadge: "captura archivada · versión Python obsoleta",
+    legacyCaption:
+      "Grabación archivada de la versión Python obsoleta — la captura v1.5.0 de arriba es la actual. Un nuevo video de Tauri próximamente.",
     play: "Reproducir",
     pause: "Pausar",
     videoAriaLabel:
