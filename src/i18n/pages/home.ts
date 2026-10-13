@@ -208,25 +208,25 @@ const en: HomeCopy = {
   },
 
   hero: {
-    eyebrow: "PLYNTE LIVEAUDIO v1.2.7 - WINDOWS & LINUX",
+    eyebrow: "PLYNTE LIVEAUDIO v1.5.0 · RUST + TAURI 2 · WINDOWS X64",
     titleA: "Real-time ",
     accent: "local",
     titleATail: " captions for your OBS.",
     titleB: "No cloud, no subscription, no API key.",
     subtitle:
-      "LiveAudio is a free, open-source (MIT) app that generates real-time Whisper speech captions 100% locally and streams them to OBS over a local WebSocket. v1.2.7 loads cached local ASR models immediately, avoids prior network waits, and falls back to CPU if CUDA fails.",
-    download: "Download LiveAudio v1.2.7 (free)",
+      "LiveAudio is a free, open-source (MIT) app that generates real-time Whisper speech captions 100% locally and streams them to OBS over a local WebSocket. v1.5.0 is rewritten in Rust with a Tauri 2 desktop shell: faster startup, lower RAM, memory-safe transcription — and no Python runtime to download.",
+    download: "Download LiveAudio v1.5.0 (free)",
     how: "How it works",
-    microTrust: ["100% local", "MIT open-source", "Windows + Linux"],
+    microTrust: ["Rust + Tauri 2", "100% local", "MIT open-source"],
     proofAlt: "LiveAudio product mark with the LiveAudio name and Plynte attribution.",
   },
 
   trust: {
     label: "What LiveAudio guarantees",
     items: [
+      "Rust + Tauri 2",
       "100% local",
       "MIT open-source",
-      "Windows + Linux",
       "No cloud",
       "No API key",
     ],
@@ -251,14 +251,14 @@ const en: HomeCopy = {
       {
         kicker: "// 100% local",
         title: "Is it really 100% local?",
-        body: "All processing happens on your machine, with no telemetry. Internet is needed only on first run to download Python, deps and models; after that it runs fully offline.",
-        spec: "no telemetry · offline after first run",
+        body: "All processing happens on your machine, with no telemetry. Internet is needed only on first run to download transcription models; after that it runs fully offline. v1.5.0 ships as a single native binary — no Python runtime to provision.",
+        spec: "rust native binary · no telemetry · offline after first run",
       },
       {
         kicker: "// linux",
         title: "Does it work on Linux?",
-        body: "Yes. Linux x86_64 captures from the microphone and needs libportaudio2. System-audio loopback (WASAPI) is Windows-only.",
-        spec: "linux x86_64 · sudo apt install libportaudio2",
+        body: "v1.5.0 focuses on Windows 10/11 x64. Linux users stay on the legacy Python v1.2.7 tarball (microphone capture, needs libportaudio2) until a native Linux build ships. System-audio loopback (WASAPI) is Windows-only.",
+        spec: "v1.5.0 windows x64 · linux legacy v1.2.7",
       },
       {
         kicker: "// gpu",
@@ -401,7 +401,7 @@ const en: HomeCopy = {
       {
         kicker: "// updates",
         title: "In-app updates",
-        body: "One-click in-app update, or run the launcher with --update. New versions land without a reinstall.",
+        body: "One-click in-app update. New versions land from GitHub Releases without a reinstall.",
         icon: "refresh-cw",
       },
     ],
@@ -448,12 +448,12 @@ const en: HomeCopy = {
       {
         question: "Is it really 100% local?",
         answer:
-          "Yes. All processing happens on your machine, with no telemetry. Internet is only needed on first run to download Python, deps and models; after that it runs fully offline.",
+          "Yes. All processing happens on your machine, with no telemetry. Internet is only needed on first run to download transcription models; after that it runs fully offline — and v1.5.0 needs no Python runtime at all.",
       },
       {
         question: "Does it work on Linux?",
         answer:
-          "Yes, on Linux x86_64 with microphone capture (needs libportaudio2). System-audio loopback is Windows-only.",
+          "v1.5.0 focuses on Windows 10/11 x64; Linux users stay on the legacy Python v1.2.7 tarball with microphone capture (needs libportaudio2). System-audio loopback is Windows-only.",
       },
       {
         question: "Is it free and open-source?",
@@ -473,7 +473,7 @@ const en: HomeCopy = {
     eyebrow: "// download",
     heading: "Local captions in your OBS in minutes.",
     body: "Free & open-source (MIT). No subscription, no API key. You only pay your own electricity — hardware not included.",
-    download: "Download LiveAudio v1.2.7 (free)",
+    download: "Download LiveAudio v1.5.0 (free)",
     secondary: "How it works",
   },
 };
@@ -486,25 +486,25 @@ const es: HomeCopy = {
   },
 
   hero: {
-    eyebrow: "PLYNTE LIVEAUDIO v1.2.7 - WINDOWS Y LINUX",
+    eyebrow: "PLYNTE LIVEAUDIO v1.5.0 · RUST + TAURI 2 · WINDOWS X64",
     titleA: "Subtítulos ",
     accent: "locales",
     titleATail: " en tiempo real para tu OBS.",
     titleB: "Sin nube, sin suscripción, sin API key.",
     subtitle:
-      "LiveAudio es una app gratuita y de código abierto (MIT) que genera subtítulos de voz Whisper en tiempo real, 100% en tu equipo, y los envía a OBS por un WebSocket local. La v1.2.7 carga de inmediato los modelos ASR locales en caché, evita las esperas de red anteriores y usa CPU si CUDA falla.",
-    download: "Descargar LiveAudio v1.2.7 (gratis)",
+      "LiveAudio es una app gratuita y de código abierto (MIT) que genera subtítulos de voz Whisper en tiempo real, 100% en tu equipo, y los envía a OBS por un WebSocket local. La v1.5.0 está reescrita en Rust con interfaz Tauri 2: arranque más rápido, menos RAM, transcripción con memoria segura — y sin runtime de Python por descargar.",
+    download: "Descargar LiveAudio v1.5.0 (gratis)",
     how: "Cómo funciona",
-    microTrust: ["100% local", "Código abierto MIT", "Windows + Linux"],
+    microTrust: ["Rust + Tauri 2", "100% local", "Código abierto MIT"],
     proofAlt: "Marca del producto LiveAudio con el nombre LiveAudio y la atribución a Plynte.",
   },
 
   trust: {
     label: "Lo que garantiza LiveAudio",
     items: [
+      "Rust + Tauri 2",
       "100% local",
       "Código abierto MIT",
-      "Windows + Linux",
       "Sin nube",
       "Sin API key",
     ],
@@ -529,14 +529,14 @@ const es: HomeCopy = {
       {
         kicker: "// 100% local",
         title: "¿De verdad es 100% local?",
-        body: "Todo el procesamiento ocurre en tu equipo, sin telemetría. Internet solo en la primera ejecución para descargar Python, dependencias y modelos; después funciona sin conexión.",
-        spec: "sin telemetría · sin conexión tras la primera ejecución",
+        body: "Todo el procesamiento ocurre en tu equipo, sin telemetría. Internet solo en la primera ejecución para descargar los modelos de transcripción; después funciona sin conexión. La v1.5.0 es un único binario nativo — sin runtime de Python por provisionar.",
+        spec: "binario nativo rust · sin telemetría · sin conexión tras la primera ejecución",
       },
       {
         kicker: "// linux",
         title: "¿Funciona en Linux?",
-        body: "Sí. Linux x86_64 captura por micrófono y necesita libportaudio2. El loopback de audio del sistema (WASAPI) es solo de Windows.",
-        spec: "linux x86_64 · sudo apt install libportaudio2",
+        body: "La v1.5.0 se enfoca en Windows 10/11 x64. En Linux sigue el tarball heredado Python v1.2.7 (captura por micrófono, necesita libportaudio2) hasta que salga una build nativa. El loopback de audio del sistema (WASAPI) es solo de Windows.",
+        spec: "v1.5.0 windows x64 · linux heredado v1.2.7",
       },
       {
         kicker: "// gpu",
@@ -679,7 +679,7 @@ const es: HomeCopy = {
       {
         kicker: "// actualizaciones",
         title: "Actualizaciones en la app",
-        body: "Actualización en un clic dentro de la app, o ejecuta el launcher con --update. Las versiones nuevas llegan sin reinstalar.",
+        body: "Actualización en un clic dentro de la app. Las versiones nuevas llegan desde GitHub Releases sin reinstalar.",
         icon: "refresh-cw",
       },
     ],
@@ -726,12 +726,12 @@ const es: HomeCopy = {
       {
         question: "¿De verdad es 100% local?",
         answer:
-          "Sí. Todo el procesamiento ocurre en tu equipo, sin telemetría. Internet solo en la primera ejecución para descargar Python, dependencias y modelos; después funciona sin conexión.",
+          "Sí. Todo el procesamiento ocurre en tu equipo, sin telemetría. Internet solo en la primera ejecución para descargar los modelos de transcripción; después funciona sin conexión — y la v1.5.0 no necesita ningún runtime de Python.",
       },
       {
         question: "¿Funciona en Linux?",
         answer:
-          "Sí, en Linux x86_64 con captura por micrófono (necesita libportaudio2). El loopback de audio del sistema es solo de Windows.",
+          "La v1.5.0 se enfoca en Windows 10/11 x64; en Linux sigue el tarball heredado Python v1.2.7 con captura por micrófono (necesita libportaudio2). El loopback de audio del sistema es solo de Windows.",
       },
       {
         question: "¿Es gratis y de código abierto?",
@@ -751,7 +751,7 @@ const es: HomeCopy = {
     eyebrow: "// descargar",
     heading: "Subtítulos locales en tu OBS en minutos.",
     body: "Gratis y de código abierto (MIT). Sin suscripción, sin API key. Solo pagas tu propia electricidad — el hardware no está incluido.",
-    download: "Descargar LiveAudio v1.2.7 (gratis)",
+    download: "Descargar LiveAudio v1.5.0 (gratis)",
     secondary: "Cómo funciona",
   },
 };

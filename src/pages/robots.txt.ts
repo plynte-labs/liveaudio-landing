@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 
 /**
- * robots.txt — crawl/agent policy for LiveAudio v1.2.0.
+ * robots.txt — crawl/agent policy for LiveAudio v1.5.0.
  *
  * Static endpoint (export GET). Allow-all baseline plus an explicit Allow for
  * the AI/GEO crawlers we want indexing the citation surfaces (llms.txt, docs,
@@ -15,7 +15,7 @@ export const GET: APIRoute = ({ site }) => {
   const sitemap = new URL("sitemap-index.xml", site).href;
 
   const body = [
-    "# https://liveaudio.opencohost.com — LiveAudio v1.2.0",
+    "# https://liveaudio.opencohost.com — LiveAudio v1.5.0",
     "# Free, open-source (MIT) real-time local Whisper captions for OBS.",
     "",
     "User-agent: *",

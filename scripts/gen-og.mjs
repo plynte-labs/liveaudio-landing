@@ -120,7 +120,7 @@ async function build() {
 
   // --- Real-font text layers (composited over the background) ---
   const eyebrow = await textLayer({
-    text: `<span foreground="${COLOR.textMuted}">PLYNTE LIVEAUDIO v1.2.0 · WINDOWS &amp; LINUX</span>`,
+    text: `<span foreground="${COLOR.textMuted}">PLYNTE LIVEAUDIO v1.5.0 · RUST + TAURI 2 · WINDOWS X64</span>`,
     fontfile: MONO,
     font: "JetBrains Mono 24",
     spacing: 3000,
@@ -137,7 +137,7 @@ async function build() {
     font: "Inter 700 46",
   });
   const taglineB = await textLayer({
-    text: `<span foreground="${COLOR.text}">Windows + Linux · MIT · 100% local · no API key</span>`,
+    text: `<span foreground="${COLOR.text}">Windows x64 · Rust · MIT · 100% local · no API key</span>`,
     fontfile: INTER,
     font: "Inter 500 34",
   });

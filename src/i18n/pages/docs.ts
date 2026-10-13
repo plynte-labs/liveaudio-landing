@@ -1,7 +1,11 @@
 /**
- * Docs content model — LiveAudio v1.2.0 · 5 sections, bilingual.
+ * Docs content model — LiveAudio v1.5.0 · 5 sections, bilingual.
  *
  * This is the CONTENT source for /docs/[section]/ (EN) + /es/docs/[section]/ (ES).
+ * v1.5.0 is a native Rust + Tauri 2 Windows x64 build: no Python runtime, no uv /
+ * torch provisioning. The legacy Python line (v1.0.0–v1.2.7) is covered only as a
+ * migration source and as the Linux fallback tarball.
+ *
  * Structure-only port of the OLD DocViewer.tsx; EVERY product fact is reconciled
  * to the product spec (no macOS, no Kira, no milliseconds, GPU optional w/ VRAM >= 4
  * GiB, blacklist verbatim from config.json.example, WS schema + ports, backlog
@@ -140,43 +144,18 @@ const WS_PAYLOAD_ES = `{
   "catchup_interval_sec": 0.0
 }`;
 
-/** Dev quickstart (uv) — §6, identical across locales except comments. */
-const UV_QUICKSTART_EN = `git clone ${REPO}.git
+/** Source checkout (Rust + Tauri 2) — identical across locales except comments. */
+const SOURCE_CLONE_EN = `git clone ${REPO}.git
 cd LiveAudio
 
-# CPU only
-uv sync --extra cpu
+# Developer path: see the repository README for the
+# Rust + Tauri 2 build prerequisites, then build from source.`;
 
-# Or with NVIDIA CUDA (exactly one torch extra)
-uv sync --extra cu121
-
-# Run the app
-uv run liveaudio
-
-# Run the tests
-uv run pytest`;
-
-const UV_QUICKSTART_ES = `git clone ${REPO}.git
+const SOURCE_CLONE_ES = `git clone ${REPO}.git
 cd LiveAudio
 
-# Solo CPU
-uv sync --extra cpu
-
-# O con NVIDIA CUDA (exactamente un extra de torch)
-uv sync --extra cu121
-
-# Ejecutar la app
-uv run liveaudio
-
-# Ejecutar los tests
-uv run pytest`;
-
-/**
- * Dev verification — GETTING_STARTED.md §3 "Verificar instalación". Confirms the
- * two libraries that actually matter (torch backend + faster-whisper).
- */
-const VERIFY_INSTALL = `uv run python -c "import torch; print('PyTorch:', torch.__version__)"
-uv run python -c "import faster_whisper; print('Faster Whisper OK')"`;
+# Camino de desarrollador: consulta el README del repositorio para los
+# prerrequisitos de compilación Rust + Tauri 2, y luego compila desde el código.`;
 
 /** Session folder layout — §3 (transcript.jsonl + subtitles.vtt + session.json). */
 const SESSION_TREE = `sessions/
@@ -226,20 +205,16 @@ const WS_HTML_CLIENT = `<!-- open this file in a browser, or load it as an OBS B
 </script>`;
 
 /**
- * Launcher bootstrap flow — PACKAGING_AND_UPDATES.md §1 "Architecture
- * Overview", trimmed to the steps a self-hoster needs. Verbatim command on
- * step 5 (`uv sync --locked --extra <cpu|cu121> --python 3.11`).
+ * Native install flow — what the v1.5.0 NSIS installer does: detect and remove
+ * legacy Python builds, preserve user data, install the Rust binary.
  */
-const BOOTSTRAP_FLOW = `LiveAudio-Setup-X.Y.Z.exe  /  liveaudio-launcher
+const NATIVE_INSTALL_FLOW = `LiveAudio_1.5.0_x64-setup.exe  /  liveaudio-desktop.exe
   │
-  ├─ 1. Resolve install root (portable.marker / default per-user dir)
-  ├─ 2. Detect hardware → torch extra: cpu | cu121
-  ├─ 3. Download liveaudio-src-X.Y.Z.zip (URL + SHA256 baked into the exe)
-  ├─ 4. Ensure uv (bundled > on PATH > previously downloaded)
-  ├─ 5. uv sync --locked --extra <cpu|cu121> --python 3.11
-  │     (uv also fetches a managed CPython 3.11 into <root>/python)
-  ├─ 6. Write installed.json (atomic — marks the install complete)
-  └─ 7. Launch <root>/app/.venv/.../liveaudio`;
+  ├─ 1. Detect legacy Python builds (v1.0.0–v1.2.7) via the Windows registry
+  ├─ 2. Run the legacy uninstaller silently + stop leftover processes
+  ├─ 3. Remove obsolete Python folders (settings in %APPDATA%\\LiveAudio kept)
+  ├─ 4. Install the native Rust + Tauri 2 desktop app (~23.9 MB, no Python)
+  └─ 5. Launch — transcription models download once on first use`;
 
 /** config.json example — §8 values, blacklist trimmed to verbatim words. */
 const CONFIG_EXAMPLE_EN = `{
@@ -302,11 +277,11 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
     navLabel: "overview",
     metaTitle: "LiveAudio docs — Overview",
     metaDescription:
-      "What LiveAudio is and what it needs: a free, open-source (MIT) app that generates real-time Whisper captions 100% locally and streams them to OBS over a local WebSocket. Windows and Linux; GPU optional.",
+      "What LiveAudio is and what it needs: a free, open-source (MIT) app that generates real-time Whisper captions 100% locally and streams them to OBS over a local WebSocket. Windows x64 native Rust + Tauri 2 build; GPU optional.",
     eyebrow: "// docs / overview",
     h1: "LiveAudio documentation",
     lede:
-      "LiveAudio is a free, open-source (MIT) desktop app that generates real-time Whisper speech captions 100% locally and streams them to OBS over a local WebSocket. It runs on Windows and Linux — no cloud, no API key, no per-minute cost.",
+      "LiveAudio is a free, open-source (MIT) desktop app that generates real-time Whisper speech captions 100% locally and streams them to OBS over a local WebSocket. v1.5.0 runs on Windows x64 as a native Rust + Tauri 2 build — no cloud, no API key, no per-minute cost.",
     blocks: [
       {
         type: "heading",
@@ -315,13 +290,13 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "<strong>Plynte LiveAudio</strong> is a local-first speech-recognition engine for streamers and creators. It transcribes with <strong>Whisper</strong> (<code>tiny</code>, <code>base</code>, <code>small</code>, <code>turbo</code>), trims silence with <strong>Silero VAD</strong>, and broadcasts subtitle JSON over a local WebSocket so OBS — or any localhost client — can render live captions.",
+        html: "<strong>Plynte LiveAudio</strong> is a local-first speech-recognition engine for streamers and creators. It transcribes with <strong>Whisper</strong> (<code>tiny</code>, <code>base</code>, <code>small</code>, <code>turbo</code>), trims silence with <strong>Silero VAD</strong>, and broadcasts subtitle JSON over a local WebSocket so OBS — or any localhost client — can render live captions. v1.5.0 is a native <strong>Rust + Tauri 2</strong> desktop app: faster startup, lower RAM, and no Python runtime.",
       },
       {
         type: "list",
         items: [
           "<strong>Local processing.</strong> No audio or transcribed text leaves your machine. No telemetry.",
-          "<strong>Process isolation.</strong> Separate worker processes keep capture and transcription stable under heavy load.",
+          "<strong>Memory-safe core.</strong> The transcription engine is written in Rust, so entire classes of memory bugs are ruled out at compile time.",
           "<strong>Hot-swap.</strong> Change the audio device or model size without restarting the app.",
         ],
       },
@@ -336,7 +311,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
         rows: [
           [
             "Operating system",
-            "Windows 10/11 x64, or Linux x86_64. <strong>No macOS.</strong>",
+            "Windows 10/11 x64. <strong>No macOS.</strong> Linux: legacy Python v1.2.7 tarball.",
           ],
           [
             "GPU",
@@ -345,22 +320,22 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
           ["RAM", "8 GB minimum, 16 GB recommended."],
           [
             "Disk",
-            "~400 MB (CPU) / ~2.5 GB (CUDA) for app + deps, plus model storage.",
+            "Installer ~23.9 MB (portable exe ~15.6 MB), plus transcription-model storage.",
           ],
           [
-            "Python",
-            "Not required for users — the installer provisions its own Python 3.11.",
+            "Runtime",
+            "None — v1.5.0 is a native binary. No Python runtime.",
           ],
           [
             "Internet",
-            "First run only (downloads Python, deps and models). Fully offline afterward.",
+            "First run only (downloads transcription models). Fully offline afterward.",
           ],
         ],
       },
       {
         type: "callout",
         flag: "first run: internet",
-        html: "Only the first run needs a connection, to download Python, dependencies and models (Silero VAD ~2 MB; Whisper <code>tiny</code> ~150 MB / <code>base</code> ~300 MB / <code>small</code> ~480 MB / <code>turbo</code> ~1.5 GB). Every run after that is 100% offline.",
+        html: "Only the first run needs a connection, to download transcription models (Silero VAD ~2 MB; Whisper <code>tiny</code> ~150 MB / <code>base</code> ~300 MB / <code>small</code> ~480 MB / <code>turbo</code> ~1.5 GB). Every run after that is 100% offline.",
       },
       {
         type: "heading",
@@ -369,67 +344,51 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "LiveAudio captures from a <strong>physical microphone</strong> on both platforms. On Windows it can also capture <strong>system audio</strong> via WASAPI loopback.",
+        html: "LiveAudio captures from a <strong>physical microphone</strong>. On Windows it can also capture <strong>system audio</strong> via WASAPI loopback.",
       },
       {
         type: "callout",
         flag: "windows-only",
-        html: "<strong>System-audio loopback (WASAPI) is Windows-only.</strong> On Linux, LiveAudio captures from the microphone; install <code>libportaudio2</code> first (<code>sudo apt install libportaudio2</code>).",
+        html: "<strong>System-audio loopback (WASAPI) is Windows-only.</strong> v1.5.0 focuses on Windows x64; on the legacy Linux v1.2.7 build, capture from the microphone and install <code>libportaudio2</code> first (<code>sudo apt install libportaudio2</code>).",
       },
       {
         type: "heading",
         id: "how-it-installs",
-        text: "How it installs (bootstrap)",
+        text: "How it installs (native build)",
       },
       {
         type: "prose",
-        html: "What you download is a small bootstrapper launcher — a frozen PyInstaller executable, not a multi-gigabyte bundle. On first run it provisions everything else: it resolves the install root, detects your hardware to pick a torch extra, downloads a checksum-verified source zip, ensures <code>uv</code>, runs <code>uv sync</code> (which also fetches a managed CPython 3.11), writes <code>installed.json</code>, then launches the app.",
+        html: "What you download is the whole app — a native Rust + Tauri 2 binary, not a bootstrapper. The Windows installer (<code>LiveAudio_1.5.0_x64-setup.exe</code>, ~23.9 MB) sets up the desktop app directly: no Python runtime, no dependency provisioning. On first transcription it downloads only the transcription models, then runs fully offline.",
       },
       {
         type: "code",
-        label: "first-run bootstrap",
-        code: BOOTSTRAP_FLOW,
+        label: "native install flow",
+        code: NATIVE_INSTALL_FLOW,
       },
       {
         type: "prose",
-        html: "On later runs <code>installed.json</code> already matches the launcher's target version, so it takes the fast path and spawns the installed app directly. On Windows a brief <strong>“Starting LiveAudio…”</strong> splash stays up until the app window appears — the app imports <code>torch</code> at module level, so a cold start can take 60+ seconds with no UI of its own.",
+        html: "Your settings and sessions live in <code>%APPDATA%\\LiveAudio</code> and survive updates. Coming from a Python build (v1.0.0–v1.2.7)? The installer removes it silently first — your data is preserved.",
       },
       {
         type: "heading",
-        id: "install-layout",
-        text: "Install layout",
+        id: "where-data-lives",
+        text: "Where your data lives",
       },
       {
         type: "prose",
-        html: "Everything lives under one install root — the source, the virtual environment, the managed Python, and your data:",
+        html: "v1.5.0 keeps your data in one place — no virtual environments, no managed Python:",
       },
       {
         type: "table",
         head: ["Location", "Content"],
         rows: [
           [
-            "<code>&lt;root&gt;/app/</code>",
-            "Application source (<code>pyproject.toml</code>, <code>uv.lock</code>, <code>liveaudio/</code>).",
+            "<code>%APPDATA%\\LiveAudio</code>",
+            "Your settings (<code>config.json</code>) and <code>sessions/</code> — preserved across installs and the Python-to-Rust migration.",
           ],
           [
-            "<code>&lt;root&gt;/app/.venv/</code>",
-            "Virtual environment created by <code>uv sync</code>.",
-          ],
-          [
-            "<code>&lt;root&gt;/python/</code>",
-            "uv-managed CPython 3.11.",
-          ],
-          [
-            "<code>&lt;root&gt;/installed.json</code>",
-            "<code>{app_version, extra, python, uv_version}</code> — marks the install complete.",
-          ],
-          [
-            "<code>&lt;root&gt;/bootstrap.log</code>",
-            "Full launcher + uv log of every run.",
-          ],
-          [
-            "<code>&lt;root&gt;/data/</code>",
-            "App data home (<code>LIVEAUDIO_HOME</code>): <code>config.json</code>, <code>sessions/</code>.",
+            "Legacy Python installs (v1.0.0–v1.2.7)",
+            "Detected via the Windows registry and removed silently by the v1.5.0 installer.",
           ],
         ],
       },
@@ -440,14 +399,13 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "The launcher decides between the <code>cpu</code> and <code>cu121</code> torch extras with a first-match-wins ladder:",
+        html: "The app chooses between <code>cuda</code> and <code>cpu</code> with a first-match-wins ladder:",
       },
       {
         type: "list",
         items: [
-          "A <code>--device cpu|cuda</code> CLI flag, if you passed one (persisted in <code>installed.json</code>).",
-          "Otherwise the persisted preference (<code>extra</code> in <code>installed.json</code>).",
-          "Otherwise NVML + <code>nvidia-smi</code>: if the driver is <code>&ge; 525</code> and VRAM is <code>&ge; 4096 MiB</code> &rarr; <code>cu121</code>.",
+          "Your explicit choice in the <strong>Advanced</strong> tab (compute-device selector) — picking CUDA dims the CPU-threads control because inference runs on the GPU.",
+          "Otherwise NVML + <code>nvidia-smi</code>: if the driver is <code>&ge; 525</code> and VRAM is <code>&ge; 4096 MiB</code> &rarr; <code>cuda</code>.",
           "Anything else (no NVML, smi failure, or a GPU below requirements) &rarr; <code>cpu</code>, with a note when a GPU was found but did not qualify.",
         ],
       },
@@ -458,7 +416,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "The app checks the GitHub Releases API in the background and shows an update button when a newer version exists. Clicking it relaunches the launcher with <code>--update vX.Y.Z</code>; you can also run <code>--update</code> by hand (no tag means “latest”). The launcher verifies the source zip’s SHA256, preserves the existing <code>.venv</code>, and re-runs <code>uv sync --locked</code>. Because <code>uv</code> only downloads what changed and torch wheels are cached, a typical update transfers a few MB rather than gigabytes. If the installed version already matches, it reports “already up to date” and exits.",
+        html: `Update in one click from inside the app. New releases — installer, portable exe, changelog and hashes — are published on <a href="${REPO}/releases/latest" target="_blank" rel="noopener noreferrer">GitHub Releases</a>. Your settings and sessions in <code>%APPDATA%\\LiveAudio</code> are preserved.`,
       },
     ],
   },
@@ -468,11 +426,11 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
     navLabel: "getting-started",
     metaTitle: "LiveAudio docs — Getting started",
     metaDescription:
-      "Install and run LiveAudio: the Windows/Linux installer or the uv source path, first-run GPU auto-detect, FPS-aware profiles, the verbatim hallucination blacklist, and session files.",
+      "Install and run LiveAudio v1.5.0 on Windows x64: the native installer or portable exe, legacy Python auto-migration, first-run GPU auto-detect, FPS-aware profiles, the verbatim hallucination blacklist, and session files.",
     eyebrow: "// docs / getting-started",
     h1: "Getting started",
     lede:
-      "Two ways to run LiveAudio: the prebuilt installer (recommended) or from source with uv. You do not need Python installed — the installer provisions its own Python 3.11.",
+      "Two ways to run LiveAudio v1.5.0 on Windows: the prebuilt installer (recommended) or the portable standalone exe. No Python installed, no runtime to provision — the app is a native binary.",
     blocks: [
       {
         type: "heading",
@@ -486,18 +444,19 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       {
         type: "list",
         items: [
-          "<strong>Windows:</strong> <code>LiveAudio-Setup-1.2.7.exe</code> (graphical installer).",
-          "<strong>Linux:</strong> <code>LiveAudio-1.2.7-linux-x64.tar.gz</code> — extract, then run <code>./liveaudio-launcher</code>.",
+          "<strong>Windows x64:</strong> <code>LiveAudio_1.5.0_x64-setup.exe</code> (graphical installer, ~23.9 MB).",
+          "<strong>Windows portable:</strong> <code>liveaudio-desktop.exe</code> (~15.6 MB) — standalone, no install.",
+          "<strong>Linux:</strong> legacy <code>LiveAudio-1.2.7-linux-x64.tar.gz</code> — extract, then run <code>./liveaudio-launcher</code>.",
         ],
       },
       {
         type: "prose",
-        html: "The <strong>first run</strong> downloads Python and all dependencies (~400 MB on CPU, ~2.5 GB with CUDA) and auto-detects your GPU. Later runs start instantly.",
+        html: "The <strong>first run</strong> downloads transcription models and auto-detects your GPU. Later runs start instantly. Coming from v1.0.0–v1.2.7? The installer removes the legacy Python build silently and preserves your settings in <code>%APPDATA%\\LiveAudio</code>.",
       },
       {
         type: "callout",
-        flag: "needs libportaudio2",
-        html: "On Linux, install the PortAudio runtime before launching: <code>sudo apt install libportaudio2</code>.",
+        flag: "legacy linux",
+        html: "On the legacy Linux build, install the PortAudio runtime before launching: <code>sudo apt install libportaudio2</code>.",
       },
       {
         type: "heading",
@@ -506,12 +465,12 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Requires <a href=\"https://docs.astral.sh/uv/\" target=\"_blank\" rel=\"noopener noreferrer\">uv</a>. Pick exactly one torch extra — <code>cpu</code> or <code>cu121</code>.",
+        html: "Developer path — clone the repo and follow the build instructions in the repository README (Rust toolchain + Tauri 2 prerequisites).",
       },
       {
         type: "code",
         label: "bash",
-        code: UV_QUICKSTART_EN,
+        code: SOURCE_CLONE_EN,
       },
       {
         type: "heading",
@@ -520,55 +479,16 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "<strong>Installer users:</strong> run the launcher with <code>--self-test</code> — it prints the detected device, the resolved paths and uv status, then exits without starting the GUI. <strong>Developers:</strong> confirm the core libraries import:",
-      },
-      {
-        type: "code",
-        label: "bash",
-        code: VERIFY_INSTALL,
+        html: "Open the app — the header shows the live status (listening / VAD state) and the <strong>Advanced</strong> tab shows the active compute device (CUDA or CPU). Speak, and captions appear in the live subtitle feed and stream to OBS.",
       },
       {
         type: "heading",
-        id: "launcher-cli",
-        text: "Launcher CLI",
+        id: "updates-recovery",
+        text: "Updates & recovery",
       },
       {
         type: "prose",
-        html: "The launcher is the primary way to force a backend, update, self-test, or recover an install. Pass these flags to the launcher executable (or, in dev, to <code>uv run liveaudio</code> where applicable):",
-      },
-      {
-        type: "table",
-        head: ["Flag", "What it does"],
-        rows: [
-          [
-            "<code>--device cpu|cuda</code>",
-            "Override GPU auto-detection; the choice is persisted in <code>installed.json</code> and re-syncs the matching torch extra.",
-          ],
-          [
-            "<code>--update [vX.Y.Z]</code>",
-            "Update to a tag, or to the latest release when no tag is given. Reports “already up to date” if current.",
-          ],
-          [
-            "<code>--self-test</code>",
-            "Print the detected device, resolved paths and uv status, then exit.",
-          ],
-          [
-            "<code>--reinstall</code>",
-            "Wipe <code>app/</code> and <code>.venv</code>, keep the device preference, and bootstrap fresh.",
-          ],
-          [
-            "<code>--headless</code>",
-            "No-GUI stdout progress; used automatically when tkinter is unavailable (servers, CI).",
-          ],
-          [
-            "<code>--src-dir PATH</code>",
-            "Dev mode: bootstrap from a local checkout instead of a release zip.",
-          ],
-          [
-            "<code>--install-desktop-entry</code>",
-            "Linux only — add an applications-menu entry.",
-          ],
-        ],
+        html: "v1.5.0 configures everything from the GUI — the <strong>Advanced</strong> tab picks the compute device (CUDA/CPU) and model without a restart. <strong>Updates</strong> arrive in one click from inside the app. If an install ever breaks, re-run <code>LiveAudio_1.5.0_x64-setup.exe</code>: it repairs the install and preserves your settings and sessions in <code>%APPDATA%\\LiveAudio</code>.",
       },
       {
         type: "heading",
@@ -945,11 +865,11 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
     navLabel: "troubleshooting",
     metaTitle: "LiveAudio docs — Troubleshooting",
     metaDescription:
-      "Fixes for common LiveAudio issues: no captions, CUDA out-of-memory, OBS not connecting on port 8765, missing torch, audio cutting out — plus local-first diagnostics export.",
+      "Fixes for common LiveAudio issues: no captions, CUDA out-of-memory, OBS not connecting on port 8765, upgrading from the Python version, audio cutting out — plus local-first diagnostics export.",
     eyebrow: "// docs / troubleshooting",
     h1: "Troubleshooting",
     lede:
-      "Root-cause fixes for the most common setup issues — capture, CUDA, the WebSocket connection, and dependency errors — followed by the local-first diagnostics export.",
+      "Root-cause fixes for the most common setup issues — capture, CUDA, the WebSocket connection, and Python-version upgrades — followed by the local-first diagnostics export.",
     blocks: [
       {
         type: "heading",
@@ -976,12 +896,12 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "heading",
-        id: "cublas-not-found",
-        text: "“cublas64_12.dll not found” (CUDA)",
+        id: "upgrading-from-python",
+        text: "Upgrading from the Python version (v1.0.0–v1.2.7)",
       },
       {
         type: "prose",
-        html: "This is a DLL-resolution issue, not a missing install. The <code>cu121</code> extra routes <code>torch</code>/<code>torchaudio</code> from <code>download.pytorch.org/whl/cu121</code> (and <code>cpu</code> from <code>/whl/cpu</code>); exactly one extra must be selected. On Windows, ctranslate2 — faster-whisper’s backend — loads <code>cublas64_12.dll</code> and cuDNN 9 via the system <code>PATH</code>, not Python’s DLL directories, so LiveAudio prepends <code>torch/lib</code> to <code>PATH</code> at startup (<code>liveaudio/utils/dllpath.py</code>). If you run from a custom environment and hit this error, make sure the CUDA torch wheels are installed and that <code>torch/lib</code> is reachable. The cu121 stack pins <code>torch&gt;=2.4,&lt;2.6</code> (no 2.6 wheels are published there, and <code>&ge; 2.4</code> ships the cuDNN 9 that ctranslate2 links against). Driver floor is 525.",
+        html: "v1.5.0 replaces the Python builds with a native Rust + Tauri 2 app. The installer detects legacy installs through the Windows registry (32- and 64-bit views), runs the old uninstaller silently (NSIS and Inno Setup), stops leftover processes, and removes the obsolete Python folders — while your settings and sessions in <code>%APPDATA%\\LiveAudio</code> are preserved.",
       },
       {
         type: "heading",
@@ -994,12 +914,12 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "heading",
-        id: "no-module-torch",
-        text: "No module named 'torch'",
+        id: "legacy-process-still-running",
+        text: "Installer reports a running copy",
       },
       {
         type: "prose",
-        html: "<strong>Installer:</strong> run the launcher with <code>--reinstall</code>. <strong>Developers:</strong> run <code>uv sync --extra cpu</code> (or <code>--extra cu121</code>), then <code>uv run liveaudio</code>.",
+        html: "Close every LiveAudio window first — the v1.5.0 installer stops leftover Python-era processes automatically, but stop a transcription in progress from the app (<strong>Stop Transcription</strong>) before upgrading.",
       },
       {
         type: "heading",
@@ -1018,7 +938,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       {
         type: "callout",
         flag: "not code-signed",
-        html: "The installer is not code-signed, so SmartScreen may warn. Choose <strong>More info &rarr; Run anyway</strong>, and verify your download against <code>SHA256SUMS.txt</code>.",
+        html: `The installer is not code-signed yet, so SmartScreen may warn. Choose <strong>More info &rarr; Run anyway</strong>. The exact files and hashes are published on the <a href="${REPO}/releases/tag/v1.5.0" target="_blank" rel="noopener noreferrer">v1.5.0 release page</a>.`,
       },
       {
         type: "heading",
@@ -1027,31 +947,31 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Issues during the first-run bootstrap (or an interrupted CUDA download) are recoverable without reinstalling from scratch:",
+        html: "Most install problems are fixed by re-running the installer — it repairs the app and preserves your settings and sessions:",
       },
       {
         type: "table",
         head: ["Problem", "What to do"],
         rows: [
           [
-            "Interrupted download (big CUDA install)",
-            "Just re-run the launcher. <code>uv</code> caches per-wheel, so completed wheels are not re-downloaded; the source zip is re-fetched and checksum-verified.",
+            "Interrupted model download",
+            "Just relaunch the app. Downloaded models are cached, so only the missing pieces are fetched again.",
           ],
           [
-            "“SHA256 mismatch”",
-            "The download was corrupted or tampered with. The launcher retries automatically (3 attempts with backoff). Persistent failures usually mean a proxy or antivirus is rewriting downloads; verify against <code>SHA256SUMS.txt</code>.",
+            "Installer warns about a running copy",
+            "Close every LiveAudio window (stop transcription first), then run the installer again.",
           ],
           [
-            "Corrupted / half-broken install",
-            "Run the launcher with <code>--reinstall</code> — it wipes <code>app/</code> and <code>.venv</code>, keeps your device preference, and bootstraps fresh.",
+            "Corrupted install",
+            "Re-run <code>LiveAudio_1.5.0_x64-setup.exe</code> — it repairs the install and keeps <code>%APPDATA%\\LiveAudio</code> intact.",
           ],
           [
-            "Wrong backend installed",
-            "Re-run with <code>--device cpu</code> or <code>--device cuda</code>; the launcher re-syncs and persists the choice.",
+            "Coming from the Python version",
+            "The installer removes legacy v1.0.0–v1.2.7 builds automatically and preserves your settings.",
           ],
           [
             "Where are the logs?",
-            "<code>bootstrap.log</code> in the install root (<code>%LOCALAPPDATA%\\LiveAudio</code> on Windows, <code>~/.local/share/liveaudio</code> on Linux, or <code>data/</code> next to the launcher in portable mode). The error dialog also has an <strong>“Open log”</strong> button.",
+            "The in-app <strong>Event Log</strong> records the service lifecycle, config changes and diagnostics.",
           ],
         ],
       },
@@ -1088,7 +1008,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
     navLabel: "config",
     metaTitle: "LiveAudio docs — Configuration",
     metaDescription:
-      "The LiveAudio config.json reference: file locations on Windows and Linux, the LIVEAUDIO_HOME override, every option key with its type, and a full example.",
+      "The LiveAudio config.json reference: file location on Windows, every option key with its type, and a full example.",
     eyebrow: "// docs / config",
     h1: "Configuration",
     lede:
@@ -1101,36 +1021,24 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Where <code>config.json</code> lives depends on whether you run the installer build or a source checkout.",
+        html: "v1.5.0 keeps your settings and sessions under <code>%APPDATA%\\LiveAudio</code> on Windows — the installer preserves this folder when it removes legacy Python builds.",
       },
       {
         type: "table",
-        head: ["Installer build", "Path"],
+        head: ["Build", "Path"],
         rows: [
-          ["Windows", "<code>%LOCALAPPDATA%\\LiveAudio\\data</code>"],
-          ["Linux", "<code>~/.local/share/liveaudio/data</code>"],
+          ["Windows x64 (v1.5.0, Rust)", "<code>%APPDATA%\\LiveAudio</code>"],
+          ["Linux (legacy Python v1.2.7)", "<code>~/.local/share/liveaudio/data</code>"],
         ],
-      },
-      {
-        type: "table",
-        head: ["Source / dev", "Path"],
-        rows: [
-          ["Windows", "<code>%APPDATA%\\LiveAudio</code>"],
-          ["Linux", "<code>~/.config/liveaudio</code>"],
-        ],
-      },
-      {
-        type: "prose",
-        html: "With the launcher, the data home is <code>&lt;root&gt;/data</code> unless you set <code>LIVEAUDIO_HOME</code> to point somewhere else. When the app runs <strong>without</strong> the launcher (a dev checkout), it defaults to <code>%APPDATA%\\LiveAudio</code> / <code>~/.config/liveaudio</code>, and a legacy <code>config.json</code> left in the current working directory is migrated automatically on first load.",
       },
       {
         type: "callout",
-        flag: "advanced",
-        html: "<code>LIVEAUDIO_INSTALL_ROOT</code> overrides the whole install root (intended for testing and automation). For day-to-day relocation, prefer <code>LIVEAUDIO_HOME</code>, which only moves the data home.",
+        flag: "migration",
+        html: "Upgrading from v1.0.0–v1.2.7? The installer migrates this folder automatically — your <code>config.json</code> and <code>sessions/</code> survive the move to Rust.",
       },
       {
         type: "prose",
-        html: "<strong>Portable mode:</strong> create an empty <code>portable.marker</code> file next to the launcher and the root becomes <code>&lt;launcher dir&gt;/data</code>, so config, sessions and models all stay beside the app instead of in the per-user locations above. In this mode <code>HF_HOME</code> is also redirected into the portable folder, so downloaded Whisper models live on the same drive — ideal for a USB stick.",
+        html: "<strong>Portable:</strong> prefer no install? Run <code>liveaudio-desktop.exe</code> (~15.6 MB) — the standalone Windows build needs no setup.",
       },
       {
         type: "heading",
@@ -1269,11 +1177,11 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
     navLabel: "introducción",
     metaTitle: "Docs de LiveAudio — Introducción",
     metaDescription:
-      "Qué es LiveAudio y qué necesita: una app gratuita y de código abierto (MIT) que genera subtítulos Whisper en tiempo real 100% en tu equipo y los envía a OBS por un WebSocket local. Windows y Linux; GPU opcional.",
+      "Qué es LiveAudio y qué necesita: una app gratuita y de código abierto (MIT) que genera subtítulos Whisper en tiempo real 100% en tu equipo y los envía a OBS por un WebSocket local. Build nativa Rust + Tauri 2 para Windows x64; GPU opcional.",
     eyebrow: "// docs / introducción",
     h1: "Documentación de LiveAudio",
     lede:
-      "LiveAudio es una app de escritorio gratuita y de código abierto (MIT) que genera subtítulos de voz Whisper en tiempo real 100% en tu equipo y los envía a OBS por un WebSocket local. Funciona en Windows y Linux: sin nube, sin API key, sin costo por minuto.",
+      "LiveAudio es una app de escritorio gratuita y de código abierto (MIT) que genera subtítulos de voz Whisper en tiempo real 100% en tu equipo y los envía a OBS por un WebSocket local. La v1.5.0 corre en Windows x64 como build nativa Rust + Tauri 2: sin nube, sin API key, sin costo por minuto.",
     blocks: [
       {
         type: "heading",
@@ -1282,13 +1190,13 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "<strong>Plynte LiveAudio</strong> es un motor de reconocimiento de voz local-first para streamers y creadores. Transcribe con <strong>Whisper</strong> (<code>tiny</code>, <code>base</code>, <code>small</code>, <code>turbo</code>), recorta silencios con <strong>Silero VAD</strong> y emite los subtítulos en JSON por un WebSocket local para que OBS — o cualquier cliente en localhost — muestre los subtítulos en vivo.",
+        html: "<strong>Plynte LiveAudio</strong> es un motor de reconocimiento de voz local-first para streamers y creadores. Transcribe con <strong>Whisper</strong> (<code>tiny</code>, <code>base</code>, <code>small</code>, <code>turbo</code>), recorta silencios con <strong>Silero VAD</strong> y emite los subtítulos en JSON por un WebSocket local para que OBS — o cualquier cliente en localhost — muestre los subtítulos en vivo. La v1.5.0 es una app de escritorio nativa <strong>Rust + Tauri 2</strong>: arranque más rápido, menos RAM y sin runtime de Python.",
       },
       {
         type: "list",
         items: [
           "<strong>Procesamiento local.</strong> Ningún audio ni texto transcrito sale de tu equipo. Sin telemetría.",
-          "<strong>Aislamiento de procesos.</strong> Procesos de trabajo separados mantienen estable la captura y la transcripción bajo carga.",
+          "<strong>Núcleo con memoria segura.</strong> El motor de transcripción está escrito en Rust, así que clases enteras de errores de memoria quedan descartadas en compilación.",
           "<strong>Hot-swap.</strong> Cambia el dispositivo de audio o el tamaño del modelo sin reiniciar la app.",
         ],
       },
@@ -1303,7 +1211,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
         rows: [
           [
             "Sistema operativo",
-            "Windows 10/11 x64 o Linux x86_64. <strong>Sin macOS.</strong>",
+            "Windows 10/11 x64. <strong>Sin macOS.</strong> Linux: tarball heredado Python v1.2.7.",
           ],
           [
             "GPU",
@@ -1312,22 +1220,22 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
           ["RAM", "8 GB mínimo, 16 GB recomendados."],
           [
             "Disco",
-            "~400 MB (CPU) / ~2.5 GB (CUDA) para app + dependencias, más el almacenamiento de modelos.",
+            "Instalador ~23.9 MB (portable ~15.6 MB), más el almacenamiento de modelos de transcripción.",
           ],
           [
-            "Python",
-            "No es necesario para los usuarios — el instalador aprovisiona su propio Python 3.11.",
+            "Runtime",
+            "Ninguno — la v1.5.0 es un binario nativo. Sin runtime de Python.",
           ],
           [
             "Internet",
-            "Solo en la primera ejecución (descarga Python, dependencias y modelos). Después funciona sin conexión.",
+            "Solo en la primera ejecución (descarga los modelos de transcripción). Después funciona sin conexión.",
           ],
         ],
       },
       {
         type: "callout",
         flag: "primera ejecución: internet",
-        html: "Solo la primera ejecución necesita conexión, para descargar Python, dependencias y modelos (Silero VAD ~2 MB; Whisper <code>tiny</code> ~150 MB / <code>base</code> ~300 MB / <code>small</code> ~480 MB / <code>turbo</code> ~1.5 GB). Cada ejecución posterior es 100% offline.",
+        html: "Solo la primera ejecución necesita conexión, para descargar los modelos de transcripción (Silero VAD ~2 MB; Whisper <code>tiny</code> ~150 MB / <code>base</code> ~300 MB / <code>small</code> ~480 MB / <code>turbo</code> ~1.5 GB). Cada ejecución posterior es 100% offline.",
       },
       {
         type: "heading",
@@ -1336,67 +1244,51 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "LiveAudio captura desde un <strong>micrófono físico</strong> en ambas plataformas. En Windows también puede capturar el <strong>audio del sistema</strong> mediante WASAPI loopback.",
+        html: "LiveAudio captura desde un <strong>micrófono físico</strong>. En Windows también puede capturar el <strong>audio del sistema</strong> mediante WASAPI loopback.",
       },
       {
         type: "callout",
         flag: "solo Windows",
-        html: "<strong>El loopback de audio del sistema (WASAPI) es solo de Windows.</strong> En Linux, LiveAudio captura desde el micrófono; instala <code>libportaudio2</code> primero (<code>sudo apt install libportaudio2</code>).",
+        html: "<strong>El loopback de audio del sistema (WASAPI) es solo de Windows.</strong> La v1.5.0 se enfoca en Windows x64; en la versión heredada Linux v1.2.7, captura desde el micrófono e instala <code>libportaudio2</code> primero (<code>sudo apt install libportaudio2</code>).",
       },
       {
         type: "heading",
         id: "como-se-instala",
-        text: "Cómo se instala (bootstrap)",
+        text: "Cómo se instala (build nativa)",
       },
       {
         type: "prose",
-        html: "Lo que descargas es un pequeño launcher bootstrapper — un ejecutable PyInstaller, no un paquete de varios gigabytes. En la primera ejecución aprovisiona todo lo demás: resuelve la raíz de instalación, detecta tu hardware para elegir un extra de torch, descarga un zip de código verificado por checksum, asegura <code>uv</code>, ejecuta <code>uv sync</code> (que además trae un CPython 3.11 gestionado), escribe <code>installed.json</code> y abre la app.",
+        html: "Lo que descargas es la app completa — un binario nativo Rust + Tauri 2, no un bootstrapper. El instalador de Windows (<code>LiveAudio_1.5.0_x64-setup.exe</code>, ~23.9 MB) instala la app de escritorio directamente: sin runtime de Python, sin provisión de dependencias. En la primera transcripción descarga solo los modelos, y después funciona sin conexión.",
       },
       {
         type: "code",
-        label: "first-run bootstrap",
-        code: BOOTSTRAP_FLOW,
+        label: "native install flow",
+        code: NATIVE_INSTALL_FLOW,
       },
       {
         type: "prose",
-        html: "En ejecuciones posteriores <code>installed.json</code> ya coincide con la versión objetivo del launcher, así que toma el camino rápido y abre la app instalada directamente. En Windows queda un breve splash <strong>“Starting LiveAudio…”</strong> hasta que aparece la ventana de la app — la app importa <code>torch</code> a nivel de módulo, por lo que un arranque en frío puede tardar 60+ segundos sin interfaz propia.",
+        html: "Tu configuración y sesiones viven en <code>%APPDATA%\\LiveAudio</code> y sobreviven a las actualizaciones. ¿Vienes de una versión Python (v1.0.0–v1.2.7)? El instalador la elimina en silencio primero — tus datos se conservan.",
       },
       {
         type: "heading",
-        id: "estructura-de-instalacion",
-        text: "Estructura de instalación",
+        id: "donde-viven-tus-datos",
+        text: "Dónde viven tus datos",
       },
       {
         type: "prose",
-        html: "Todo vive bajo una sola raíz de instalación — el código, el entorno virtual, el Python gestionado y tus datos:",
+        html: "La v1.5.0 guarda tus datos en un solo lugar — sin entornos virtuales, sin Python gestionado:",
       },
       {
         type: "table",
         head: ["Ubicación", "Contenido"],
         rows: [
           [
-            "<code>&lt;root&gt;/app/</code>",
-            "Código de la aplicación (<code>pyproject.toml</code>, <code>uv.lock</code>, <code>liveaudio/</code>).",
+            "<code>%APPDATA%\\LiveAudio</code>",
+            "Tu configuración (<code>config.json</code>) y <code>sessions/</code> — se conservan entre instalaciones y en la migración de Python a Rust.",
           ],
           [
-            "<code>&lt;root&gt;/app/.venv/</code>",
-            "Entorno virtual creado por <code>uv sync</code>.",
-          ],
-          [
-            "<code>&lt;root&gt;/python/</code>",
-            "CPython 3.11 gestionado por uv.",
-          ],
-          [
-            "<code>&lt;root&gt;/installed.json</code>",
-            "<code>{app_version, extra, python, uv_version}</code> — marca la instalación como completa.",
-          ],
-          [
-            "<code>&lt;root&gt;/bootstrap.log</code>",
-            "Log completo del launcher + uv de cada ejecución.",
-          ],
-          [
-            "<code>&lt;root&gt;/data/</code>",
-            "Home de datos (<code>LIVEAUDIO_HOME</code>): <code>config.json</code>, <code>sessions/</code>.",
+            "Instalaciones Python heredadas (v1.0.0–v1.2.7)",
+            "Detectadas vía el registro de Windows y eliminadas en silencio por el instalador v1.5.0.",
           ],
         ],
       },
@@ -1407,14 +1299,13 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "El launcher elige entre los extras <code>cpu</code> y <code>cu121</code> con una escalera de “primera coincidencia gana”:",
+        html: "La app elige entre <code>cuda</code> y <code>cpu</code> con una escalera de “primera coincidencia gana”:",
       },
       {
         type: "list",
         items: [
-          "Un flag <code>--device cpu|cuda</code>, si lo pasaste (se persiste en <code>installed.json</code>).",
-          "Si no, la preferencia persistida (<code>extra</code> en <code>installed.json</code>).",
-          "Si no, NVML + <code>nvidia-smi</code>: si el driver es <code>&ge; 525</code> y la VRAM es <code>&ge; 4096 MiB</code> &rarr; <code>cu121</code>.",
+          "Tu elección explícita en la pestaña <strong>Avanzado</strong> (selector de dispositivo de cómputo) — elegir CUDA atenúa el control de hilos de CPU porque la inferencia corre en la GPU.",
+          "Si no, NVML + <code>nvidia-smi</code>: si el driver es <code>&ge; 525</code> y la VRAM es <code>&ge; 4096 MiB</code> &rarr; <code>cuda</code>.",
           "Cualquier otro caso (sin NVML, fallo de smi o una GPU por debajo de los requisitos) &rarr; <code>cpu</code>, con un aviso cuando se encontró una GPU pero no calificó.",
         ],
       },
@@ -1425,7 +1316,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "La app consulta la API de GitHub Releases en segundo plano y muestra un botón de actualización cuando hay una versión más nueva. Al pulsarlo, relanza el launcher con <code>--update vX.Y.Z</code>; también puedes ejecutar <code>--update</code> a mano (sin tag significa “la última”). El launcher verifica el SHA256 del zip de código, preserva el <code>.venv</code> existente y vuelve a correr <code>uv sync --locked</code>. Como <code>uv</code> solo descarga lo que cambió y las ruedas de torch quedan en caché, una actualización típica transfiere unos pocos MB en vez de gigabytes. Si la versión instalada ya coincide, informa “already up to date” y sale.",
+        html: `Actualiza con un clic desde la app. Las versiones nuevas — instalador, portable, changelog y hashes — se publican en <a href="${REPO}/releases/latest" target="_blank" rel="noopener noreferrer">GitHub Releases</a>. Tu configuración y sesiones en <code>%APPDATA%\\LiveAudio</code> se conservan.`,
       },
     ],
   },
@@ -1435,11 +1326,11 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
     navLabel: "primeros-pasos",
     metaTitle: "Docs de LiveAudio — Primeros pasos",
     metaDescription:
-      "Instala y ejecuta LiveAudio: el instalador para Windows/Linux o el camino desde el código con uv, la detección automática de GPU en la primera ejecución, los perfiles, la blacklist de alucinaciones verbatim y los archivos de sesión.",
+      "Instala y ejecuta LiveAudio v1.5.0 en Windows x64: el instalador nativo o el portable, la migración automática desde Python, la detección automática de GPU en la primera ejecución, los perfiles, la blacklist de alucinaciones verbatim y los archivos de sesión.",
     eyebrow: "// docs / primeros-pasos",
     h1: "Primeros pasos",
     lede:
-      "Dos maneras de ejecutar LiveAudio: el instalador prearmado (recomendado) o desde el código con uv. No necesitas Python instalado — el instalador aprovisiona su propio Python 3.11.",
+      "Dos maneras de ejecutar LiveAudio v1.5.0 en Windows: el instalador prearmado (recomendado) o el portable standalone. Sin Python instalado, sin runtime por provisionar — la app es un binario nativo.",
     blocks: [
       {
         type: "heading",
@@ -1453,18 +1344,19 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       {
         type: "list",
         items: [
-          "<strong>Windows:</strong> <code>LiveAudio-Setup-1.2.7.exe</code> (instalador gráfico).",
-          "<strong>Linux:</strong> <code>LiveAudio-1.2.7-linux-x64.tar.gz</code> — extrae y ejecuta <code>./liveaudio-launcher</code>.",
+          "<strong>Windows x64:</strong> <code>LiveAudio_1.5.0_x64-setup.exe</code> (instalador gráfico, ~23.9 MB).",
+          "<strong>Windows portable:</strong> <code>liveaudio-desktop.exe</code> (~15.6 MB) — standalone, sin instalación.",
+          "<strong>Linux:</strong> <code>LiveAudio-1.2.7-linux-x64.tar.gz</code> heredado — extrae y ejecuta <code>./liveaudio-launcher</code>.",
         ],
       },
       {
         type: "prose",
-        html: "La <strong>primera ejecución</strong> descarga Python y todas las dependencias (~400 MB en CPU, ~2.5 GB con CUDA) y detecta tu GPU automáticamente. Las ejecuciones siguientes arrancan al instante.",
+        html: "La <strong>primera ejecución</strong> descarga los modelos de transcripción y detecta tu GPU automáticamente. Las ejecuciones siguientes arrancan al instante. ¿Vienes de v1.0.0–v1.2.7? El instalador elimina la versión Python heredada en silencio y conserva tu configuración en <code>%APPDATA%\\LiveAudio</code>.",
       },
       {
         type: "callout",
-        flag: "necesita libportaudio2",
-        html: "En Linux, instala el runtime de PortAudio antes de iniciar: <code>sudo apt install libportaudio2</code>.",
+        flag: "linux heredado",
+        html: "En la versión heredada de Linux, instala el runtime de PortAudio antes de iniciar: <code>sudo apt install libportaudio2</code>.",
       },
       {
         type: "heading",
@@ -1473,12 +1365,12 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Requiere <a href=\"https://docs.astral.sh/uv/\" target=\"_blank\" rel=\"noopener noreferrer\">uv</a>. Elige exactamente un extra de torch — <code>cpu</code> o <code>cu121</code>.",
+        html: "Camino de desarrollador — clona el repositorio y sigue las instrucciones de compilación del README (toolchain de Rust + prerrequisitos de Tauri 2).",
       },
       {
         type: "code",
         label: "bash",
-        code: UV_QUICKSTART_ES,
+        code: SOURCE_CLONE_ES,
       },
       {
         type: "heading",
@@ -1487,55 +1379,16 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "<strong>Usuarios del instalador:</strong> ejecuta el launcher con <code>--self-test</code> — imprime el dispositivo detectado, las rutas resueltas y el estado de uv, y luego sale sin abrir la GUI. <strong>Desarrolladores:</strong> confirma que las librerías principales importan:",
-      },
-      {
-        type: "code",
-        label: "bash",
-        code: VERIFY_INSTALL,
+        html: "Abre la app — la cabecera muestra el estado en vivo (escuchando / estado VAD) y la pestaña <strong>Avanzado</strong> muestra el dispositivo de cómputo activo (CUDA o CPU). Habla, y los subtítulos aparecen en el feed en vivo y se envían a OBS.",
       },
       {
         type: "heading",
-        id: "cli-del-launcher",
-        text: "CLI del launcher",
+        id: "actualizaciones-recuperacion",
+        text: "Actualizaciones y recuperación",
       },
       {
         type: "prose",
-        html: "El launcher es la vía principal para forzar un backend, actualizar, autodiagnosticar o recuperar una instalación. Pasa estos flags al ejecutable del launcher (o, en desarrollo, a <code>uv run liveaudio</code> donde aplique):",
-      },
-      {
-        type: "table",
-        head: ["Flag", "Qué hace"],
-        rows: [
-          [
-            "<code>--device cpu|cuda</code>",
-            "Anula la autodetección de GPU; la elección se persiste en <code>installed.json</code> y re-sincroniza el extra de torch correspondiente.",
-          ],
-          [
-            "<code>--update [vX.Y.Z]</code>",
-            "Actualiza a un tag, o a la última versión si no se da tag. Informa “already up to date” si ya está al día.",
-          ],
-          [
-            "<code>--self-test</code>",
-            "Imprime el dispositivo detectado, las rutas resueltas y el estado de uv, y sale.",
-          ],
-          [
-            "<code>--reinstall</code>",
-            "Borra <code>app/</code> y <code>.venv</code>, mantiene la preferencia de dispositivo y reinstala desde cero.",
-          ],
-          [
-            "<code>--headless</code>",
-            "Progreso por stdout sin GUI; se usa automáticamente cuando tkinter no está disponible (servidores, CI).",
-          ],
-          [
-            "<code>--src-dir PATH</code>",
-            "Modo desarrollo: instala desde un checkout local en vez de un zip de release.",
-          ],
-          [
-            "<code>--install-desktop-entry</code>",
-            "Solo Linux — agrega una entrada al menú de aplicaciones.",
-          ],
-        ],
+        html: "La v1.5.0 configura todo desde la GUI — la pestaña <strong>Avanzado</strong> elige el dispositivo de cómputo (CUDA/CPU) y el modelo sin reiniciar. Las <strong>actualizaciones</strong> llegan en un clic desde la app. Si una instalación se rompe, vuelve a ejecutar <code>LiveAudio_1.5.0_x64-setup.exe</code>: repara la instalación y conserva tu configuración y sesiones en <code>%APPDATA%\\LiveAudio</code>.",
       },
       {
         type: "heading",
@@ -1912,11 +1765,11 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
     navLabel: "solución-de-problemas",
     metaTitle: "Docs de LiveAudio — Solución de problemas",
     metaDescription:
-      "Soluciones a los problemas más comunes de LiveAudio: sin subtítulos, CUDA sin memoria, OBS que no conecta en el puerto 8765, torch faltante, audio que se corta — más la exportación de diagnóstico local-first.",
+      "Soluciones a los problemas más comunes de LiveAudio: sin subtítulos, CUDA sin memoria, OBS que no conecta en el puerto 8765, actualización desde la versión Python, audio que se corta — más la exportación de diagnóstico local-first.",
     eyebrow: "// docs / solución-de-problemas",
     h1: "Solución de problemas",
     lede:
-      "Soluciones de raíz para los problemas de configuración más comunes — captura, CUDA, la conexión WebSocket y errores de dependencias — seguidas de la exportación de diagnóstico local-first.",
+      "Soluciones de raíz para los problemas de configuración más comunes — captura, CUDA, la conexión WebSocket y actualizaciones desde Python — seguidas de la exportación de diagnóstico local-first.",
     blocks: [
       {
         type: "heading",
@@ -1943,12 +1796,12 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "heading",
-        id: "cublas-no-encontrado",
-        text: "“cublas64_12.dll not found” (CUDA)",
+        id: "actualizar-desde-python",
+        text: "Actualizar desde la versión Python (v1.0.0–v1.2.7)",
       },
       {
         type: "prose",
-        html: "Es un problema de resolución de DLLs, no una instalación faltante. El extra <code>cu121</code> trae <code>torch</code>/<code>torchaudio</code> desde <code>download.pytorch.org/whl/cu121</code> (y <code>cpu</code> desde <code>/whl/cpu</code>); debe seleccionarse exactamente un extra. En Windows, ctranslate2 — el backend de faster-whisper — carga <code>cublas64_12.dll</code> y cuDNN 9 vía el <code>PATH</code> del sistema, no los directorios de DLL de Python, por eso LiveAudio antepone <code>torch/lib</code> al <code>PATH</code> al iniciar (<code>liveaudio/utils/dllpath.py</code>). Si ejecutas desde un entorno propio y aparece este error, asegúrate de que las ruedas de torch CUDA estén instaladas y que <code>torch/lib</code> sea accesible. El stack cu121 fija <code>torch&gt;=2.4,&lt;2.6</code> (allí no se publican ruedas 2.6, y <code>&ge; 2.4</code> trae el cuDNN 9 contra el que enlaza ctranslate2). El driver mínimo es 525.",
+        html: "La v1.5.0 reemplaza las versiones Python con una app nativa Rust + Tauri 2. El instalador detecta instalaciones heredadas vía el registro de Windows (vistas de 32 y 64 bits), ejecuta el desinstalador viejo en silencio (NSIS e Inno Setup), detiene procesos restantes y elimina las carpetas Python obsoletas — mientras tu configuración y sesiones en <code>%APPDATA%\\LiveAudio</code> se conservan.",
       },
       {
         type: "heading",
@@ -1961,12 +1814,12 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "heading",
-        id: "torch-faltante",
-        text: "No module named 'torch'",
+        id: "instalador-informa-copia-en-ejecucion",
+        text: "El instalador informa una copia en ejecución",
       },
       {
         type: "prose",
-        html: "<strong>Instalador:</strong> ejecuta el launcher con <code>--reinstall</code>. <strong>Desarrolladores:</strong> ejecuta <code>uv sync --extra cpu</code> (o <code>--extra cu121</code>) y luego <code>uv run liveaudio</code>.",
+        html: "Cierra todas las ventanas de LiveAudio primero — el instalador v1.5.0 detiene automáticamente los procesos restantes de la era Python, pero conviene detener una transcripción en curso desde la app (<strong>Detener Transcripción</strong>) antes de actualizar.",
       },
       {
         type: "heading",
@@ -1985,7 +1838,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       {
         type: "callout",
         flag: "sin firma de código",
-        html: "El instalador no está firmado, así que SmartScreen puede avisar. Elige <strong>Más información &rarr; Ejecutar de todas formas</strong> y verifica tu descarga contra <code>SHA256SUMS.txt</code>.",
+        html: `El instalador aún no está firmado, así que SmartScreen puede avisar. Elige <strong>Más información &rarr; Ejecutar de todas formas</strong>. Los archivos exactos y sus hashes están publicados en la <a href="${REPO}/releases/tag/v1.5.0" target="_blank" rel="noopener noreferrer">página del release v1.5.0</a>.`,
       },
       {
         type: "heading",
@@ -1994,31 +1847,31 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Los problemas durante el bootstrap de la primera ejecución (o una descarga CUDA interrumpida) se recuperan sin reinstalar desde cero:",
+        html: "La mayoría de los problemas de instalación se arreglan volviendo a ejecutar el instalador — repara la app y conserva tu configuración y sesiones:",
       },
       {
         type: "table",
         head: ["Problema", "Qué hacer"],
         rows: [
           [
-            "Descarga interrumpida (instalación CUDA grande)",
-            "Simplemente vuelve a ejecutar el launcher. <code>uv</code> cachea por rueda, así que las ruedas completas no se vuelven a descargar; el zip de código se re-baja y se verifica por checksum.",
+            "Descarga de modelos interrumpida",
+            "Simplemente vuelve a abrir la app. Los modelos descargados quedan en caché, así que solo se baja lo que falte.",
           ],
           [
-            "“SHA256 mismatch”",
-            "La descarga se corrompió o fue manipulada. El launcher reintenta solo (3 intentos con backoff). Los fallos persistentes suelen ser un proxy o antivirus reescribiendo descargas; verifica contra <code>SHA256SUMS.txt</code>.",
+            "El instalador avisa de una copia en ejecución",
+            "Cierra todas las ventanas de LiveAudio (detén la transcripción primero) y vuelve a ejecutar el instalador.",
           ],
           [
-            "Instalación corrupta / a medias",
-            "Ejecuta el launcher con <code>--reinstall</code> — borra <code>app/</code> y <code>.venv</code>, mantiene tu preferencia de dispositivo y reinstala desde cero.",
+            "Instalación corrupta",
+            "Vuelve a ejecutar <code>LiveAudio_1.5.0_x64-setup.exe</code> — repara la instalación y mantiene <code>%APPDATA%\\LiveAudio</code> intacto.",
           ],
           [
-            "Backend equivocado instalado",
-            "Vuelve a ejecutar con <code>--device cpu</code> o <code>--device cuda</code>; el launcher re-sincroniza y persiste la elección.",
+            "Vienes de la versión Python",
+            "El instalador elimina las versiones heredadas v1.0.0–v1.2.7 automáticamente y conserva tu configuración.",
           ],
           [
             "¿Dónde están los logs?",
-            "<code>bootstrap.log</code> en la raíz de instalación (<code>%LOCALAPPDATA%\\LiveAudio</code> en Windows, <code>~/.local/share/liveaudio</code> en Linux, o <code>data/</code> junto al launcher en modo portable). El diálogo de error también tiene un botón <strong>“Open log”</strong>.",
+            "El <strong>Registro de Eventos</strong> dentro de la app registra el ciclo de vida del servicio, los cambios de configuración y el diagnóstico.",
           ],
         ],
       },
@@ -2055,7 +1908,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
     navLabel: "configuración",
     metaTitle: "Docs de LiveAudio — Configuración",
     metaDescription:
-      "Referencia de config.json de LiveAudio: ubicación del archivo en Windows y Linux, el override LIVEAUDIO_HOME, cada clave de opción con su tipo y un ejemplo completo.",
+      "Referencia de config.json de LiveAudio: ubicación del archivo en Windows, cada clave de opción con su tipo y un ejemplo completo.",
     eyebrow: "// docs / configuración",
     h1: "Configuración",
     lede:
@@ -2068,36 +1921,24 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Dónde vive <code>config.json</code> depende de si ejecutas la build del instalador o un checkout del código.",
+        html: "La v1.5.0 guarda tu configuración y sesiones en <code>%APPDATA%\\LiveAudio</code> en Windows — el instalador conserva esta carpeta cuando elimina las versiones Python heredadas.",
       },
       {
         type: "table",
-        head: ["Build del instalador", "Ruta"],
+        head: ["Build", "Ruta"],
         rows: [
-          ["Windows", "<code>%LOCALAPPDATA%\\LiveAudio\\data</code>"],
-          ["Linux", "<code>~/.local/share/liveaudio/data</code>"],
+          ["Windows x64 (v1.5.0, Rust)", "<code>%APPDATA%\\LiveAudio</code>"],
+          ["Linux (heredado Python v1.2.7)", "<code>~/.local/share/liveaudio/data</code>"],
         ],
-      },
-      {
-        type: "table",
-        head: ["Código / dev", "Ruta"],
-        rows: [
-          ["Windows", "<code>%APPDATA%\\LiveAudio</code>"],
-          ["Linux", "<code>~/.config/liveaudio</code>"],
-        ],
-      },
-      {
-        type: "prose",
-        html: "Con el launcher, el home de datos es <code>&lt;root&gt;/data</code> salvo que apuntes <code>LIVEAUDIO_HOME</code> a otro lugar. Cuando la app corre <strong>sin</strong> el launcher (un checkout de desarrollo), usa por defecto <code>%APPDATA%\\LiveAudio</code> / <code>~/.config/liveaudio</code>, y un <code>config.json</code> heredado que haya quedado en el directorio de trabajo se migra automáticamente en la primera carga.",
       },
       {
         type: "callout",
-        flag: "avanzado",
-        html: "<code>LIVEAUDIO_INSTALL_ROOT</code> anula la raíz de instalación completa (pensado para testing y automatización). Para reubicación diaria, prefiere <code>LIVEAUDIO_HOME</code>, que solo mueve el home de datos.",
+        flag: "migración",
+        html: "¿Actualizas desde v1.0.0–v1.2.7? El instalador migra esta carpeta automáticamente — tu <code>config.json</code> y <code>sessions/</code> sobreviven el paso a Rust.",
       },
       {
         type: "prose",
-        html: "<strong>Modo portable:</strong> crea un archivo <code>portable.marker</code> vacío junto al launcher y la raíz pasa a ser <code>&lt;launcher dir&gt;/data</code>, de modo que configuración, sesiones y modelos quedan al lado de la app en vez de en las ubicaciones por usuario de arriba. En este modo también se redirige <code>HF_HOME</code> dentro de la carpeta portable, así los modelos de Whisper descargados viven en el mismo disco — ideal para un pendrive.",
+        html: "<strong>Portable:</strong> ¿prefieres no instalar? Ejecuta <code>liveaudio-desktop.exe</code> (~15.6 MB) — la versión standalone de Windows no necesita instalación.",
       },
       {
         type: "heading",

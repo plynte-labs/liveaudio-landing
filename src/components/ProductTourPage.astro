@@ -8,7 +8,11 @@ interface Props { lang?: Locale; }
 const { lang = "en" } = Astro.props;
 const copy = productTourCopy(lang);
 const media = "/media/liveaudio-v1.2.5";
+const rustMedia = "/media/liveaudio-v1.5.0";
+// Drop the v1.5.0 screenshot at public/media/liveaudio-v1.5.0/v1-5-0-avanzado.webp
+// (1920×1080 WebP recorte de la pestaña Avanzado: feed en vivo + RNNoise).
 const imageById = {
+  rust: { src: `${rustMedia}/v1-5-0-avanzado.webp`, width: 1917, height: 1013 },
   live: { src: `${media}/live-panel-caption-output.webp`, width: 1477, height: 368 },
   "first-run": { src: `${media}/setup-initial-screen.webp`, width: 973, height: 602 },
   workspace: { src: `${media}/workspace-live-panel-and-settings.webp`, width: 1916, height: 982 },

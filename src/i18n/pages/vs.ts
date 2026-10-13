@@ -6,7 +6,8 @@
  *   - 100% local / no telemetry.
  *   - Cost $0 (electricity only) vs cloud ASR ~$0.006/min (= ~$0.36/hr,
  *     OpenAI Whisper API).
- *   - Platforms Windows + Linux (loopback Windows-only -> conditional ◐).
+ *   - Platforms: Windows x64 native (v1.5.0 Rust) with legacy Linux v1.2.7
+ *     fallback (loopback Windows-only -> conditional ◐).
  *   - OBS integration via WebSocket Browser Source (subtitulos_obs.html).
  *   - Open-source MIT.
  *   - GPU optional (CPU works).
@@ -78,17 +79,17 @@ export interface VsCopy {
 const en: VsCopy = {
   title: "LiveAudio vs OBS plugins, browser tools & cloud ASR",
   description:
-    "Fact-based comparison: LiveAudio runs Whisper captions 100% locally, free under MIT, on Windows and Linux, and streams to OBS over a local WebSocket — versus OBS caption plugins, browser-source tools and paid cloud ASR APIs.",
+    "Fact-based comparison: LiveAudio runs Whisper captions 100% locally, free under MIT, on Windows x64 (Rust + Tauri 2), and streams to OBS over a local WebSocket — versus OBS caption plugins, browser-source tools and paid cloud ASR APIs.",
   eyebrow: "// vs",
   heading: "Local, free, and yours — versus everything else.",
   intro:
     "LiveAudio generates real-time Whisper captions 100% on your own machine and broadcasts them to OBS over a local WebSocket. The table below compares it on the facts: cost, platforms, OBS integration, license, privacy and hardware. No spin — every cell is a capability statement.",
-  tableCaption: "// capability comparison · v1.2.7",
+  tableCaption: "// capability comparison · v1.5.0",
   tableSummary:
     "Capability comparison across LiveAudio, OBS caption plugins, browser-source caption tools and cloud ASR APIs. Rows: local processing, cost, platforms, OBS integration, open-source license, privacy, and GPU requirement.",
   featureHeader: "capability",
   columns: [
-    { name: "LiveAudio", example: "v1.2.7 · this app" },
+    { name: "LiveAudio", example: "v1.5.0 · this app" },
     { name: "OBS caption plugins", example: "e.g. LocalVocal" },
     { name: "Browser-source tools", example: "e.g. Caption.Ninja" },
     { name: "Cloud ASR APIs", example: "e.g. OpenAI Whisper API" },
@@ -115,7 +116,7 @@ const en: VsCopy = {
     {
       feature: "Platforms",
       cells: [
-        { state: "yes", note: "Windows + Linux" },
+        { state: "cond", note: "Windows x64 v1.5.0 · Linux legacy", flag: true },
         { state: "cond", note: "depends on host" },
         { state: "yes", note: "any browser" },
         { state: "yes", note: "any with internet" },
@@ -185,23 +186,23 @@ const en: VsCopy = {
   closingHeading: "Local captions, on your terms.",
   closingBody:
     "Free & open-source (MIT). No subscription, no API key. You only pay your own electricity — hardware not included.",
-  download: "Download LiveAudio v1.2.7 (free)",
+  download: "Download LiveAudio v1.5.0 (free)",
 };
 
 const es: VsCopy = {
   title: "LiveAudio frente a plugins de OBS, herramientas web y ASR en la nube",
   description:
-    "Comparativa basada en hechos: LiveAudio genera subtítulos Whisper 100% en tu equipo, gratis con licencia MIT, en Windows y Linux, y los envía a OBS por un WebSocket local — frente a plugins de subtítulos de OBS, herramientas de origen de navegador y APIs de ASR en la nube de pago.",
+    "Comparativa basada en hechos: LiveAudio genera subtítulos Whisper 100% en tu equipo, gratis con licencia MIT, en Windows x64 (Rust + Tauri 2), y los envía a OBS por un WebSocket local — frente a plugins de subtítulos de OBS, herramientas de origen de navegador y APIs de ASR en la nube de pago.",
   eyebrow: "// comparativa",
   heading: "Local, gratis y tuyo — frente a todo lo demás.",
   intro:
     "LiveAudio genera subtítulos Whisper en tiempo real 100% en tu propio equipo y los emite a OBS por un WebSocket local. La tabla siguiente lo compara con datos: costo, plataformas, integración con OBS, licencia, privacidad y hardware. Sin adornos — cada celda es una afirmación de capacidad.",
-  tableCaption: "// comparativa de capacidades · v1.2.7",
+  tableCaption: "// comparativa de capacidades · v1.5.0",
   tableSummary:
     "Comparativa de capacidades entre LiveAudio, plugins de subtítulos de OBS, herramientas de origen de navegador y APIs de ASR en la nube. Filas: procesamiento local, costo, plataformas, integración con OBS, licencia de código abierto, privacidad y requisito de GPU.",
   featureHeader: "capacidad",
   columns: [
-    { name: "LiveAudio", example: "v1.2.7 · esta app" },
+    { name: "LiveAudio", example: "v1.5.0 · esta app" },
     { name: "Plugins de OBS", example: "p. ej. LocalVocal" },
     { name: "Herramientas web", example: "p. ej. Caption.Ninja" },
     { name: "ASR en la nube", example: "p. ej. OpenAI Whisper API" },
@@ -228,7 +229,7 @@ const es: VsCopy = {
     {
       feature: "Plataformas",
       cells: [
-        { state: "yes", note: "Windows + Linux" },
+        { state: "cond", note: "Windows x64 v1.5.0 · Linux heredado", flag: true },
         { state: "cond", note: "según el anfitrión" },
         { state: "yes", note: "cualquier navegador" },
         { state: "yes", note: "cualquiera con internet" },
@@ -298,7 +299,7 @@ const es: VsCopy = {
   closingHeading: "Subtítulos locales, en tus términos.",
   closingBody:
     "Gratis y de código abierto (MIT). Sin suscripción, sin API key. Solo pagas tu propia electricidad — el hardware no está incluido.",
-  download: "Descargar LiveAudio v1.2.7 (gratis)",
+  download: "Descargar LiveAudio v1.5.0 (gratis)",
 };
 
 /** Return the /vs copy bound to a locale (EN default). */

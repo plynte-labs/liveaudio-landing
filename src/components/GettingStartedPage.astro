@@ -5,11 +5,11 @@
  *
  * THE SIGNAL DESK numbered "signal timeline" (per the design system's
  * Pipeline and /getting-started/ layout): the EARNED, real activation sequence for
- * LiveAudio v1.2.0, on a single vertical emerald spine. Numbering is honest —
+ * LiveAudio v1.5.0, on a single vertical emerald spine. Numbering is honest —
  * each step is a real ordered action the user performs:
  *
- *   01  get LiveAudio   installer (.exe / tarball) vs source via `uv`
- *   02  first run       provisions Python + deps; first-run internet only (amber)
+ *   01  get LiveAudio   installer (.exe / portable) vs source (Rust + Tauri 2)
+  *   02  first run       fetches transcription models; first-run internet only (amber)
  *   03  GPU auto-detect  CPU works; CUDA driver >= 525 / VRAM >= 4 GiB ladder
  *   04  pick + START SYSTEM  Fast/Balanced/Quality/Stable Streaming -> START SYSTEM
  *
@@ -139,7 +139,7 @@ const rungToneClass: Record<"go" | "warn" | "info", string> = {
                   </p>
                 )}
 
-                {/* Step 01: install tracks (installer vs source/uv). */}
+                {/* Step 01: install tracks (installer vs source/Rust). */}
                 {step.tracks && (
                   <div class="gs-tracks">
                     {step.tracks.map((track) => (
@@ -408,7 +408,7 @@ const rungToneClass: Record<"go" | "warn" | "info", string> = {
     font-size: var(--text-sm);
     margin: 0;
     max-width: none;
-    /* Names like LiveAudio-1.2.0-linux-x64.tar.gz appear inline; allow breaks. */
+    /* Names like LiveAudio-1.2.7-linux-x64.tar.gz appear inline; allow breaks. */
     overflow-wrap: anywhere;
   }
   .gs-track-flag {
@@ -599,7 +599,7 @@ const rungToneClass: Record<"go" | "warn" | "info", string> = {
     font-size: var(--text-xs);
     margin: var(--space-5) 0 0;
     max-width: var(--measure);
-    /* Inline literals (portable.marker, sudo apt install libportaudio2). */
+    /* Inline literals (legacy tarball name, sudo apt install libportaudio2). */
     overflow-wrap: anywhere;
   }
 

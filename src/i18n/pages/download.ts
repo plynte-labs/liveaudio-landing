@@ -1,18 +1,24 @@
 /**
  * Download page copy + asset data — single bilingual source for both locales.
  *
- * Every product fact / URL / size traces to the product spec (real v1.2.7
- * assets, system requirements) and the operator notes (SmartScreen /
- * portable.marker / --update). Sizes and filenames are the REAL released
- * artifacts — never invent or round differently.
+ * Every product fact / URL traces to the v1.5.0 GitHub release (Rust + Tauri 2
+ * rewrite): the Windows NSIS installer and the portable standalone exe. The
+ * Linux tarball is the legacy Python v1.2.7 build, kept as a fallback until a
+ * native Linux build ships. The installer is NOT code-signed yet.
  *
  * Spanish is neutral/professional (no Rioplatense slang in artifacts).
  */
 
 import type { Locale } from "../routes";
 
-/** Base for every release asset (from the product spec). */
+/** Base for every v1.5.0 release asset (verified: both .exe resolve HTTP 200). */
 export const RELEASE_BASE =
+  "https://github.com/plynte-labs/LiveAudio/releases/download/v1.5.0";
+/** Release notes page for v1.5.0 (hashes + changelog live here). */
+export const RELEASE_TAG =
+  "https://github.com/plynte-labs/LiveAudio/releases/tag/v1.5.0";
+/** Legacy Python build line (v1.2.7) — Linux fallback only. */
+export const LEGACY_RELEASE_BASE =
   "https://github.com/plynte-labs/LiveAudio/releases/download/v1.2.7";
 /** Always-latest redirect (from the product spec). */
 export const RELEASE_LATEST =
@@ -38,16 +44,23 @@ export interface PrimaryAsset {
 export const PRIMARY_ASSETS: Record<Os, PrimaryAsset> = {
   windows: {
     os: "windows",
-    filename: "LiveAudio-Setup-1.2.7.exe",
-    url: `${RELEASE_BASE}/LiveAudio-Setup-1.2.7.exe`,
-    size: "35,879,306 bytes (35.88 MB)",
+    filename: "LiveAudio_1.5.0_x64-setup.exe",
+    url: `${RELEASE_BASE}/LiveAudio_1.5.0_x64-setup.exe`,
+    size: "~23.9 MB",
   },
   linux: {
     os: "linux",
     filename: "LiveAudio-1.2.7-linux-x64.tar.gz",
-    url: `${RELEASE_BASE}/LiveAudio-1.2.7-linux-x64.tar.gz`,
+    url: `${LEGACY_RELEASE_BASE}/LiveAudio-1.2.7-linux-x64.tar.gz`,
     size: "46,351,037 bytes (46.35 MB)",
   },
+};
+
+/** Portable standalone exe (no install) — second Windows option. */
+export const PORTABLE_ASSET = {
+  filename: "liveaudio-desktop.exe",
+  url: `${RELEASE_BASE}/liveaudio-desktop.exe`,
+  size: "~15.6 MB",
 };
 
 /** A row in the brutalist "all assets" table. */
@@ -78,6 +91,9 @@ export interface DownloadCopy {
   linuxLabel: string;
   downloadVerb: string; // verb used inside the giant CTA label
   latestLinkLabel: string; // "Always-latest release →"
+  portableLabel: string; // label for the portable standalone exe link
+  portableHint: string; // one-line hint: no install needed
+  legacyNote: string; // honest flag: Linux build is still the legacy v1.2.7
 
   /** Asset table. */
   tableEyebrow: string;
@@ -107,14 +123,14 @@ export interface DownloadCopy {
 }
 
 const EN: DownloadCopy = {
-  title: "Download LiveAudio v1.2.7 — Windows & Linux (free)",
+  title: "Download LiveAudio v1.5.0 — Windows x64 Rust build (free)",
   description:
-    "Download LiveAudio v1.2.7 free for Windows and Linux. Real v1.2.7 assets: Windows installer, Linux tarball, pip wheel, source, checksums. 100% local, MIT open-source.",
+    "Download LiveAudio v1.5.0 free for Windows x64. Rewritten in Rust + Tauri 2: faster startup, lower footprint, memory-safe — no Python runtime. Windows installer + portable exe. 100% local, MIT open-source.",
 
-  consoleEyebrow: "// download · v1.2.7",
-  heading: "Download LiveAudio v1.2.7.",
+  consoleEyebrow: "// download · v1.5.0 · rust + tauri 2",
+  heading: "Download LiveAudio v1.5.0.",
   subheading:
-    "Free & open-source (MIT). No subscription, no API key. Pick your platform — both builds and every release asset are listed in full below.",
+    "Free & open-source (MIT). Rewritten in Rust with a Tauri 2 desktop shell: faster startup, lower RAM, and memory-safe transcription — with no Python runtime to provision. Windows x64 below; Linux users stay on the legacy v1.2.7 build for now.",
   detecting: "Detecting OS…",
   detectedPrefix: "Detected:",
   recommendedTag: "recommended",
@@ -123,8 +139,12 @@ const EN: DownloadCopy = {
   linuxLabel: "Linux",
   downloadVerb: "Download",
   latestLinkLabel: "Always-latest release",
+  portableLabel: "Portable standalone (no install)",
+  portableHint: "liveaudio-desktop.exe · ~15.6 MB · just run it",
+  legacyNote:
+    "v1.5.0 is Windows x64. The Linux build below is the legacy Python v1.2.7.",
 
-  tableEyebrow: "// all v1.2.7 assets",
+  tableEyebrow: "// all v1.5.0 assets",
   tableHeading: "Every release artifact, with exact URLs.",
   thAsset: "asset",
   thUse: "platform / use",
@@ -133,46 +153,28 @@ const EN: DownloadCopy = {
   getLabel: "get",
   assets: [
     {
-      filename: "LiveAudio-Setup-1.2.7.exe",
-      url: `${RELEASE_BASE}/LiveAudio-Setup-1.2.7.exe`,
-      size: "35,879,306 bytes (35.88 MB)",
-      use: "Windows installer (primary)",
+      filename: "LiveAudio_1.5.0_x64-setup.exe",
+      url: `${RELEASE_BASE}/LiveAudio_1.5.0_x64-setup.exe`,
+      size: "~23.9 MB",
+      use: "Windows x64 installer (primary) — NSIS, bilingual, removes legacy Python builds",
+    },
+    {
+      filename: "liveaudio-desktop.exe",
+      url: `${RELEASE_BASE}/liveaudio-desktop.exe`,
+      size: "~15.6 MB",
+      use: "Windows x64 portable — standalone, no install, just run it",
     },
     {
       filename: "LiveAudio-1.2.7-linux-x64.tar.gz",
-      url: `${RELEASE_BASE}/LiveAudio-1.2.7-linux-x64.tar.gz`,
+      url: `${LEGACY_RELEASE_BASE}/LiveAudio-1.2.7-linux-x64.tar.gz`,
       size: "46,351,037 bytes (46.35 MB)",
-      use: "Linux x86_64 — extract, run ./liveaudio-launcher (needs libportaudio2)",
+      use: "Linux x86_64 legacy (Python v1.2.7) — extract, run ./liveaudio-launcher (needs libportaudio2)",
     },
     {
-      filename: "liveaudio-1.2.7-py3-none-any.whl",
-      url: `${RELEASE_BASE}/liveaudio-1.2.7-py3-none-any.whl`,
-      size: "344,456 bytes (344.46 kB)",
-      use: "pip wheel (advanced)",
-    },
-    {
-      filename: "liveaudio-src-1.2.7.zip",
-      url: `${RELEASE_BASE}/liveaudio-src-1.2.7.zip`,
-      size: "399,125 bytes (399.13 kB)",
-      use: "source",
-    },
-    {
-      filename: "requirements-cpu.txt",
-      url: `${RELEASE_BASE}/requirements-cpu.txt`,
+      filename: "v1.5.0 release notes",
+      url: RELEASE_TAG,
       size: "—",
-      use: "pip escape hatch (CPU)",
-    },
-    {
-      filename: "requirements-cu121.txt",
-      url: `${RELEASE_BASE}/requirements-cu121.txt`,
-      size: "—",
-      use: "pip escape hatch (CUDA 12.1)",
-    },
-    {
-      filename: "SHA256SUMS.txt",
-      url: `${RELEASE_BASE}/SHA256SUMS.txt`,
-      size: "—",
-      use: "verify your downloads",
+      use: "changelog, hashes and source for v1.5.0",
     },
   ],
 
@@ -182,22 +184,22 @@ const EN: DownloadCopy = {
     {
       tag: "not code-signed",
       title: "Windows SmartScreen",
-      body: "The installer is not code-signed, so SmartScreen may warn. Click More info, then Run anyway. Optionally verify the file against SHA256SUMS.txt first.",
+      body: "The v1.5.0 installer is not code-signed yet, so SmartScreen may warn. Click More info, then Run anyway. The exact files and hashes are listed on the v1.5.0 release page.",
     },
     {
-      tag: "verify",
-      title: "Verify the download",
-      body: "Check the file hash against SHA256SUMS.txt before running, especially on a shared or untrusted network.",
+      tag: "migration",
+      title: "Upgrading from the Python version",
+      body: "Coming from v1.0.0–v1.2.7? The installer finds the legacy Python build (32/64-bit registry), runs its uninstaller silently, stops leftover processes and removes the obsolete Python folders. Your settings and sessions in %APPDATA%\\LiveAudio are preserved.",
     },
     {
-      tag: "portable",
-      title: "Portable mode",
-      body: "Create an empty file named portable.marker next to the launcher and LiveAudio stores everything in a local data/ folder instead of your user profile.",
+      tag: "rust",
+      title: "Why Rust is safer to download",
+      body: "v1.5.0 is a native binary — there is no Python runtime, no pip dependency chain and no multi-gigabyte first-run provisioning. The installer (~23.9 MB) is the whole app; only transcription models download on first use.",
     },
     {
       tag: "updates",
       title: "Updates",
-      body: "Update in one click from inside the app, or run the launcher with --update to fetch the latest release.",
+      body: "Update in one click from inside the app. New releases are published on GitHub Releases.",
     },
   ],
 
@@ -207,10 +209,10 @@ const EN: DownloadCopy = {
     {
       heading: "minimum",
       rows: [
-        { k: "os", v: "Windows 10/11 x64 or Linux x86_64" },
+        { k: "os", v: "Windows 10/11 x64 (v1.5.0); Linux x86_64 legacy v1.2.7" },
         { k: "gpu", v: "optional — CPU works" },
         { k: "ram", v: "8 GB (16 GB recommended)" },
-        { k: "disk", v: "~400 MB CPU / ~2.5 GB CUDA + models" },
+        { k: "disk", v: "installer ~23.9 MB + transcription models" },
         { k: "internet", v: "first run only, then fully offline" },
       ],
     },
@@ -220,7 +222,7 @@ const EN: DownloadCopy = {
         { k: "vendor", v: "NVIDIA CUDA, auto-detected" },
         { k: "driver", v: ">= 525" },
         { k: "vram", v: ">= 4 GiB" },
-        { k: "python", v: "not required — installer provisions Python 3.11" },
+        { k: "python", v: "not needed — v1.5.0 is a native Rust binary" },
         { k: "linux dep", v: "libportaudio2 (sudo apt install libportaudio2)" },
       ],
     },
@@ -230,28 +232,32 @@ const EN: DownloadCopy = {
   closingHeading: "Free, local, and yours in one download.",
   closingBody:
     "No account, no API key, no per-minute cost. Grab the build above, run it, and your captions stream to OBS over a local WebSocket — fully offline after the first run.",
-  download: "Download LiveAudio v1.2.7 (free)",
+  download: "Download LiveAudio v1.5.0 (free)",
 };
 
 const ES: DownloadCopy = {
-  title: "Descargar LiveAudio v1.2.7 — Windows y Linux (gratis)",
+  title: "Descargar LiveAudio v1.5.0 — Windows x64 build Rust (gratis)",
   description:
-    "Descargá LiveAudio v1.2.7 gratis para Windows y Linux. Assets reales de v1.2.7: instalador de Windows, tarball de Linux, wheel pip, código fuente, checksums. 100% local, código abierto MIT.",
+    "Descarga LiveAudio v1.5.0 gratis para Windows x64. Reescrito en Rust + Tauri 2: arranque más rápido, menor huella, transcripción con memoria segura — sin runtime de Python. Instalador de Windows + portable. 100% local, código abierto MIT.",
 
-  consoleEyebrow: "// descargar · v1.2.7",
-  heading: "Descargar LiveAudio v1.2.7.",
+  consoleEyebrow: "// descargar · v1.5.0 · rust + tauri 2",
+  heading: "Descargar LiveAudio v1.5.0.",
   subheading:
-    "Gratis y de código abierto (MIT). Sin suscripción, sin API key. Elegí tu plataforma — ambas versiones y cada asset del release están listados por completo abajo.",
+    "Gratis y de código abierto (MIT). Reescrito en Rust con interfaz Tauri 2: arranque más rápido, menos RAM y transcripción con memoria segura — sin runtime de Python por provisionar. Windows x64 abajo; en Linux sigue la versión heredada v1.2.7 por ahora.",
   detecting: "Detectando SO…",
   detectedPrefix: "Detectado:",
   recommendedTag: "recomendado",
-  toggleLabel: "Elegí tu sistema operativo",
+  toggleLabel: "Elige tu sistema operativo",
   windowsLabel: "Windows",
   linuxLabel: "Linux",
   downloadVerb: "Descargar",
   latestLinkLabel: "Versión siempre más reciente",
+  portableLabel: "Portable standalone (sin instalar)",
+  portableHint: "liveaudio-desktop.exe · ~15.6 MB · solo ejecútalo",
+  legacyNote:
+    "La v1.5.0 es Windows x64. La versión de Linux abajo es la heredada Python v1.2.7.",
 
-  tableEyebrow: "// todos los assets v1.2.7",
+  tableEyebrow: "// todos los assets v1.5.0",
   tableHeading: "Cada artefacto del release, con URLs exactas.",
   thAsset: "asset",
   thUse: "plataforma / uso",
@@ -260,84 +266,66 @@ const ES: DownloadCopy = {
   getLabel: "obtener",
   assets: [
     {
-      filename: "LiveAudio-Setup-1.2.7.exe",
-      url: `${RELEASE_BASE}/LiveAudio-Setup-1.2.7.exe`,
-      size: "35,879,306 bytes (35.88 MB)",
-      use: "Instalador de Windows (primario)",
+      filename: "LiveAudio_1.5.0_x64-setup.exe",
+      url: `${RELEASE_BASE}/LiveAudio_1.5.0_x64-setup.exe`,
+      size: "~23.9 MB",
+      use: "Instalador de Windows x64 (primario) — NSIS, bilingüe, elimina versiones Python heredadas",
+    },
+    {
+      filename: "liveaudio-desktop.exe",
+      url: `${RELEASE_BASE}/liveaudio-desktop.exe`,
+      size: "~15.6 MB",
+      use: "Portable de Windows x64 — standalone, sin instalación, solo ejecútalo",
     },
     {
       filename: "LiveAudio-1.2.7-linux-x64.tar.gz",
-      url: `${RELEASE_BASE}/LiveAudio-1.2.7-linux-x64.tar.gz`,
+      url: `${LEGACY_RELEASE_BASE}/LiveAudio-1.2.7-linux-x64.tar.gz`,
       size: "46,351,037 bytes (46.35 MB)",
-      use: "Linux x86_64 — extraé y ejecutá ./liveaudio-launcher (necesita libportaudio2)",
+      use: "Linux x86_64 heredado (Python v1.2.7) — extrae y ejecuta ./liveaudio-launcher (necesita libportaudio2)",
     },
     {
-      filename: "liveaudio-1.2.7-py3-none-any.whl",
-      url: `${RELEASE_BASE}/liveaudio-1.2.7-py3-none-any.whl`,
-      size: "344,456 bytes (344.46 kB)",
-      use: "wheel pip (avanzado)",
-    },
-    {
-      filename: "liveaudio-src-1.2.7.zip",
-      url: `${RELEASE_BASE}/liveaudio-src-1.2.7.zip`,
-      size: "399,125 bytes (399.13 kB)",
-      use: "código fuente",
-    },
-    {
-      filename: "requirements-cpu.txt",
-      url: `${RELEASE_BASE}/requirements-cpu.txt`,
+      filename: "notas de la versión v1.5.0",
+      url: RELEASE_TAG,
       size: "—",
-      use: "vía pip (CPU)",
-    },
-    {
-      filename: "requirements-cu121.txt",
-      url: `${RELEASE_BASE}/requirements-cu121.txt`,
-      size: "—",
-      use: "vía pip (CUDA 12.1)",
-    },
-    {
-      filename: "SHA256SUMS.txt",
-      url: `${RELEASE_BASE}/SHA256SUMS.txt`,
-      size: "—",
-      use: "verificar tus descargas",
+      use: "changelog, hashes y código fuente de v1.5.0",
     },
   ],
 
   notesEyebrow: "// notas de operación",
-  notesHeading: "Leé antes de ejecutar.",
+  notesHeading: "Lee antes de ejecutar.",
   notes: [
     {
       tag: "sin firma de código",
       title: "SmartScreen de Windows",
-      body: "El instalador no está firmado digitalmente, así que SmartScreen puede advertir. Hacé clic en Más información y luego en Ejecutar de todas formas. Opcionalmente verificá el archivo contra SHA256SUMS.txt primero.",
+      body: "El instalador v1.5.0 aún no está firmado digitalmente, así que SmartScreen puede advertir. Haz clic en Más información y luego en Ejecutar de todas formas. Los archivos exactos y sus hashes están en la página del release v1.5.0.",
     },
     {
-      tag: "verificar",
-      title: "Verificá la descarga",
-      body: "Comprobá el hash del archivo contra SHA256SUMS.txt antes de ejecutar, sobre todo en una red compartida o no confiable.",
+      tag: "migración",
+      title: "Si vienes de la versión Python",
+      body: "¿Vienes de v1.0.0–v1.2.7? El instalador encuentra la versión Python heredada (registro de 32/64 bits), ejecuta su desinstalador en silencio, detiene procesos restantes y elimina las carpetas Python obsoletas. Tu configuración y sesiones en %APPDATA%\\LiveAudio se conservan.",
     },
     {
-      tag: "portable",
-      title: "Modo portable",
-      body: "Creá un archivo vacío llamado portable.marker junto al launcher y LiveAudio guarda todo en una carpeta local data/ en lugar de tu perfil de usuario.",
+      tag: "rust",
+      title: "Por qué Rust es más seguro de descargar",
+      body: "La v1.5.0 es un binario nativo — no hay runtime de Python, ni cadena de dependencias pip, ni provisión multi-gigabyte en el primer arranque. El instalador (~23.9 MB) es la app completa; solo los modelos de transcripción se descargan en el primer uso.",
     },
     {
       tag: "actualizaciones",
       title: "Actualizaciones",
-      body: "Actualizá con un clic desde la app, o ejecutá el launcher con --update para obtener el último release.",
+      body: "Actualiza con un clic desde la app. Las versiones nuevas se publican en GitHub Releases.",
     },
   ],
 
   reqEyebrow: "// requisitos del sistema",
-  reqHeading: "Lo que necesitás para ejecutarlo.",
+  reqHeading: "Lo que necesitas para ejecutarlo.",
   reqCols: [
     {
       heading: "mínimo",
       rows: [
-        { k: "so", v: "Windows 10/11 x64 o Linux x86_64" },
+        { k: "so", v: "Windows 10/11 x64 (v1.5.0); Linux x86_64 heredado v1.2.7" },
         { k: "gpu", v: "opcional — la CPU funciona" },
         { k: "ram", v: "8 GB (16 GB recomendado)" },
-        { k: "disco", v: "~400 MB CPU / ~2.5 GB CUDA + modelos" },
+        { k: "disco", v: "instalador ~23.9 MB + modelos de transcripción" },
         { k: "internet", v: "solo la primera vez, luego sin conexión" },
       ],
     },
@@ -347,7 +335,7 @@ const ES: DownloadCopy = {
         { k: "fabricante", v: "NVIDIA CUDA, autodetectado" },
         { k: "driver", v: ">= 525" },
         { k: "vram", v: ">= 4 GiB" },
-        { k: "python", v: "no requerido — el instalador provee Python 3.11" },
+        { k: "python", v: "no necesario — v1.5.0 es un binario Rust nativo" },
         { k: "dep linux", v: "libportaudio2 (sudo apt install libportaudio2)" },
       ],
     },
@@ -356,8 +344,8 @@ const ES: DownloadCopy = {
   closingEyebrow: "// empezar",
   closingHeading: "Gratis, local y tuyo en una sola descarga.",
   closingBody:
-    "Sin cuenta, sin API key, sin costo por minuto. Descargá la versión de arriba, ejecutala y tus subtítulos van a OBS por un WebSocket local — sin conexión después de la primera ejecución.",
-  download: "Descargar LiveAudio v1.2.7 (gratis)",
+    "Sin cuenta, sin API key, sin costo por minuto. Descarga la versión de arriba, ejecútala y tus subtítulos van a OBS por un WebSocket local — sin conexión después de la primera ejecución.",
+  download: "Descargar LiveAudio v1.5.0 (gratis)",
 };
 
 export function downloadCopy(lang: Locale): DownloadCopy {

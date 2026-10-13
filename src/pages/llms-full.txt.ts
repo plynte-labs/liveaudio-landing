@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 
 /**
- * llms-full.txt — expanded, concatenated reference of LiveAudio v1.2.7 facts.
+ * llms-full.txt — expanded, concatenated reference of LiveAudio v1.5.0 facts.
  *
  * A single plain-text document an LLM can ingest to answer questions about the
  * product without crawling every page. Every claim is traceable to
@@ -9,83 +9,81 @@ import type { APIRoute } from "astro";
  */
 export const GET: APIRoute = ({ site }) => {
   const base = (site ?? new URL("https://liveaudio.opencohost.com")).href.replace(/\/$/, "");
-  const REL = "https://github.com/plynte-labs/LiveAudio/releases/download/v1.2.7";
+  const REL = "https://github.com/plynte-labs/LiveAudio/releases/download/v1.5.0";
+  const LEGACY_REL = "https://github.com/plynte-labs/LiveAudio/releases/download/v1.2.7";
 
-  const body = `# LiveAudio — Full Reference (v1.2.7)
+  const body = `# LiveAudio — Full Reference (v1.5.0)
 
-> LiveAudio is a free, open-source (MIT) desktop app that generates real-time Whisper speech captions 100% locally and streams them to OBS over a local WebSocket. It runs on Windows and Linux. No cloud, no API key, no per-minute cost.
+> LiveAudio is a free, open-source (MIT) desktop app that generates real-time Whisper speech captions 100% locally and streams them to OBS over a local WebSocket. v1.5.0 is a native Rust + Tauri 2 build for Windows x64. No cloud, no API key, no per-minute cost.
 
 Canonical site: ${base}/
 Source: https://github.com/plynte-labs/LiveAudio (MIT)
-Release: v1.2.7
+Release: v1.5.0 (Rust + Tauri 2)
 
 ---
 
 ## What it is
 
-A real-time, local automatic-speech-recognition (ASR) engine for streamers and creators. It is a Python desktop GUI application (CustomTkinter) that:
+A real-time, local automatic-speech-recognition (ASR) engine for streamers and creators. It is a native Rust desktop app (Tauri 2 shell) that:
 - Transcribes speech with Whisper (tiny, base, small, turbo models).
-- Uses Silero VAD (voice activity detection) to trim silence, with a configurable onset pre-roll and VAD threshold (new in v1.2.0).
-- Captures from a physical microphone or system audio. System-audio loopback uses WASAPI and is Windows-only; on Linux it captures the microphone.
+- Uses Silero VAD (voice activity detection) to trim silence, with configurable pause-to-close, max segment duration, VAD pre-roll and threshold.
+- Optionally suppresses noise with local RNNoise and emits acoustic speech-metadata events.
+- Captures from a physical microphone or system audio. System-audio loopback uses WASAPI and is Windows-only.
 - Broadcasts subtitle JSON over a local WebSocket at ws://127.0.0.1:8765 (configurable via ws_port) to OBS or any HTML/WebSocket client on localhost.
+- Shows a live stream-chat subtitle feed with timestamps, plus a collapsible event log.
 
-## Platforms (NOT Windows-only)
+## Platforms
 
-- Windows 10/11 x64 — Full support: microphone + WASAPI system loopback; graphical installer (.exe).
-- Linux x86_64 — Supported: microphone capture; requires libportaudio2 (sudo apt install libportaudio2); ships as a tarball launcher.
+- Windows 10/11 x64 — Full support (v1.5.0 native Rust build): microphone + WASAPI system loopback; NSIS installer or portable standalone exe.
+- Linux x86_64 — Legacy Python v1.2.7 tarball only (microphone capture; requires libportaudio2) until a native Linux build ships.
 - macOS — NOT supported.
 
-## Features
+## Features (v1.5.0)
 
 - Real-time transcription with Whisper (tiny / base / small / turbo).
-- Silero VAD with configurable onset pre-roll + VAD threshold (new in v1.2.0).
+- Silero VAD with configurable pause, pre-roll and threshold.
+- Optional local RNNoise suppression + acoustic speech-metadata events.
+- Live stream-chat subtitle feed (timestamps, stick-to-bottom, circular buffer).
+- On-the-fly blacklist and vocabulary-prompt enrichment with retroactive strike-through.
 - Flexible capture: mic or system loopback (loopback is Windows-only).
 - Integrated WebSocket server feeding an OBS Browser Source or any HTML/WS client.
-- OBS overlay: improved subtitle legibility, capped reveal-animation timing, and an adaptive vertical "ribbon" subtitle buffer (new in v1.2.0).
+- OBS overlay: improved subtitle legibility, capped reveal-animation timing, and an adaptive vertical "ribbon" subtitle buffer.
 - OBS backlog policy: Auto / Live only / Send all (controls only what shows live in OBS; everything valid is always saved).
 - Hallucination filtering via an editable blacklist.
 - Session management: transcript.jsonl + subtitles.vtt (+ session.json).
-- Hot-swap of device/model without restarting.
+- Hot-swap of device/model without restarting (CUDA selection dims the CPU-threads control).
 - Profiles: Fast, Balanced, Quality, Stable Streaming (FPS-aware presets).
-- Local-first diagnostics: no telemetry; export sanitizes secrets/paths and excludes raw audio + full transcripts.
-- Robust runtime: isolated processes (multiprocessing), audio ring buffer, automatic reconnection.
+- Local-first diagnostics: no telemetry; event log records service lifecycle and config changes.
+- Bilingual UI and installer (English / Spanish).
 
 ## System requirements
 
-- OS: Windows 10/11 or Linux x86_64.
-- Python: NOT required for end users — the installer provisions its own Python 3.11.
+- OS: Windows 10/11 x64 (v1.5.0). Linux: legacy v1.2.7 tarball.
+- Runtime: NONE for end users — v1.5.0 is a native binary, no Python runtime.
 - GPU: optional. CPU works. NVIDIA CUDA is optional but recommended; auto-detected (driver ≥ 525, VRAM ≥ 4 GiB).
 - RAM: 8 GB minimum / 16 GB recommended.
-- Disk: ~400 MB (CPU) / ~2.5 GB (CUDA) for app + dependencies, plus model storage.
-- Internet: first run only (downloads Python + dependencies + models); fully offline afterward.
+- Disk: installer ~23.9 MB (portable exe ~15.6 MB), plus transcription-model storage.
+- Internet: first run only (downloads transcription models); fully offline afterward.
 
-## Downloads — real v1.2.7 assets
+## Downloads — real v1.5.0 assets
 
 Base URL: ${REL}/
 Always-latest: https://github.com/plynte-labs/LiveAudio/releases/latest
+Release notes (changelog + hashes): https://github.com/plynte-labs/LiveAudio/releases/tag/v1.5.0
 
-- Windows installer (primary), 35,879,306 bytes (35.88 MB): ${REL}/LiveAudio-Setup-1.2.7.exe
-- Linux x64 tarball (extract, run ./liveaudio-launcher; needs libportaudio2), 46,351,037 bytes (46.35 MB): ${REL}/LiveAudio-1.2.7-linux-x64.tar.gz
-- pip wheel (advanced), 344,456 bytes (344.46 kB): ${REL}/liveaudio-1.2.7-py3-none-any.whl
-- Source, 399,125 bytes (399.13 kB): ${REL}/liveaudio-src-1.2.7.zip
-- CPU requirements (pip escape hatch): ${REL}/requirements-cpu.txt
-- CUDA 12.1 requirements (pip escape hatch): ${REL}/requirements-cu121.txt
-- Checksums: ${REL}/SHA256SUMS.txt
+- Windows installer (primary), ~23.9 MB: ${REL}/LiveAudio_1.5.0_x64-setup.exe
+- Windows portable standalone (no install), ~15.6 MB: ${REL}/liveaudio-desktop.exe
+- Linux x64 legacy tarball (Python v1.2.7; extract, run ./liveaudio-launcher; needs libportaudio2), 46,351,037 bytes (46.35 MB): ${LEGACY_REL}/LiveAudio-1.2.7-linux-x64.tar.gz
 
-Windows SmartScreen: the installer is not code-signed, so SmartScreen may warn. Choose "More info → Run anyway", and verify the download against SHA256SUMS.txt.
-Portable mode: create an empty portable.marker file next to the launcher (stores everything in data/).
-Updates: in-app one-click, or run the launcher with --update.
+Windows SmartScreen: the v1.5.0 installer is not code-signed yet, so SmartScreen may warn. Choose "More info → Run anyway"; the exact files and hashes are on the v1.5.0 release page.
+Upgrading from Python (v1.0.0–v1.2.7): the installer detects the legacy build via the Windows registry (32/64-bit), runs its uninstaller silently, stops leftover processes and removes obsolete Python folders. Settings and sessions in %APPDATA%\\LiveAudio are preserved.
+Updates: one-click in-app update; new releases on GitHub Releases.
 
 ## Install / first run
 
-End users: download → run. The first run downloads Python + dependencies (~400 MB CPU / ~2.5 GB CUDA) and auto-detects the GPU; later runs start instantly. Models download on first transcription (Silero VAD ~2 MB; Whisper tiny ~150 MB / base ~300 MB / small ~480 MB / turbo ~1.5 GB). Offline after that.
+End users: download → run. The first run downloads transcription models and auto-detects the GPU; later runs start instantly and offline. Your settings and sessions in %APPDATA%\\LiveAudio survive updates and the Python-to-Rust migration.
 
-Developers (uv):
-  git clone https://github.com/plynte-labs/LiveAudio.git
-  cd LiveAudio
-  uv sync --extra cpu      # OR: uv sync --extra cu121 (exactly one torch extra)
-  uv run liveaudio
-  uv run pytest
+Developers: clone https://github.com/plynte-labs/LiveAudio.git and follow the repository README (Rust toolchain + Tauri 2 prerequisites).
 
 ## OBS setup
 
@@ -110,10 +108,10 @@ Free & open-source (MIT). No subscription, no API key. You only pay your own ele
 ## FAQ
 
 Q: Is it really 100% local?
-A: Yes — all transcription runs on your machine with no telemetry. Internet is used only on the first run to download Python, dependencies, and models; it works fully offline afterward.
+A: Yes — all transcription runs on your machine with no telemetry. Internet is used only on the first run to download transcription models; it works fully offline afterward. v1.5.0 is a native Rust binary with no Python runtime.
 
 Q: Does it work on Linux?
-A: Yes — Linux x86_64 is supported for microphone capture. It needs libportaudio2 (sudo apt install libportaudio2) and ships as a tarball launcher. System-audio loopback is Windows-only.
+A: v1.5.0 focuses on Windows 10/11 x64; Linux users stay on the legacy Python v1.2.7 tarball for microphone capture. It needs libportaudio2 (sudo apt install libportaudio2). System-audio loopback is Windows-only.
 
 Q: Is it free / open-source?
 A: Yes — it's free and open-source under the MIT license. No subscription and no API key; you only pay your own electricity.
@@ -122,7 +120,7 @@ Q: Do I need a GPU?
 A: No — the CPU works. An NVIDIA CUDA GPU is optional but recommended and is auto-detected (driver ≥ 525, VRAM ≥ 4 GiB).
 
 Q: Do I need internet or an API key?
-A: No API key, ever. Internet is only required on the first run to download Python, dependencies, and models; after that it runs offline.
+A: No API key, ever. Internet is only required on the first run to download transcription models; after that it runs offline.
 
 Q: What's the latency?
 A: Low and tunable — well under a second on a typical setup. Profiles (Fast / Balanced / Quality / Stable Streaming) let you trade latency for accuracy.

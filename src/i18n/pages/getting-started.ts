@@ -2,19 +2,20 @@
  * Getting-started page copy — bilingual (EN default + ES mirror).
  *
  * The /getting-started/ page is a numbered "signal timeline": the EARNED,
- * real activation sequence for LiveAudio v1.2.0. Numbering is honest — each
+ * real activation sequence for LiveAudio v1.5.0. Numbering is honest — each
  * step is a real ordered action a user actually performs.
  *
- *   01  get LiveAudio        installer (.exe / tarball) vs source via `uv`
- *   02  first run            provisions Python + deps; first-run internet only
+ *   01  get LiveAudio        installer (.exe) / portable exe vs source (Rust + Tauri)
+ *   02  first run            fetches transcription models; first-run internet only
  *   03  GPU auto-detect      CPU works; CUDA driver >= 525 / VRAM >= 4 GiB
  *   04  pick profile + go    Fast/Balanced/Quality/Stable Streaming -> START SYSTEM
  *
- * Every claim is traceable to the product spec:
- *   - install / first run + uv dev flow (uv sync --extra cpu|cu121, uv run liveaudio)
+ * Every claim is traceable to the v1.5.0 release:
+ *   - install / first run (native Rust binary, no Python runtime)
  *   - GPU optional; CUDA driver >= 525, VRAM >= 4 GiB; CPU works
- *   - first-run footprint ~400 MB (CPU) / ~2.5 GB (CUDA); SmartScreen; libportaudio2
- *   - START SYSTEM (INICIAR SISTEMA) + Apply changes
+ *   - installer ~23.9 MB / portable ~15.6 MB; SmartScreen (not code-signed yet);
+ *     legacy Python v1.0.0–v1.2.7 auto-migration preserving %APPDATA%\LiveAudio
+ *   - START SYSTEM + Apply changes
  *   - profiles Fast / Balanced (recommended) / Quality / Stable Streaming
  *
  * Spanish is neutral/professional — NO Rioplatense slang in artifacts.
@@ -35,7 +36,7 @@ export interface CodeBlock {
   lines: CodeLine[];
 }
 
-/** One path inside step 01 (installer track vs source/uv track). */
+/** One path inside step 01 (installer track vs source/Rust track). */
 export interface InstallTrack {
   /** mono kicker, e.g. "// installer". */
   kicker: string;
@@ -115,68 +116,64 @@ export interface GettingStartedCopy {
 }
 
 const EN: GettingStartedCopy = {
-  title: "Getting started — activate LiveAudio v1.2.7 (Windows & Linux)",
+  title: "Getting started — activate LiveAudio v1.5.0 (Windows x64)",
   description:
-    "Activate LiveAudio v1.2.7: install the app or run from source with uv, let the first run provision Python + deps, auto-detect your GPU, pick a profile, and START SYSTEM. Windows and Linux, 100% local.",
+    "Activate LiveAudio v1.5.0: run the native Rust installer or the portable exe, let the first run fetch transcription models, auto-detect your GPU, pick a profile, and START SYSTEM. Windows x64, 100% local.",
   eyebrow: "// getting-started",
   h1: "Activate LiveAudio in four real steps.",
   intro:
-    "Install the app (or run from source with uv), let the first run provision Python, deps and models, let LiveAudio auto-detect your GPU, then pick a profile and START SYSTEM. Internet is needed only on the first run; after that it is 100% local.",
+    "Install the app (or run the portable exe), let the first run fetch transcription models, let LiveAudio auto-detect your GPU, then pick a profile and START SYSTEM. No Python runtime to provision. Internet is needed only on the first run; after that it is 100% local.",
   spineLabel: "ACTIVATION SEQUENCE",
   steps: [
     {
       num: "01",
       kicker: "// get",
-      title: "Get LiveAudio — installer or source.",
-      lede: "Most people just download and run. Two real paths: the graphical installer (recommended), or running from source with uv if you are a developer.",
+      title: "Get LiveAudio — installer, portable, or source.",
+      lede: "Most people just download and run. Three real paths: the graphical installer (recommended), the portable standalone exe, or building from source if you are a developer.",
       tracks: [
         {
           kicker: "// installer",
           title: "Installer (recommended)",
-          body: "Windows: download LiveAudio-Setup-1.2.7.exe and run it. Linux: download the tarball, extract it, and run ./liveaudio-launcher. No Python to install — the app provisions its own Python 3.11.",
+          body: "Windows x64: download LiveAudio_1.5.0_x64-setup.exe and run it — no Python to install, the app is a native Rust binary. Coming from v1.0.0–v1.2.7? The installer removes the legacy Python build silently and preserves your settings in %APPDATA%\\LiveAudio. Prefer no install? Grab liveaudio-desktop.exe (~15.6 MB) and just run it. Linux: use the legacy v1.2.7 tarball for now.",
           code: {
-            tab: "linux x86_64",
+            tab: "windows x64",
             lines: [
-              { kind: "comment", text: "# Linux: extract and launch" },
+              { kind: "comment", text: "# Installer (recommended) or portable:" },
               {
                 kind: "command",
-                text: "tar -xzf LiveAudio-1.2.7-linux-x64.tar.gz",
+                text: "LiveAudio_1.5.0_x64-setup.exe",
               },
-              { kind: "command", text: "./liveaudio-launcher" },
+              { kind: "command", text: "liveaudio-desktop.exe" },
             ],
           },
-          flag: "Windows: not code-signed",
+          flag: "Windows: not code-signed yet",
         },
         {
           kicker: "// source",
-          title: "Run from source (uv)",
-          body: "Clone the repo and let uv create the environment. Choose exactly one torch extra: --extra cpu for CPU, or --extra cu121 for NVIDIA CUDA. Then run liveaudio.",
+          title: "Build from source (Rust + Tauri 2)",
+          body: "Clone the repo and follow the build instructions in the repository README (Rust toolchain + Tauri 2 prerequisites). This path is for developers; everyone else should use the installer.",
           code: {
-            tab: "uv · developers",
+            tab: "git · developers",
             lines: [
               {
                 kind: "command",
                 text: "git clone https://github.com/plynte-labs/LiveAudio.git",
               },
               { kind: "command", text: "cd LiveAudio" },
-              { kind: "comment", text: "# pick exactly one torch extra:" },
-              { kind: "command", text: "uv sync --extra cpu" },
-              { kind: "command", text: "uv sync --extra cu121" },
-              { kind: "command", text: "uv run liveaudio" },
             ],
           },
         },
       ],
-      note: "Linux needs libportaudio2 (sudo apt install libportaudio2).",
-      flag: "Linux: needs libportaudio2",
+      note: "Legacy Linux tarball (v1.2.7) needs libportaudio2 (sudo apt install libportaudio2).",
+      flag: "Linux: legacy v1.2.7 build",
     },
     {
       num: "02",
       kicker: "// first-run",
-      title: "First run provisions everything.",
-      lede: "The first launch downloads Python, dependencies and models, then caches them. Plan for roughly 400 MB on CPU or 2.5 GB on CUDA. Models download on first transcription. Every later start is instant and fully offline.",
+      title: "First run fetches the models.",
+      lede: "The first launch downloads the transcription models, then caches them. Models download on first transcription. Every later start is instant and fully offline.",
       flag: "First run: internet required",
-      note: "Footprint: ~400 MB (CPU) / ~2.5 GB (CUDA). After that, fully offline. Portable mode: drop an empty portable.marker next to the launcher to keep everything in a local data/ folder.",
+      note: "No Python, no pip chain: the installer (~23.9 MB) is the whole app. Your settings and sessions in %APPDATA%\\LiveAudio survive updates and the Python-to-Rust migration.",
     },
     {
       num: "03",
@@ -220,79 +217,72 @@ const EN: GettingStartedCopy = {
   closingHeading: "Have the app yet?",
   closingBody:
     "Free & open-source (MIT). No subscription, no API key. You only pay your own electricity — hardware not included.",
-  download: "Download LiveAudio v1.2.7 (free)",
-  howToName: "Get started with LiveAudio v1.2.7",
+  download: "Download LiveAudio v1.5.0 (free)",
+  howToName: "Get started with LiveAudio v1.5.0",
   timelineLabel: "Activation steps",
   detectLabel: "GPU auto-detect ladder",
   profilesLabel: "Profiles",
 };
 
 const ES: GettingStartedCopy = {
-  title: "Primeros pasos — activa LiveAudio v1.2.7 (Windows y Linux)",
+  title: "Primeros pasos — activa LiveAudio v1.5.0 (Windows x64)",
   description:
-    "Activa LiveAudio v1.2.7: instala la app o ejecuta desde el código con uv, deja que la primera ejecución provisione Python y dependencias, detecte la GPU, elige un perfil e INICIAR SISTEMA. Windows y Linux, 100% local.",
+    "Activa LiveAudio v1.5.0: ejecuta el instalador Rust nativo o el portable, deja que la primera ejecución descargue los modelos, detecte la GPU, elige un perfil e INICIAR SISTEMA. Windows x64, 100% local.",
   eyebrow: "// primeros-pasos",
   h1: "Activa LiveAudio en cuatro pasos reales.",
   intro:
-    "Instala la app (o ejecuta desde el código con uv), deja que la primera ejecución provisione Python, dependencias y modelos, deja que LiveAudio detecte tu GPU y después elige un perfil e INICIAR SISTEMA. Internet solo en la primera ejecución; después es 100% local.",
+    "Instala la app (o ejecuta el portable), deja que la primera ejecución descargue los modelos de transcripción, deja que LiveAudio detecte tu GPU y después elige un perfil e INICIAR SISTEMA. Sin runtime de Python por provisionar. Internet solo en la primera ejecución; después es 100% local.",
   spineLabel: "SECUENCIA DE ACTIVACIÓN",
   steps: [
     {
       num: "01",
       kicker: "// obtener",
-      title: "Obtén LiveAudio — instalador o código.",
-      lede: "La mayoría solo descarga y ejecuta. Dos rutas reales: el instalador gráfico (recomendado), o ejecutar desde el código con uv si eres desarrollador.",
+      title: "Obtén LiveAudio — instalador, portable o código.",
+      lede: "La mayoría solo descarga y ejecuta. Tres rutas reales: el instalador gráfico (recomendado), el portable standalone, o compilar desde el código si eres desarrollador.",
       tracks: [
         {
           kicker: "// instalador",
           title: "Instalador (recomendado)",
-          body: "Windows: descarga LiveAudio-Setup-1.2.7.exe y ejecútalo. Linux: descarga el tarball, extráelo y ejecuta ./liveaudio-launcher. No hay que instalar Python — la app provisiona su propio Python 3.11.",
+          body: "Windows x64: descarga LiveAudio_1.5.0_x64-setup.exe y ejecútalo — sin Python por instalar, la app es un binario Rust nativo. ¿Vienes de v1.0.0–v1.2.7? El instalador elimina la versión Python heredada en silencio y conserva tu configuración en %APPDATA%\\LiveAudio. ¿Prefieres no instalar? Toma liveaudio-desktop.exe (~15.6 MB) y ejecútalo. Linux: usa el tarball heredado v1.2.7 por ahora.",
           code: {
-            tab: "linux x86_64",
+            tab: "windows x64",
             lines: [
-              { kind: "comment", text: "# Linux: extraer y ejecutar" },
+              { kind: "comment", text: "# Instalador (recomendado) o portable:" },
               {
                 kind: "command",
-                text: "tar -xzf LiveAudio-1.2.7-linux-x64.tar.gz",
+                text: "LiveAudio_1.5.0_x64-setup.exe",
               },
-              { kind: "command", text: "./liveaudio-launcher" },
+              { kind: "command", text: "liveaudio-desktop.exe" },
             ],
           },
-          flag: "Windows: sin firma de código",
+          flag: "Windows: aún sin firma de código",
         },
         {
           kicker: "// código",
-          title: "Ejecutar desde el código (uv)",
-          body: "Clona el repositorio y deja que uv cree el entorno. Elige exactamente un extra de torch: --extra cpu para CPU, o --extra cu121 para NVIDIA CUDA. Después ejecuta liveaudio.",
+          title: "Compilar desde el código (Rust + Tauri 2)",
+          body: "Clona el repositorio y sigue las instrucciones de compilación del README (toolchain de Rust + prerrequisitos de Tauri 2). Este camino es para desarrolladores; los demás deben usar el instalador.",
           code: {
-            tab: "uv · desarrolladores",
+            tab: "git · desarrolladores",
             lines: [
               {
                 kind: "command",
                 text: "git clone https://github.com/plynte-labs/LiveAudio.git",
               },
               { kind: "command", text: "cd LiveAudio" },
-              {
-                kind: "comment",
-                text: "# elige exactamente un extra de torch:",
-              },
-              { kind: "command", text: "uv sync --extra cpu" },
-              { kind: "command", text: "uv sync --extra cu121" },
-              { kind: "command", text: "uv run liveaudio" },
             ],
           },
         },
       ],
-      note: "Linux necesita libportaudio2 (sudo apt install libportaudio2).",
-      flag: "Linux: necesita libportaudio2",
+      note: "El tarball heredado de Linux (v1.2.7) necesita libportaudio2 (sudo apt install libportaudio2).",
+      flag: "Linux: versión heredada v1.2.7",
     },
     {
       num: "02",
       kicker: "// primera-ejecución",
-      title: "La primera ejecución provisiona todo.",
-      lede: "El primer arranque descarga Python, dependencias y modelos, y luego los guarda en caché. Calculá unos 400 MB en CPU o 2.5 GB en CUDA. Los modelos se descargan en la primera transcripción. Cada arranque posterior es instantáneo y sin conexión.",
+      title: "La primera ejecución descarga los modelos.",
+      lede: "El primer arranque descarga los modelos de transcripción y luego los guarda en caché. Los modelos se descargan en la primera transcripción. Cada arranque posterior es instantáneo y sin conexión.",
       flag: "Primera ejecución: requiere internet",
-      note: "Tamaño: ~400 MB (CPU) / ~2.5 GB (CUDA). Después, totalmente sin conexión. Modo portable: coloca un portable.marker vacío junto al launcher para mantener todo en una carpeta data/ local.",
+      note: "Sin Python ni cadena pip: el instalador (~23.9 MB) es la app completa. Tu configuración y sesiones en %APPDATA%\\LiveAudio sobreviven a las actualizaciones y a la migración de Python a Rust.",
     },
     {
       num: "03",
@@ -337,8 +327,8 @@ const ES: GettingStartedCopy = {
   closingHeading: "¿Todavía no tienes la app?",
   closingBody:
     "Gratis y de código abierto (MIT). Sin suscripción, sin API key. Solo pagas tu propia electricidad — el hardware no está incluido.",
-  download: "Descargar LiveAudio v1.2.7 (gratis)",
-  howToName: "Empieza con LiveAudio v1.2.7",
+  download: "Descargar LiveAudio v1.5.0 (gratis)",
+  howToName: "Empieza con LiveAudio v1.5.0",
   timelineLabel: "Pasos de activación",
   detectLabel: "Escalera de detección de GPU",
   profilesLabel: "Perfiles",

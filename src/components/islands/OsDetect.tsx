@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { Download, MonitorDown, ArrowUpRight } from "lucide-react";
 import {
   PRIMARY_ASSETS,
+  PORTABLE_ASSET,
   RELEASE_LATEST,
+  RELEASE_TAG,
   downloadCopy,
   type Os,
 } from "../../i18n/pages/download";
@@ -84,7 +86,7 @@ export default function OsDetect({ lang = "en" }: Props) {
           <span className="osd-dot" />
           <span className="osd-dot" />
         </span>
-        <span className="osd-tab">liveaudio · v1.2.7</span>
+        <span className="osd-tab">liveaudio · v1.5.0 · rust</span>
         <span className="osd-status" aria-live="polite">
           <span className="live-dot" aria-hidden="true" />
           {statusText}
@@ -154,6 +156,30 @@ export default function OsDetect({ lang = "en" }: Props) {
           rel="noopener"
         >
           {copy.latestLinkLabel}
+          <ArrowUpRight size={16} strokeWidth={1.75} aria-hidden="true" />
+        </a>
+
+        {/* Portable standalone exe (Windows, no install) */}
+        <a
+          className="btn-tertiary osd-latest"
+          href={PORTABLE_ASSET.url}
+          rel="noopener"
+        >
+          {copy.portableLabel}
+          <span className="osd-portable-meta">{copy.portableHint}</span>
+          <ArrowUpRight size={16} strokeWidth={1.75} aria-hidden="true" />
+        </a>
+
+        {/* Honest platform flag: v1.5.0 is Windows x64; Linux is legacy */}
+        <p className="osd-legacy">{copy.legacyNote}</p>
+
+        {/* Release notes (hashes + changelog) */}
+        <a
+          className="btn-tertiary osd-latest"
+          href={RELEASE_TAG}
+          rel="noopener"
+        >
+          v1.5.0 · Tauri 2
           <ArrowUpRight size={16} strokeWidth={1.75} aria-hidden="true" />
         </a>
       </div>
@@ -273,6 +299,18 @@ export default function OsDetect({ lang = "en" }: Props) {
           gap: 6px;
           align-self: flex-start;
           font-size: var(--text-xs);
+        }
+        .osd-portable-meta {
+          font-family: var(--font-mono);
+          font-size: var(--text-xs);
+          color: var(--color-text-muted);
+        }
+        .osd-legacy {
+          margin: 0;
+          align-self: flex-start;
+          font-family: var(--font-mono);
+          font-size: var(--text-xs);
+          color: var(--color-amber);
         }
       `}</style>
     </div>

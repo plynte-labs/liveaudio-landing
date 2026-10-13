@@ -99,7 +99,7 @@ const en: ObsSetupCopy = {
   eyebrow: "// obs setup",
   h1: "Add LiveAudio captions to OBS in five steps.",
   intro:
-    "LiveAudio renders into OBS through a Browser source that loads the included subtitulos_obs.html overlay and listens to a local WebSocket (ws://127.0.0.1:8765). Create the source, size it 1920×200, keep it always running, match the port, and start the system. Windows and Linux.",
+    "LiveAudio renders into OBS through a Browser source that loads the included subtitulos_obs.html overlay and listens to a local WebSocket (ws://127.0.0.1:8765). Create the source, size it 1920×200, keep it always running, match the port, and start the system. Windows x64 (v1.5.0 Rust build).",
 
   stepsEyebrow: "// the five steps",
   stepsHeading: "The exact Browser-source flow.",
@@ -166,8 +166,8 @@ const en: ObsSetupCopy = {
   closingEyebrow: "// download",
   closingHeading: "Get LiveAudio and wire up OBS today.",
   closingBody:
-    "Free & open-source (MIT). No subscription, no API key. You only pay your own electricity — hardware not included. Windows and Linux.",
-  download: "Download LiveAudio v1.2.7 (free)",
+    "Free & open-source (MIT). No subscription, no API key. You only pay your own electricity — hardware not included. Windows x64 (v1.5.0).",
+  download: "Download LiveAudio v1.5.0 (free)",
   downloadHref: localizedPath("en", "download"),
 
   howToName: "Add LiveAudio captions to OBS",
@@ -189,7 +189,7 @@ const es: ObsSetupCopy = {
   eyebrow: "// configurar obs",
   h1: "Agrega los subtítulos de LiveAudio a OBS en cinco pasos.",
   intro:
-    "LiveAudio se muestra en OBS mediante una fuente de navegador que carga el overlay incluido subtitulos_obs.html y escucha un WebSocket local (ws://127.0.0.1:8765). Crea la fuente, dale un tamaño de 1920×200, mantenla siempre activa, iguala el puerto e inicia el sistema. Windows y Linux.",
+    "LiveAudio se muestra en OBS mediante una fuente de navegador que carga el overlay incluido subtitulos_obs.html y escucha un WebSocket local (ws://127.0.0.1:8765). Crea la fuente, dale un tamaño de 1920×200, mantenla siempre activa, iguala el puerto e inicia el sistema. Windows x64 (versión Rust v1.5.0).",
 
   stepsEyebrow: "// los cinco pasos",
   stepsHeading: "El flujo exacto de la fuente de navegador.",
@@ -256,8 +256,8 @@ const es: ObsSetupCopy = {
   closingEyebrow: "// descargar",
   closingHeading: "Descarga LiveAudio y configura OBS hoy.",
   closingBody:
-    "Gratis y de código abierto (MIT). Sin suscripción, sin API key. Solo pagas tu propia electricidad — el hardware no está incluido. Windows y Linux.",
-  download: "Descargar LiveAudio v1.2.7 (gratis)",
+    "Gratis y de código abierto (MIT). Sin suscripción, sin API key. Solo pagas tu propia electricidad — el hardware no está incluido. Windows x64 (v1.5.0).",
+  download: "Descargar LiveAudio v1.5.0 (gratis)",
   downloadHref: localizedPath("es", "download"),
 
   howToName: "Agregar subtítulos de LiveAudio a OBS",
