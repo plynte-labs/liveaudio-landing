@@ -120,7 +120,7 @@ async function build() {
 
   // --- Real-font text layers (composited over the background) ---
   const eyebrow = await textLayer({
-    text: `<span foreground="${COLOR.textMuted}">PLYNTE LIVEAUDIO v1.5.0 · RUST + TAURI 2 · WINDOWS X64</span>`,
+    text: `<span foreground="${COLOR.textMuted}">PLYNTE LIVEAUDIO v1.5.1 · RUST + TAURI 2 · WINDOWS X64</span>`,
     fontfile: MONO,
     font: "JetBrains Mono 24",
     spacing: 3000,

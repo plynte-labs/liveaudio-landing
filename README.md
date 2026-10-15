@@ -7,7 +7,7 @@ the root is unambiguously the Astro project.
 
 ---
 
-## Product facts (v1.5.0)
+## Product facts (v1.5.1)
 
 LiveAudio runs on **Windows x64** (native Rust + Tauri 2 build; Linux stays on the legacy Python v1.2.7 tarball — not macOS). It transcribes with Whisper
 (`tiny` / `base` / `small` / `turbo`), trims silence with Silero VAD, and broadcasts
@@ -15,7 +15,7 @@ subtitle JSON over `ws://127.0.0.1:8765` to OBS Browser Source or any HTML/WebSo
 client on localhost.
 
 - **Free & open-source (MIT).** No subscription, no API key, no per-minute cost.
-- **Platforms:** Windows 10/11 x64 (v1.5.0 Rust: installer `LiveAudio_1.5.0_x64-setup.exe` ~23.9 MB + portable `liveaudio-desktop.exe` ~15.6 MB) and Linux x86_64 legacy
+- **Platforms:** Windows 10/11 x64 (v1.5.1 Rust: installer `LiveAudio_1.5.1_x64-setup.exe` ~26.2 MB + portable `liveaudio-desktop.exe` ~16.2 MB) and Linux x86_64 legacy
   (mic capture; needs `libportaudio2`). System-audio loopback is **Windows-only**.
 - **GPU optional;** CPU works. NVIDIA CUDA is optional but recommended (driver ≥ 525,
   VRAM ≥ 4 GiB), auto-detected.
@@ -23,8 +23,8 @@ client on localhost.
   transcription models — fully offline afterward. No Python runtime to provision.
 - **New in v1.5.0:** rewritten in Rust with a Tauri 2 desktop shell — faster startup, lower RAM, memory-safe transcription. Ships as a single native binary. The installer auto-removes legacy Python builds (v1.0.0–v1.2.7) and preserves settings/sessions in `%APPDATA%\LiveAudio`. **Not code-signed yet** — SmartScreen may warn (More info → Run anyway).
 
-Real v1.5.0 download assets live at
-`https://github.com/plynte-labs/LiveAudio/releases/download/v1.5.0/` (Windows installer
+Real v1.5.1 download assets live at
+`https://github.com/plynte-labs/LiveAudio/releases/download/v1.5.1/` (Windows installer
 `.exe`, portable `.exe`); legacy Linux v1.2.7 tarball at
 `https://github.com/plynte-labs/LiveAudio/releases/download/v1.2.7/`; always-latest at
 `https://github.com/plynte-labs/LiveAudio/releases/latest`.
@@ -54,7 +54,7 @@ EN lives at `/`; every marketing page is mirrored under `/es/…`.
 | Route | Page |
 |---|---|
 | `/` · `/es/` | Home — answer-first hero + conversion funnel |
-| `/download/` · `/es/download/` | Real v1.5.0 download assets, OS detection, SmartScreen + checksum notes, system requirements |
+| `/download/` · `/es/download/` | Real v1.5.1 download assets, OS detection, SmartScreen + checksum notes, system requirements |
 | `/getting-started/` · `/es/getting-started/` | Activation: installer / portable vs. source (Rust + Tauri 2), first run, GPU auto-detect, profiles |
 | `/obs-setup/` · `/es/obs-setup/` | OBS Browser Source step-by-step |
 | `/docs/[section]/` · `/es/docs/[section]/` | overview · getting_started · websocket_obs · troubleshooting · config |
@@ -102,5 +102,5 @@ liveaudio-landing/
 ## Content rules
 
 - Use only design tokens and classes from `src/styles/global.css` — never hardcode hex.
-- Keep EN/ES parity and keep every claim faithful to the real LiveAudio v1.5.0 product facts.
+- Keep EN/ES parity and keep every claim faithful to the real LiveAudio v1.5.1 product facts.
 - Spanish artifacts use neutral/professional Spanish.

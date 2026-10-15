@@ -27,15 +27,15 @@ export const ui = {
     "nav.openMenu": "Open menu",
 
     // Common buttons / CTAs (chrome-level; page heroes own their own copy)
-    "cta.download": "Download LiveAudio v1.5.0 (free)",
+    "cta.download": "Download LiveAudio v1.5.1 (free)",
     "cta.github": "GitHub",
     "cta.copy": "Copy",
     "cta.copied": "copied",
 
     // Brand / version
     "brand.name": "LiveAudio",
-    "brand.version": "v1.5.0",
-    "brand.versionLinkLabel": "View LiveAudio v1.5.0 release",
+    "brand.version": "v1.5.1",
+    "brand.versionLinkLabel": "View LiveAudio v1.5.1 release",
 
     // Footer columns
     "footer.tagline": "100% local · MIT open-source",
@@ -46,7 +46,7 @@ export const ui = {
     "footer.resources.releases": "Releases",
     "footer.resources.llms": "llms.txt",
     "footer.resources.checksums": "SHA256SUMS",
-    "footer.legal": "© Plynte · LiveAudio v1.5.0 · MIT · Windows x64 · Rust",
+    "footer.legal": "© Plynte · LiveAudio v1.5.1 · MIT · Windows x64 · Rust",
     "footer.privacy": "Privacy Policy",
     "footer.terms": "Terms of Service",
 
@@ -74,15 +74,15 @@ export const ui = {
     "nav.openMenu": "Abrir menú",
 
     // Common buttons / CTAs
-    "cta.download": "Descargar LiveAudio v1.5.0 (gratis)",
+    "cta.download": "Descargar LiveAudio v1.5.1 (gratis)",
     "cta.github": "GitHub",
     "cta.copy": "Copiar",
     "cta.copied": "copiado",
 
     // Brand / version
     "brand.name": "LiveAudio",
-    "brand.version": "v1.5.0",
-    "brand.versionLinkLabel": "Ver versión de LiveAudio v1.5.0",
+    "brand.version": "v1.5.1",
+    "brand.versionLinkLabel": "Ver versión de LiveAudio v1.5.1",
 
     // Footer columns
     "footer.tagline": "100% local · Código abierto MIT",
@@ -93,7 +93,7 @@ export const ui = {
     "footer.resources.releases": "Versiones",
     "footer.resources.llms": "llms.txt",
     "footer.resources.checksums": "SHA256SUMS",
-    "footer.legal": "© Plynte · LiveAudio v1.5.0 · MIT · Windows x64 · Rust",
+    "footer.legal": "© Plynte · LiveAudio v1.5.1 · MIT · Windows x64 · Rust",
     "footer.privacy": "Política de Privacidad",
     "footer.terms": "Términos del Servicio",
 

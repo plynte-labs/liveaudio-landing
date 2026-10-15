@@ -2,7 +2,7 @@
  * Getting-started page copy — bilingual (EN default + ES mirror).
  *
  * The /getting-started/ page is a numbered "signal timeline": the EARNED,
- * real activation sequence for LiveAudio v1.5.0. Numbering is honest — each
+ * real activation sequence for LiveAudio v1.5.1. Numbering is honest — each
  * step is a real ordered action a user actually performs.
  *
  *   01  get LiveAudio        installer (.exe) / portable exe vs source (Rust + Tauri)
@@ -10,10 +10,10 @@
  *   03  GPU auto-detect      CPU works; CUDA driver >= 525 / VRAM >= 4 GiB
  *   04  pick profile + go    Fast/Balanced/Quality/Stable Streaming -> START SYSTEM
  *
- * Every claim is traceable to the v1.5.0 release:
+ * Every claim is traceable to the v1.5.1 release:
  *   - install / first run (native Rust binary, no Python runtime)
  *   - GPU optional; CUDA driver >= 525, VRAM >= 4 GiB; CPU works
- *   - installer ~23.9 MB / portable ~15.6 MB; SmartScreen (not code-signed yet);
+ *   - installer ~26.2 MB / portable ~16.2 MB; SmartScreen (not code-signed yet);
  *     legacy Python v1.0.0–v1.2.7 auto-migration preserving %APPDATA%\LiveAudio
  *   - START SYSTEM + Apply changes
  *   - profiles Fast / Balanced (recommended) / Quality / Stable Streaming
@@ -116,9 +116,9 @@ export interface GettingStartedCopy {
 }
 
 const EN: GettingStartedCopy = {
-  title: "Getting started — activate LiveAudio v1.5.0 (Windows x64)",
+  title: "Getting started — activate LiveAudio v1.5.1 (Windows x64)",
   description:
-    "Activate LiveAudio v1.5.0: run the native Rust installer or the portable exe, let the first run fetch transcription models, auto-detect your GPU, pick a profile, and START SYSTEM. Windows x64, 100% local.",
+    "Activate LiveAudio v1.5.1: run the native Rust installer or the portable exe, let the first run fetch transcription models, auto-detect your GPU, pick a profile, and START SYSTEM. Windows x64, 100% local.",
   eyebrow: "// getting-started",
   h1: "Activate LiveAudio in four real steps.",
   intro:
@@ -134,14 +134,14 @@ const EN: GettingStartedCopy = {
         {
           kicker: "// installer",
           title: "Installer (recommended)",
-          body: "Windows x64: download LiveAudio_1.5.0_x64-setup.exe and run it — no Python to install, the app is a native Rust binary. Coming from v1.0.0–v1.2.7? The installer removes the legacy Python build silently and preserves your settings in %APPDATA%\\LiveAudio. Prefer no install? Grab liveaudio-desktop.exe (~15.6 MB) and just run it. Linux: use the legacy v1.2.7 tarball for now.",
+          body: "Windows x64: download LiveAudio_1.5.1_x64-setup.exe and run it — no Python to install, the app is a native Rust binary. Coming from v1.0.0–v1.2.7? The installer removes the legacy Python build silently and preserves your settings in %APPDATA%\\LiveAudio. Prefer no install? Grab liveaudio-desktop.exe (~16.2 MB) and just run it. Linux: use the legacy v1.2.7 tarball for now.",
           code: {
             tab: "windows x64",
             lines: [
               { kind: "comment", text: "# Installer (recommended) or portable:" },
               {
                 kind: "command",
-                text: "LiveAudio_1.5.0_x64-setup.exe",
+                text: "LiveAudio_1.5.1_x64-setup.exe",
               },
               { kind: "command", text: "liveaudio-desktop.exe" },
             ],
@@ -173,7 +173,7 @@ const EN: GettingStartedCopy = {
       title: "First run fetches the models.",
       lede: "The first launch downloads the transcription models, then caches them. Models download on first transcription. Every later start is instant and fully offline.",
       flag: "First run: internet required",
-      note: "No Python, no pip chain: the installer (~23.9 MB) is the whole app. Your settings and sessions in %APPDATA%\\LiveAudio survive updates and the Python-to-Rust migration.",
+      note: "No Python, no pip chain: the installer (~26.2 MB) is the whole app. Your settings and sessions in %APPDATA%\\LiveAudio survive updates and the Python-to-Rust migration.",
     },
     {
       num: "03",
@@ -217,17 +217,17 @@ const EN: GettingStartedCopy = {
   closingHeading: "Have the app yet?",
   closingBody:
     "Free & open-source (MIT). No subscription, no API key. You only pay your own electricity — hardware not included.",
-  download: "Download LiveAudio v1.5.0 (free)",
-  howToName: "Get started with LiveAudio v1.5.0",
+  download: "Download LiveAudio v1.5.1 (free)",
+  howToName: "Get started with LiveAudio v1.5.1",
   timelineLabel: "Activation steps",
   detectLabel: "GPU auto-detect ladder",
   profilesLabel: "Profiles",
 };
 
 const ES: GettingStartedCopy = {
-  title: "Primeros pasos — activa LiveAudio v1.5.0 (Windows x64)",
+  title: "Primeros pasos — activa LiveAudio v1.5.1 (Windows x64)",
   description:
-    "Activa LiveAudio v1.5.0: ejecuta el instalador Rust nativo o el portable, deja que la primera ejecución descargue los modelos, detecte la GPU, elige un perfil e INICIAR SISTEMA. Windows x64, 100% local.",
+    "Activa LiveAudio v1.5.1: ejecuta el instalador Rust nativo o el portable, deja que la primera ejecución descargue los modelos, detecte la GPU, elige un perfil e INICIAR SISTEMA. Windows x64, 100% local.",
   eyebrow: "// primeros-pasos",
   h1: "Activa LiveAudio en cuatro pasos reales.",
   intro:
@@ -243,14 +243,14 @@ const ES: GettingStartedCopy = {
         {
           kicker: "// instalador",
           title: "Instalador (recomendado)",
-          body: "Windows x64: descarga LiveAudio_1.5.0_x64-setup.exe y ejecútalo — sin Python por instalar, la app es un binario Rust nativo. ¿Vienes de v1.0.0–v1.2.7? El instalador elimina la versión Python heredada en silencio y conserva tu configuración en %APPDATA%\\LiveAudio. ¿Prefieres no instalar? Toma liveaudio-desktop.exe (~15.6 MB) y ejecútalo. Linux: usa el tarball heredado v1.2.7 por ahora.",
+          body: "Windows x64: descarga LiveAudio_1.5.1_x64-setup.exe y ejecútalo — sin Python por instalar, la app es un binario Rust nativo. ¿Vienes de v1.0.0–v1.2.7? El instalador elimina la versión Python heredada en silencio y conserva tu configuración en %APPDATA%\\LiveAudio. ¿Prefieres no instalar? Toma liveaudio-desktop.exe (~16.2 MB) y ejecútalo. Linux: usa el tarball heredado v1.2.7 por ahora.",
           code: {
             tab: "windows x64",
             lines: [
               { kind: "comment", text: "# Instalador (recomendado) o portable:" },
               {
                 kind: "command",
-                text: "LiveAudio_1.5.0_x64-setup.exe",
+                text: "LiveAudio_1.5.1_x64-setup.exe",
               },
               { kind: "command", text: "liveaudio-desktop.exe" },
             ],
@@ -282,7 +282,7 @@ const ES: GettingStartedCopy = {
       title: "La primera ejecución descarga los modelos.",
       lede: "El primer arranque descarga los modelos de transcripción y luego los guarda en caché. Los modelos se descargan en la primera transcripción. Cada arranque posterior es instantáneo y sin conexión.",
       flag: "Primera ejecución: requiere internet",
-      note: "Sin Python ni cadena pip: el instalador (~23.9 MB) es la app completa. Tu configuración y sesiones en %APPDATA%\\LiveAudio sobreviven a las actualizaciones y a la migración de Python a Rust.",
+      note: "Sin Python ni cadena pip: el instalador (~26.2 MB) es la app completa. Tu configuración y sesiones en %APPDATA%\\LiveAudio sobreviven a las actualizaciones y a la migración de Python a Rust.",
     },
     {
       num: "03",
@@ -327,8 +327,8 @@ const ES: GettingStartedCopy = {
   closingHeading: "¿Todavía no tienes la app?",
   closingBody:
     "Gratis y de código abierto (MIT). Sin suscripción, sin API key. Solo pagas tu propia electricidad — el hardware no está incluido.",
-  download: "Descargar LiveAudio v1.5.0 (gratis)",
-  howToName: "Empieza con LiveAudio v1.5.0",
+  download: "Descargar LiveAudio v1.5.1 (gratis)",
+  howToName: "Empieza con LiveAudio v1.5.1",
   timelineLabel: "Pasos de activación",
   detectLabel: "Escalera de detección de GPU",
   profilesLabel: "Perfiles",

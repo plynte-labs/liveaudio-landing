@@ -4,7 +4,7 @@ import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 
-// LiveAudio v1.5.0 — Astro 6 static build.
+// LiveAudio v1.5.1 — Astro 6 static build.
 // i18n: EN default at `/`, ES mirror at `/es/`. Tailwind v4 via the Vite plugin
 // (NOT @astrojs/tailwind, which is deprecated). React 19 islands.
 export default defineConfig({

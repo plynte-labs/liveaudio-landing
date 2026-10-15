@@ -2,10 +2,10 @@
  * JSON-LD builders — return plain serializable objects (no <script> tags).
  * Callers embed them via `<script type="application/ld+json" set:html={...}>`.
  *
- * Product facts traceable to the v1.5.0 release:
- *   - operatingSystem: "Windows" (v1.5.0 is a Windows x64 Rust + Tauri 2 build;
+ * Product facts traceable to the v1.5.1 release:
+ *   - operatingSystem: "Windows" (v1.5.1 is a Windows x64 Rust + Tauri 2 build;
  *     Linux stays on the legacy Python v1.2.7 tarball).
- *   - price 0 USD, softwareVersion 1.5.0, MIT license.
+ *   - price 0 USD, softwareVersion 1.5.1, MIT license.
  *   - softwareRequirements: CPU works; CUDA needs driver >=525 + VRAM >=4 GiB.
  *   - canonical org / repo: github.com/plynte-labs/LiveAudio.
  */
@@ -23,7 +23,7 @@ function inLanguage(lang: Locale): string {
 
 export interface SoftwareApplicationInput {
   lang: Locale;
-  /** Direct v1.5.0 asset URL (e.g. the Windows installer) when the page is the download endpoint. */
+  /** Direct v1.5.1 asset URL (e.g. the Windows installer) when the page is the download endpoint. */
   downloadUrl?: string;
 }
 
@@ -38,7 +38,7 @@ export function softwareApplication({ lang, downloadUrl }: SoftwareApplicationIn
     name: "LiveAudio",
     applicationCategory: "MultimediaApplication",
     operatingSystem: "Windows",
-    softwareVersion: "1.5.0",
+    softwareVersion: "1.5.1",
     inLanguage: inLanguage(lang),
     url: SITE_URL,
     license: MIT_LICENSE,

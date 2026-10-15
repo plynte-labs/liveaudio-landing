@@ -6,7 +6,7 @@
  * ~28 Spanish literals: preset names Rápido/Balanceado, "Esperando audio",
  * device names, "[PANTALLA CONGELADA...]", etc.).
  *
- * Fact-checked against the v1.5.0 release (Rust + Tauri 2 rewrite):
+ * Fact-checked against the v1.5.1 release (Rust + Tauri 2 rewrite):
  *   - Profiles: Fast / Balanced / Quality / Stable Streaming. FPS-aware,
  *     never "no FPS drops". Stable Streaming = "reduces GPU
  *     load while gaming" — no third-party game name.

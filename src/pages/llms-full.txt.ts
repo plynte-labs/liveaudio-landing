@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 
 /**
- * llms-full.txt — expanded, concatenated reference of LiveAudio v1.5.0 facts.
+ * llms-full.txt — expanded, concatenated reference of LiveAudio v1.5.1 facts.
  *
  * A single plain-text document an LLM can ingest to answer questions about the
  * product without crawling every page. Every claim is traceable to
@@ -9,16 +9,16 @@ import type { APIRoute } from "astro";
  */
 export const GET: APIRoute = ({ site }) => {
   const base = (site ?? new URL("https://liveaudio.opencohost.com")).href.replace(/\/$/, "");
-  const REL = "https://github.com/plynte-labs/LiveAudio/releases/download/v1.5.0";
+  const REL = "https://github.com/plynte-labs/LiveAudio/releases/download/v1.5.1";
   const LEGACY_REL = "https://github.com/plynte-labs/LiveAudio/releases/download/v1.2.7";
 
-  const body = `# LiveAudio — Full Reference (v1.5.0)
+  const body = `# LiveAudio — Full Reference (v1.5.1)
 
-> LiveAudio is a free, open-source (MIT) desktop app that generates real-time Whisper speech captions 100% locally and streams them to OBS over a local WebSocket. v1.5.0 is a native Rust + Tauri 2 build for Windows x64. No cloud, no API key, no per-minute cost.
+> LiveAudio is a free, open-source (MIT) desktop app that generates real-time Whisper speech captions 100% locally and streams them to OBS over a local WebSocket. v1.5.1 is a native Rust + Tauri 2 build for Windows x64. No cloud, no API key, no per-minute cost.
 
 Canonical site: ${base}/
 Source: https://github.com/plynte-labs/LiveAudio (MIT)
-Release: v1.5.0 (Rust + Tauri 2)
+Release: v1.5.1 (Rust + Tauri 2)
 
 ---
 
@@ -34,11 +34,11 @@ A real-time, local automatic-speech-recognition (ASR) engine for streamers and c
 
 ## Platforms
 
-- Windows 10/11 x64 — Full support (v1.5.0 native Rust build): microphone + WASAPI system loopback; NSIS installer or portable standalone exe.
+- Windows 10/11 x64 — Full support (v1.5.1 native Rust build): microphone + WASAPI system loopback; NSIS installer or portable standalone exe.
 - Linux x86_64 — Legacy Python v1.2.7 tarball only (microphone capture; requires libportaudio2) until a native Linux build ships.
 - macOS — NOT supported.
 
-## Features (v1.5.0)
+## Features (v1.5.1)
 
 - Real-time transcription with Whisper (tiny / base / small / turbo).
 - Silero VAD with configurable pause, pre-roll and threshold.
@@ -58,24 +58,24 @@ A real-time, local automatic-speech-recognition (ASR) engine for streamers and c
 
 ## System requirements
 
-- OS: Windows 10/11 x64 (v1.5.0). Linux: legacy v1.2.7 tarball.
-- Runtime: NONE for end users — v1.5.0 is a native binary, no Python runtime.
+- OS: Windows 10/11 x64 (v1.5.1). Linux: legacy v1.2.7 tarball.
+- Runtime: NONE for end users — v1.5.1 is a native binary, no Python runtime.
 - GPU: optional. CPU works. NVIDIA CUDA is optional but recommended; auto-detected (driver ≥ 525, VRAM ≥ 4 GiB).
 - RAM: 8 GB minimum / 16 GB recommended.
-- Disk: installer ~23.9 MB (portable exe ~15.6 MB), plus transcription-model storage.
+- Disk: installer ~26.2 MB (portable exe ~16.2 MB), plus transcription-model storage.
 - Internet: first run only (downloads transcription models); fully offline afterward.
 
-## Downloads — real v1.5.0 assets
+## Downloads — real v1.5.1 assets
 
 Base URL: ${REL}/
 Always-latest: https://github.com/plynte-labs/LiveAudio/releases/latest
-Release notes (changelog + hashes): https://github.com/plynte-labs/LiveAudio/releases/tag/v1.5.0
+Release notes (changelog + hashes): https://github.com/plynte-labs/LiveAudio/releases/tag/v1.5.1
 
-- Windows installer (primary), ~23.9 MB: ${REL}/LiveAudio_1.5.0_x64-setup.exe
-- Windows portable standalone (no install), ~15.6 MB: ${REL}/liveaudio-desktop.exe
+- Windows installer (primary), ~26.2 MB: ${REL}/LiveAudio_1.5.1_x64-setup.exe
+- Windows portable standalone (no install), ~16.2 MB: ${REL}/liveaudio-desktop.exe
 - Linux x64 legacy tarball (Python v1.2.7; extract, run ./liveaudio-launcher; needs libportaudio2), 46,351,037 bytes (46.35 MB): ${LEGACY_REL}/LiveAudio-1.2.7-linux-x64.tar.gz
 
-Windows SmartScreen: the v1.5.0 installer is not code-signed yet, so SmartScreen may warn. Choose "More info → Run anyway"; the exact files and hashes are on the v1.5.0 release page.
+Windows SmartScreen: the v1.5.1 installer is not code-signed yet, so SmartScreen may warn. Choose "More info → Run anyway"; the exact files and hashes are on the v1.5.1 release page.
 Upgrading from Python (v1.0.0–v1.2.7): the installer detects the legacy build via the Windows registry (32/64-bit), runs its uninstaller silently, stops leftover processes and removes obsolete Python folders. Settings and sessions in %APPDATA%\\LiveAudio are preserved.
 Updates: one-click in-app update; new releases on GitHub Releases.
 
@@ -108,10 +108,10 @@ Free & open-source (MIT). No subscription, no API key. You only pay your own ele
 ## FAQ
 
 Q: Is it really 100% local?
-A: Yes — all transcription runs on your machine with no telemetry. Internet is used only on the first run to download transcription models; it works fully offline afterward. v1.5.0 is a native Rust binary with no Python runtime.
+A: Yes — all transcription runs on your machine with no telemetry. Internet is used only on the first run to download transcription models; it works fully offline afterward. v1.5.1 is a native Rust binary with no Python runtime.
 
 Q: Does it work on Linux?
-A: v1.5.0 focuses on Windows 10/11 x64; Linux users stay on the legacy Python v1.2.7 tarball for microphone capture. It needs libportaudio2 (sudo apt install libportaudio2). System-audio loopback is Windows-only.
+A: v1.5.1 focuses on Windows 10/11 x64; Linux users stay on the legacy Python v1.2.7 tarball for microphone capture. It needs libportaudio2 (sudo apt install libportaudio2). System-audio loopback is Windows-only.
 
 Q: Is it free / open-source?
 A: Yes — it's free and open-source under the MIT license. No subscription and no API key; you only pay your own electricity.

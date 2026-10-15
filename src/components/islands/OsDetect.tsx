@@ -86,7 +86,7 @@ export default function OsDetect({ lang = "en" }: Props) {
           <span className="osd-dot" />
           <span className="osd-dot" />
         </span>
-        <span className="osd-tab">liveaudio · v1.5.0 · rust</span>
+        <span className="osd-tab">liveaudio · v1.5.1 · rust</span>
         <span className="osd-status" aria-live="polite">
           <span className="live-dot" aria-hidden="true" />
           {statusText}
@@ -170,7 +170,7 @@ export default function OsDetect({ lang = "en" }: Props) {
           <ArrowUpRight size={16} strokeWidth={1.75} aria-hidden="true" />
         </a>
 
-        {/* Honest platform flag: v1.5.0 is Windows x64; Linux is legacy */}
+        {/* Honest platform flag: v1.5.1 is Windows x64; Linux is legacy */}
         <p className="osd-legacy">{copy.legacyNote}</p>
 
         {/* Release notes (hashes + changelog) */}
@@ -179,7 +179,7 @@ export default function OsDetect({ lang = "en" }: Props) {
           href={RELEASE_TAG}
           rel="noopener"
         >
-          v1.5.0 · Tauri 2
+          v1.5.1 · Tauri 2
           <ArrowUpRight size={16} strokeWidth={1.75} aria-hidden="true" />
         </a>
       </div>

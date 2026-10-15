@@ -26,8 +26,8 @@ export interface ProductTourCopy {
 
 const en: ProductTourCopy = {
   meta: {
-    title: "Product Tour — LiveAudio v1.5.0",
-    description: "A visual walkthrough of real LiveAudio desktop application states, including the v1.5.0 Rust + Tauri 2 workspace, from first run through local diagnostics.",
+    title: "Product Tour — LiveAudio v1.5.1",
+    description: "A visual walkthrough of real LiveAudio desktop application states, including the v1.5.1 Rust + Tauri 2 workspace, from first run through local diagnostics.",
   },
   eyebrow: "// product tour",
   heading: "A local captioning workspace, shown state by state.",
@@ -42,9 +42,9 @@ const en: ProductTourCopy = {
   chapters: [
     {
       id: "rust",
-      eyebrow: "// v1.5.0 · rust + tauri 2",
+      eyebrow: "// v1.5.1 · rust + tauri 2",
       title: "Rewritten in Rust: faster, lighter, safer.",
-      body: "The v1.5.0 desktop runs on a Rust core with a Tauri 2 shell — no Python runtime. This capture shows the Advanced tab: Whisper turbo on CUDA, voice-activity tuning, local RNNoise suppression, acoustic speech-metadata events, the live stream-chat subtitle feed, and OBS Studio integration.",
+      body: "The v1.5.1 desktop runs on a Rust core with a Tauri 2 shell — no Python runtime. This capture shows the Advanced tab: Whisper turbo on CUDA, voice-activity tuning, local RNNoise suppression, acoustic speech-metadata events, the live stream-chat subtitle feed, and OBS Studio integration.",
       alt: "LiveAudio v1.5.0 Advanced tab with Whisper turbo model, CUDA compute device, voice-activity sliders, RNNoise suppression and acoustic event toggles, live subtitle feed, OBS Studio integration and event log.",
       layout: "wide",
     },
@@ -109,8 +109,8 @@ const en: ProductTourCopy = {
 
 const es: ProductTourCopy = {
   meta: {
-    title: "Tour del producto — LiveAudio v1.5.0",
-    description: "Un recorrido visual por estados reales de la app de escritorio LiveAudio, incluido el espacio v1.5.0 Rust + Tauri 2, desde el primer inicio hasta el diagnóstico local.",
+    title: "Tour del producto — LiveAudio v1.5.1",
+    description: "Un recorrido visual por estados reales de la app de escritorio LiveAudio, incluido el espacio v1.5.1 Rust + Tauri 2, desde el primer inicio hasta el diagnóstico local.",
   },
   eyebrow: "// tour del producto",
   heading: "Un espacio local para subtítulos, mostrado estado por estado.",
@@ -125,9 +125,9 @@ const es: ProductTourCopy = {
   chapters: [
     {
       id: "rust",
-      eyebrow: "// v1.5.0 · rust + tauri 2",
+      eyebrow: "// v1.5.1 · rust + tauri 2",
       title: "Reescrita en Rust: más rápida, liviana y segura.",
-      body: "El escritorio v1.5.0 corre sobre un núcleo Rust con interfaz Tauri 2 — sin runtime de Python. Esta captura muestra la pestaña Avanzado: Whisper turbo en CUDA, ajuste de actividad de voz, supresión de ruido RNNoise local, eventos acústicos de metadatos del habla, feed de subtítulos en vivo y la integración con OBS Studio.",
+      body: "El escritorio v1.5.1 corre sobre un núcleo Rust con interfaz Tauri 2 — sin runtime de Python. Esta captura muestra la pestaña Avanzado: Whisper turbo en CUDA, ajuste de actividad de voz, supresión de ruido RNNoise local, eventos acústicos de metadatos del habla, feed de subtítulos en vivo y la integración con OBS Studio.",
       alt: "Pestaña Avanzado de LiveAudio v1.5.0 con modelo Whisper turbo, dispositivo de cómputo CUDA, deslizadores de actividad de voz, interruptores de supresión RNNoise y eventos acústicos, feed de subtítulos en vivo, integración con OBS Studio y registro de eventos.",
       layout: "wide",
     },
