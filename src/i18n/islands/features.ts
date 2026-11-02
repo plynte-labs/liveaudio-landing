@@ -210,7 +210,7 @@ export const features: Record<Lang, FeaturesStrings> = {
       },
       tipLabel: "Sizing tip",
       tipTurbo:
-        "GPU is optional and CPU works. CUDA is auto-detected and recommended (driver ≥ 525, VRAM ≥ 4 GiB). turbo is the largest model.",
+        "GPU is optional and CPU works. CUDA also requires compatible runtime libraries; detection alone does not guarantee readiness. turbo is the largest model.",
       tipSmall:
         "small / base is the streamer sweet spot: fast transcription, modest footprint. GPU optional — CPU works fine.",
     },
@@ -355,7 +355,7 @@ export const features: Record<Lang, FeaturesStrings> = {
       },
       tipLabel: "Recomendación",
       tipTurbo:
-        "La GPU es opcional y la CPU funciona. CUDA se detecta solo y es recomendado (driver ≥ 525, VRAM ≥ 4 GiB). turbo es el modelo más grande.",
+        "La GPU es opcional y la CPU funciona. CUDA también requiere bibliotecas compatibles; la detección no garantiza que esté preparado. turbo es el modelo más grande.",
       tipSmall:
         "small / base es el punto justo para streamers: transcripción rápida, huella moderada. GPU opcional — la CPU anda bien.",
     },

@@ -43,7 +43,7 @@ export function softwareApplication({ lang, downloadUrl }: SoftwareApplicationIn
     url: SITE_URL,
     license: MIT_LICENSE,
     softwareRequirements:
-      "CPU works (no GPU required). NVIDIA CUDA is optional but recommended and needs driver >= 525 and VRAM >= 4 GiB.",
+      "CPU transcription is available. NVIDIA CUDA is optional and requires compatible GPU drivers and runtime libraries.",
     offers: {
       "@type": "Offer",
       // The product spec hard gate specifies the string "0" (schema.org Offer.price

@@ -4,8 +4,7 @@
  * Single decisive, FACT-BASED comparison table. Every cell is traceable to
  * the product spec:
  *   - 100% local / no telemetry.
- *   - Cost $0 (electricity only) vs cloud ASR ~$0.006/min (= ~$0.36/hr,
- *     OpenAI Whisper API).
+ *   - Local transcription has no per-minute fee.
  *   - Platforms: Windows x64 native (v1.5.1 Rust) with legacy Linux v1.2.7
  *     fallback (loopback Windows-only -> conditional ◐).
  *   - OBS integration via WebSocket Browser Source (subtitulos_obs.html).
@@ -110,7 +109,7 @@ const en: VsCopy = {
         { state: "yes", note: "$0 · electricity only" },
         { state: "yes", note: "$0" },
         { state: "cond", note: "free / paid tiers" },
-        { state: "no", note: "~$0.006/min metered", flag: true },
+        { state: "cond", note: "provider pricing varies", flag: true },
       ],
     },
     {
@@ -150,9 +149,9 @@ const en: VsCopy = {
       ],
     },
     {
-      feature: "No telemetry",
+      feature: "No application telemetry",
       cells: [
-        { state: "yes", note: "no telemetry" },
+        { state: "yes", note: "no application telemetry" },
         { state: "cond", note: "varies by plugin" },
         { state: "cond", note: "varies by tool" },
         { state: "no", note: "server-side logs", flag: true },
@@ -170,7 +169,7 @@ const en: VsCopy = {
     {
       feature: "Works offline",
       cells: [
-        { state: "yes", note: "offline after first run" },
+        { state: "cond", note: "after required components and models are available" },
         { state: "yes", note: "on-device" },
         { state: "no", note: "needs the web page" },
         { state: "no", note: "needs internet", flag: true },
@@ -223,7 +222,7 @@ const es: VsCopy = {
         { state: "yes", note: "$0 · solo electricidad" },
         { state: "yes", note: "$0" },
         { state: "cond", note: "planes gratis / de pago" },
-        { state: "no", note: "~$0.006/min medido", flag: true },
+        { state: "cond", note: "según el proveedor", flag: true },
       ],
     },
     {
@@ -263,9 +262,9 @@ const es: VsCopy = {
       ],
     },
     {
-      feature: "Sin telemetría",
+      feature: "Sin telemetría en la aplicación",
       cells: [
-        { state: "yes", note: "sin telemetría" },
+        { state: "yes", note: "sin telemetría en la aplicación" },
         { state: "cond", note: "según el plugin" },
         { state: "cond", note: "según la herramienta" },
         { state: "no", note: "registros en servidor", flag: true },
@@ -283,7 +282,7 @@ const es: VsCopy = {
     {
       feature: "Funciona sin conexión",
       cells: [
-        { state: "yes", note: "offline tras la 1ª ejecución" },
+        { state: "cond", note: "con componentes y modelos necesarios disponibles" },
         { state: "yes", note: "en el equipo" },
         { state: "no", note: "necesita la página web" },
         { state: "no", note: "necesita internet", flag: true },

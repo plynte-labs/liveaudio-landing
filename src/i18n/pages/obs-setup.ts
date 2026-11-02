@@ -94,12 +94,12 @@ export interface ObsSetupCopy {
 const en: ObsSetupCopy = {
   title: "OBS setup — LiveAudio local captions in OBS (step by step)",
   description:
-    "Add LiveAudio captions to OBS in five steps: create a Browser source, point it at subtitulos_obs.html at 1920×200, disable shut-down-when-not-visible, set the WebSocket port, then START SYSTEM.",
+    "Add LiveAudio captions to OBS using a Browser source and the overlay URL copied from LiveAudio.",
 
   eyebrow: "// obs setup",
   h1: "Add LiveAudio captions to OBS in five steps.",
   intro:
-    "LiveAudio renders into OBS through a Browser source that loads the included subtitulos_obs.html overlay and listens to a local WebSocket (ws://127.0.0.1:8765). Create the source, size it 1920×200, keep it always running, match the port, and start the system. Windows x64 (v1.5.1 Rust build).",
+    "Start the system in LiveAudio, then copy its overlay URL into an OBS Browser source. The overlay uses a local WebSocket. Windows x64 (v1.5.1).",
 
   stepsEyebrow: "// the five steps",
   stepsHeading: "The exact Browser-source flow.",
@@ -112,28 +112,28 @@ const en: ObsSetupCopy = {
     },
     {
       kicker: "// local overlay",
-      name: "Point it at subtitulos_obs.html and size it 1920×200",
-      text: "Choose Local file and select subtitulos_obs.html (it ships in liveaudio/assets/). Not sure where that is? On the installed app it lives under your LiveAudio data folder — on Windows open %LOCALAPPDATA%\\LiveAudio\\data, on Linux ~/.local/share/liveaudio/data, then go into liveaudio/assets/. Set the source size to Width 1920 and Height 200 so the caption ribbon spans the bottom of a 1080p canvas.",
+      name: "Paste the overlay URL and size it 1920×200",
+      text: "In LiveAudio, select your audio device, profile and model and apply changes. Start the system, then copy the overlay URL. In OBS, leave Local File unchecked and paste the URL. Set Width to 1920 and Height to 200.",
       token: "1920×200",
     },
     {
       kicker: "// keep alive",
       name: 'Disable "Shut down source when not visible"',
-      text: 'In the Browser source properties, turn off "Shut down source when not visible" (and "Refresh browser when scene becomes active"). This keeps the WebSocket connection open so captions never drop when you switch scenes.',
+      text: 'In the Browser source properties, turn off "Shut down source when not visible" (and "Refresh browser when scene becomes active") to keep the connection active when switching scenes.',
       amber: 'turn OFF "shut down when not visible"',
     },
     {
       kicker: "// port match",
       name: "Match the WebSocket port (default 8765)",
-      text: "LiveAudio broadcasts on ws://127.0.0.1:8765 by default. To change it, set ws_port in config.json; the OBS overlay reads its port from the ?port=XXXX query in the source URL. Keep both sides on the same port.",
+      text: "While the system is running, the copied overlay URL includes the active WebSocket port. LiveAudio starts at port 8765 and may use an alternative through 8774 if needed; copy the URL again if the port changes.",
       token: "ws://127.0.0.1:8765",
-      amber: "custom port: set ws_port + ?port=XXXX",
+      amber: "use the copied URL for the active port",
     },
     {
       kicker: "// go live",
-      name: "Apply changes, then START SYSTEM",
-      text: "In LiveAudio pick a profile, audio device, CPU or CUDA, and a Whisper model, then click Apply changes and START SYSTEM. Speak — captions appear in the OBS Browser source within about a second.",
-      token: "START SYSTEM",
+      name: "Check captions in OBS",
+      text: "Speak and check for captions in the OBS Browser source. If the active port changes, copy the overlay URL again while the system is running.",
+      token: "Check captions",
     },
   ],
 
@@ -161,7 +161,7 @@ const en: ObsSetupCopy = {
     { field: "catchup_interval_sec", desc: "Spacing used when replaying backlog.", timing: true },
   ],
   payloadNote:
-    "Latency is low and tunable — sub-second to about one second on a typical setup (example frame: total_delay ~1.3s, latency ~1.1s), not milliseconds.",
+    "Latency depends on speech segmentation, model, hardware and system load. Timing fields are measured in seconds.",
 
   closingEyebrow: "// download",
   closingHeading: "Get LiveAudio and wire up OBS today.",
@@ -184,12 +184,12 @@ const en: ObsSetupCopy = {
 const es: ObsSetupCopy = {
   title: "Configurar OBS — subtítulos locales de LiveAudio en OBS (paso a paso)",
   description:
-    "Agrega los subtítulos de LiveAudio a OBS en cinco pasos: crea una fuente de navegador, apúntala a subtitulos_obs.html en 1920×200, desactiva apagar cuando no está visible, configura el puerto del WebSocket y luego INICIAR SISTEMA.",
+    "Agrega subtítulos de LiveAudio a OBS mediante una fuente de navegador y la URL del overlay copiada desde LiveAudio.",
 
   eyebrow: "// configurar obs",
   h1: "Agrega los subtítulos de LiveAudio a OBS en cinco pasos.",
   intro:
-    "LiveAudio se muestra en OBS mediante una fuente de navegador que carga el overlay incluido subtitulos_obs.html y escucha un WebSocket local (ws://127.0.0.1:8765). Crea la fuente, dale un tamaño de 1920×200, mantenla siempre activa, iguala el puerto e inicia el sistema. Windows x64 (versión Rust v1.5.1).",
+    "Inicia el sistema en LiveAudio y después copia la URL del overlay en una fuente de navegador de OBS. El overlay usa un WebSocket local. Windows x64 (v1.5.1).",
 
   stepsEyebrow: "// los cinco pasos",
   stepsHeading: "El flujo exacto de la fuente de navegador.",
@@ -202,28 +202,28 @@ const es: ObsSetupCopy = {
     },
     {
       kicker: "// overlay local",
-      name: "Apúntala a subtitulos_obs.html y pon 1920×200",
-      text: "Elige Archivo local y selecciona subtitulos_obs.html (viene en liveaudio/assets/). ¿No sabes dónde está? En la app instalada vive dentro de tu carpeta de datos de LiveAudio — en Windows abre %LOCALAPPDATA%\\LiveAudio\\data, en Linux ~/.local/share/liveaudio/data, y luego entra en liveaudio/assets/. Configura el tamaño de la fuente en Ancho 1920 y Alto 200 para que la franja de subtítulos cubra la parte inferior de un lienzo 1080p.",
+      name: "Pega la URL del overlay y configura 1920×200",
+      text: "En LiveAudio, selecciona el dispositivo de audio, el perfil y el modelo y aplica los cambios. Inicia el sistema y después copia la URL del overlay. En OBS, deja Archivo local desmarcado y pega la URL. Configura Ancho 1920 y Alto 200.",
       token: "1920×200",
     },
     {
       kicker: "// mantener activo",
       name: 'Desactiva "Apagar la fuente cuando no está visible"',
-      text: 'En las propiedades de la fuente de navegador, desactiva "Apagar la fuente cuando no está visible" (y "Actualizar el navegador cuando la escena se activa"). Esto mantiene abierta la conexión del WebSocket para que los subtítulos no se corten al cambiar de escena.',
+      text: 'En las propiedades de la fuente de navegador, desactiva "Apagar la fuente cuando no está visible" (y "Actualizar el navegador cuando la escena se activa") para mantener activa la conexión al cambiar de escena.',
       amber: 'desactiva "apagar cuando no está visible"',
     },
     {
       kicker: "// igualar puerto",
-      name: "Igualá el puerto del WebSocket (por defecto 8765)",
-      text: "Por defecto, LiveAudio emite en ws://127.0.0.1:8765. Para cambiarlo, configura ws_port en config.json; el overlay de OBS lee su puerto desde la consulta ?port=XXXX en la URL de la fuente. Mantén ambos lados en el mismo puerto.",
+      name: "Comprueba el puerto del WebSocket",
+      text: "Mientras el sistema está iniciado, la URL copiada del overlay incluye el puerto WebSocket activo. LiveAudio comienza en el puerto 8765 y puede usar una alternativa hasta el 8774; copia de nuevo la URL si el puerto cambia.",
       token: "ws://127.0.0.1:8765",
-      amber: "puerto personalizado: ws_port + ?port=XXXX",
+      amber: "usa la URL copiada para el puerto activo",
     },
     {
       kicker: "// salir en vivo",
-      name: "Aplica los cambios y luego INICIAR SISTEMA",
-      text: "En LiveAudio elige un perfil, un dispositivo de audio, CPU o CUDA y un modelo de Whisper; luego haz clic en Aplicar cambios e INICIAR SISTEMA. Habla — los subtítulos aparecen en la fuente de navegador de OBS en aproximadamente un segundo.",
-      token: "INICIAR SISTEMA",
+      name: "Comprueba los subtítulos en OBS",
+      text: "Habla y comprueba los subtítulos en la fuente de navegador de OBS. Si cambia el puerto activo, copia de nuevo la URL mientras el sistema está iniciado.",
+      token: "Comprueba los subtítulos",
     },
   ],
 
@@ -251,7 +251,7 @@ const es: ObsSetupCopy = {
     { field: "catchup_interval_sec", desc: "Espaciado usado al repetir el backlog.", timing: true },
   ],
   payloadNote:
-    "La latencia es baja y ajustable — de menos de un segundo a alrededor de un segundo en un equipo típico (frame de ejemplo: total_delay ~1.3s, latency ~1.1s), no milisegundos.",
+    "La latencia depende de la segmentación, el modelo, el hardware y la carga. Los campos de tiempo se miden en segundos.",
 
   closingEyebrow: "// descargar",
   closingHeading: "Descarga LiveAudio y configura OBS hoy.",

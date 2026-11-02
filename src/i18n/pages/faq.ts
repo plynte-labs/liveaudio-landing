@@ -55,7 +55,7 @@ const en: FaqPageCopy = {
     {
       question: "Is it really 100% local?",
       answer:
-        "Yes. All audio processing and transcription run on your own machine with no telemetry, and internet is needed only on first run to download transcription models — after that it works fully offline. v1.5.1 is a native Rust binary with no Python runtime at all.",
+        "Audio processing and transcription run on your computer. The Rust core and Tauri desktop use a Python inference worker; initial setup and model downloads may require internet.",
     },
     {
       question: "Does it work on Linux?",
@@ -70,17 +70,17 @@ const en: FaqPageCopy = {
     {
       question: "Do I need a GPU?",
       answer:
-        "No. The CPU works on its own; NVIDIA CUDA is optional but recommended and is auto-detected, needing driver 525 or newer and at least 4 GiB of VRAM.",
+        "No. CPU transcription is available. NVIDIA CUDA is optional; detecting a GPU does not guarantee that the required CUDA runtime libraries are available.",
     },
     {
       question: "Do I need internet or an API key?",
       answer:
-        "No API key, ever — and no account either. Internet is required only on first run to fetch transcription models; once those are cached, LiveAudio runs entirely offline.",
+        "No API key or account is needed for local transcription. Internet may be needed to provision components or download a newly selected model. Transcription can run offline once the required components and model are available.",
     },
     {
       question: "What's the latency?",
       answer:
-        "Low and tunable — well under a second on a typical setup — using FPS-aware presets (Fast / Balanced / Quality / Stable Streaming). It is real-time and sub-second, not the few-milliseconds figure marketing pages sometimes claim.",
+        "Latency depends on speech segmentation, the model, hardware and system load. Profiles let you adjust the balance between responsiveness and accuracy.",
     },
     {
       question:
@@ -107,7 +107,7 @@ const es: FaqPageCopy = {
     {
       question: "¿De verdad es 100% local?",
       answer:
-        "Sí. Todo el procesamiento de audio y la transcripción ocurren en tu propio equipo, sin telemetría, y solo se necesita internet en la primera ejecución para descargar los modelos de transcripción — después funciona totalmente sin conexión. La v1.5.1 es un binario Rust nativo sin ningún runtime de Python.",
+        "El procesamiento de audio y la transcripción ocurren en tu equipo. El núcleo Rust y el escritorio Tauri usan un worker de inferencia Python; la configuración inicial y las descargas de modelos pueden necesitar internet.",
     },
     {
       question: "¿Funciona en Linux?",
@@ -122,17 +122,17 @@ const es: FaqPageCopy = {
     {
       question: "¿Necesito una GPU?",
       answer:
-        "No. La CPU funciona por sí sola; NVIDIA CUDA es opcional pero recomendada y se detecta de forma automática, y necesita driver 525 o posterior y al menos 4 GiB de VRAM.",
+        "No. La transcripción puede usar la CPU. NVIDIA CUDA es opcional; detectar una GPU no garantiza que las bibliotecas necesarias para CUDA estén disponibles.",
     },
     {
       question: "¿Necesito internet o una API key?",
       answer:
-        "Nunca una API key — ni tampoco una cuenta. Solo se necesita internet en la primera ejecución para descargar los modelos de transcripción; una vez guardados en caché, LiveAudio funciona totalmente sin conexión.",
+        "La transcripción local no necesita una clave API ni una cuenta. Puede necesitarse internet para preparar los componentes o descargar un modelo recién seleccionado. La transcripción puede funcionar sin conexión cuando los componentes y el modelo necesarios están disponibles.",
     },
     {
       question: "¿Cuál es la latencia?",
       answer:
-        "Baja y ajustable — bastante por debajo de un segundo en un equipo típico — mediante perfiles según FPS (Fast / Balanced / Quality / Stable Streaming). Es en tiempo real y por debajo de un segundo, no la cifra de pocos milisegundos que a veces prometen otras páginas.",
+        "La latencia depende de la segmentación de voz, el modelo, el hardware y la carga del sistema. Los perfiles permiten ajustar el equilibrio entre respuesta y precisión.",
     },
     {
       question:

@@ -218,9 +218,9 @@ const en: HomeCopy = {
     titleA: "Real-time ",
     accent: "local",
     titleATail: " captions for your OBS.",
-    titleB: "No cloud, no subscription, no API key.",
+    titleB: "No cloud transcription, subscription, or API key.",
     subtitle:
-      "LiveAudio is a free, open-source (MIT) app that generates real-time Whisper speech captions 100% locally and streams them to OBS over a local WebSocket. v1.5.1 is rewritten in Rust with a Tauri 2 desktop shell: faster startup, lower RAM, memory-safe transcription — and no Python runtime to download.",
+      "LiveAudio is a free, open-source (MIT) app that transcribes speech locally and sends captions to OBS or other local clients. Its Rust core and Tauri desktop work with a Python inference worker; no cloud transcription service or API key is needed.",
     download: "Download LiveAudio v1.5.1 (free)",
     how: "How it works",
     microTrust: ["Rust + Tauri 2", "100% local", "MIT open-source"],
@@ -233,7 +233,7 @@ const en: HomeCopy = {
       "Rust + Tauri 2",
       "100% local",
       "MIT open-source",
-      "No cloud",
+      "No cloud transcription",
       "No API key",
     ],
   },
@@ -242,13 +242,13 @@ const en: HomeCopy = {
     eyebrow: "LIVE DEMO",
     badge: "real capture",
     heading: "See LiveAudio running live.",
-    lead: "The current v1.5.0 interface in one screenshot — plus an archived recording of the deprecated Python version below.",
+    lead: "A v1.5.0 interface screenshot — plus an archived recording of an earlier version below.",
     imageAlt:
       "LiveAudio v1.5.0 desktop showing the Advanced tab with Whisper turbo on CUDA, voice-activity tuning, live subtitle feed and OBS Studio integration.",
-    imageCaption: "v1.5.0 (Rust + Tauri 2) — the current interface.",
+    imageCaption: "v1.5.0 (Rust + Tauri 2) — historical capture.",
     legacyBadge: "archived capture · deprecated Python version",
     legacyCaption:
-      "Archived recording of the deprecated Python version — the v1.5.0 screenshot above is current. A new Tauri video is coming soon.",
+      "Archived recording of an earlier version. The screenshot above shows v1.5.0.",
     play: "Play",
     pause: "Pause",
     videoAriaLabel:
@@ -262,8 +262,8 @@ const en: HomeCopy = {
       {
         kicker: "// 100% local",
         title: "Is it really 100% local?",
-        body: "All processing happens on your machine, with no telemetry. Internet is needed only on first run to download transcription models; after that it runs fully offline. v1.5.1 ships as a single native binary — no Python runtime to provision.",
-        spec: "rust native binary · no telemetry · offline after first run",
+        body: "Transcription runs on your machine. Initial setup can require internet for the Python worker and its dependencies; models may also need downloading when first selected. Once the required components and models are available, transcription can run offline.",
+        spec: "local transcription · Python worker · setup may need internet",
       },
       {
         kicker: "// linux",
@@ -274,7 +274,7 @@ const en: HomeCopy = {
       {
         kicker: "// gpu",
         title: "Do I need a GPU?",
-        body: "No. The CPU works. NVIDIA CUDA is optional but recommended: it is auto-detected and needs driver ≥ 525 and VRAM ≥ 4 GiB.",
+        body: "No. CPU transcription is available. NVIDIA CUDA is optional; detection alone does not ensure that the required CUDA runtime libraries are installed.",
         spec: "cpu works · cuda driver ≥ 525 · vram ≥ 4 GiB",
       },
     ],
@@ -367,7 +367,7 @@ const en: HomeCopy = {
   bento: {
     eyebrow: "// in the box",
     heading:
-      "Seven built-in tools: adaptive ribbon overlay, hot-swap device & model, FPS-aware profiles, hallucination blacklist, session files, local-first diagnostics, in-app updates.",
+      "Built-in tools include an adaptive overlay, device and model selection, profiles, session files and local diagnostics.",
     tiles: [
       {
         kicker: "// obs overlay",
@@ -406,13 +406,13 @@ const en: HomeCopy = {
       {
         kicker: "// diagnostics",
         title: "Local-first diagnostics",
-        body: "Export sanitizes secrets and paths and excludes raw audio and full transcripts. No telemetry, ever.",
+        body: "Export sanitizes secrets and paths and excludes raw audio and full transcripts. The application does not send telemetry.",
         icon: "stethoscope",
       },
       {
         kicker: "// updates",
-        title: "In-app updates",
-        body: "One-click in-app update. New versions land from GitHub Releases without a reinstall.",
+        title: "Release information",
+        body: "Find new versions on GitHub Releases. Back up settings and sessions before upgrading.",
         icon: "refresh-cw",
       },
     ],
@@ -459,7 +459,7 @@ const en: HomeCopy = {
       {
         question: "Is it really 100% local?",
         answer:
-          "Yes. All processing happens on your machine, with no telemetry. Internet is only needed on first run to download transcription models; after that it runs fully offline — and v1.5.1 needs no Python runtime at all.",
+          "Transcription runs locally. Initial setup may need internet for the Python worker and its dependencies, and a model may need downloading when first selected.",
       },
       {
         question: "Does it work on Linux?",
@@ -474,7 +474,7 @@ const en: HomeCopy = {
       {
         question: "What's the latency?",
         answer:
-          "Low, tunable latency — well under a second on a typical setup. Profiles trade latency against accuracy and GPU load.",
+          "Latency depends on speech segmentation, model, hardware and system load. Profiles let you adjust the tradeoff between responsiveness and accuracy.",
       },
     ],
     cta: "Read the full FAQ",
@@ -501,9 +501,9 @@ const es: HomeCopy = {
     titleA: "Subtítulos ",
     accent: "locales",
     titleATail: " en tiempo real para tu OBS.",
-    titleB: "Sin nube, sin suscripción, sin API key.",
+    titleB: "Sin transcripción en la nube, suscripción ni clave API.",
     subtitle:
-      "LiveAudio es una app gratuita y de código abierto (MIT) que genera subtítulos de voz Whisper en tiempo real, 100% en tu equipo, y los envía a OBS por un WebSocket local. La v1.5.1 está reescrita en Rust con interfaz Tauri 2: arranque más rápido, menos RAM, transcripción con memoria segura — y sin runtime de Python por descargar.",
+      "LiveAudio es una app gratuita y de código abierto (MIT) que transcribe voz localmente y envía subtítulos a OBS u otros clientes locales. Su núcleo Rust y escritorio Tauri trabajan con un worker de inferencia Python, sin servicio de transcripción en la nube ni clave API.",
     download: "Descargar LiveAudio v1.5.1 (gratis)",
     how: "Cómo funciona",
     microTrust: ["Rust + Tauri 2", "100% local", "Código abierto MIT"],
@@ -516,7 +516,7 @@ const es: HomeCopy = {
       "Rust + Tauri 2",
       "100% local",
       "Código abierto MIT",
-      "Sin nube",
+      "Sin transcripción en la nube",
       "Sin API key",
     ],
   },
@@ -525,13 +525,13 @@ const es: HomeCopy = {
     eyebrow: "DEMO EN VIVO",
     badge: "captura real",
     heading: "Mira LiveAudio funcionando en vivo.",
-    lead: "La interfaz actual v1.5.0 en una captura — más una grabación archivada de la versión Python obsoleta abajo.",
+    lead: "Una captura de la interfaz v1.5.0 y una grabación archivada de una versión anterior.",
     imageAlt:
       "Escritorio de LiveAudio v1.5.0 con la pestaña Avanzado: Whisper turbo en CUDA, ajuste de actividad de voz, feed de subtítulos en vivo e integración con OBS Studio.",
-    imageCaption: "v1.5.0 (Rust + Tauri 2) — la interfaz actual.",
+    imageCaption: "v1.5.0 (Rust + Tauri 2) — captura histórica.",
     legacyBadge: "captura archivada · versión Python obsoleta",
     legacyCaption:
-      "Grabación archivada de la versión Python obsoleta — la captura v1.5.0 de arriba es la actual. Un nuevo video de Tauri próximamente.",
+      "Grabación archivada de una versión anterior. La captura de arriba muestra la v1.5.0.",
     play: "Reproducir",
     pause: "Pausar",
     videoAriaLabel:
@@ -545,8 +545,8 @@ const es: HomeCopy = {
       {
         kicker: "// 100% local",
         title: "¿De verdad es 100% local?",
-        body: "Todo el procesamiento ocurre en tu equipo, sin telemetría. Internet solo en la primera ejecución para descargar los modelos de transcripción; después funciona sin conexión. La v1.5.1 es un único binario nativo — sin runtime de Python por provisionar.",
-        spec: "binario nativo rust · sin telemetría · sin conexión tras la primera ejecución",
+        body: "La transcripción ocurre en tu equipo. La configuración inicial puede necesitar internet para el worker Python y sus dependencias; también puede ser necesario descargar cada modelo al seleccionarlo por primera vez. Una vez disponibles los componentes y modelos necesarios, la transcripción puede funcionar sin conexión.",
+        spec: "transcripción local · worker Python · conexión para configurar",
       },
       {
         kicker: "// linux",
@@ -557,7 +557,7 @@ const es: HomeCopy = {
       {
         kicker: "// gpu",
         title: "¿Necesito una GPU?",
-        body: "No. La CPU funciona. NVIDIA CUDA es opcional pero recomendada: se detecta sola y necesita driver ≥ 525 y VRAM ≥ 4 GiB.",
+        body: "No. La transcripción puede usar la CPU. NVIDIA CUDA es opcional; la detección por sí sola no garantiza que estén instaladas las bibliotecas necesarias para CUDA.",
         spec: "la cpu funciona · cuda driver ≥ 525 · vram ≥ 4 GiB",
       },
     ],
@@ -650,7 +650,7 @@ const es: HomeCopy = {
   bento: {
     eyebrow: "// incluido",
     heading:
-      "Siete herramientas integradas: overlay de cinta adaptable, cambio de dispositivo y modelo en caliente, perfiles según FPS, blacklist de alucinaciones, archivos de sesión, diagnóstico local y actualizaciones en la app.",
+      "Las herramientas incluyen un overlay adaptable, selección de dispositivo y modelo, perfiles, archivos de sesión y diagnóstico local.",
     tiles: [
       {
         kicker: "// overlay obs",
@@ -689,13 +689,13 @@ const es: HomeCopy = {
       {
         kicker: "// diagnóstico",
         title: "Diagnóstico local",
-        body: "La exportación sanea secretos y rutas y excluye audio crudo y transcripciones completas. Sin telemetría, nunca.",
+        body: "La exportación sanea secretos y rutas y excluye audio crudo y transcripciones completas. La aplicación no envía telemetría.",
         icon: "stethoscope",
       },
       {
         kicker: "// actualizaciones",
-        title: "Actualizaciones en la app",
-        body: "Actualización en un clic dentro de la app. Las versiones nuevas llegan desde GitHub Releases sin reinstalar.",
+        title: "Información de versiones",
+        body: "Consulta las versiones nuevas en GitHub Releases. Respalda la configuración y las sesiones antes de actualizar.",
         icon: "refresh-cw",
       },
     ],
@@ -742,7 +742,7 @@ const es: HomeCopy = {
       {
         question: "¿De verdad es 100% local?",
         answer:
-          "Sí. Todo el procesamiento ocurre en tu equipo, sin telemetría. Internet solo en la primera ejecución para descargar los modelos de transcripción; después funciona sin conexión — y la v1.5.1 no necesita ningún runtime de Python.",
+          "La transcripción ocurre localmente. La configuración inicial puede necesitar internet para el worker Python y sus dependencias, y un modelo puede requerir una descarga al seleccionarlo por primera vez.",
       },
       {
         question: "¿Funciona en Linux?",
@@ -757,7 +757,7 @@ const es: HomeCopy = {
       {
         question: "¿Cuál es la latencia?",
         answer:
-          "Latencia baja y ajustable — bastante menos de un segundo en un equipo típico. Los perfiles equilibran latencia, precisión y carga de GPU.",
+          "La latencia depende de la segmentación de voz, el modelo, el hardware y la carga del sistema. Los perfiles permiten ajustar el equilibrio entre respuesta y precisión.",
       },
     ],
     cta: "Leer las FAQ completas",

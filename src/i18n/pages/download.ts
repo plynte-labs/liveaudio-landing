@@ -2,7 +2,7 @@
  * Download page copy + asset data — single bilingual source for both locales.
  *
  * Every product fact / URL traces to the v1.5.1 GitHub release (Rust + Tauri 2
- * rewrite): the Windows NSIS installer and the portable standalone exe. The
+ * rewrite): the Windows NSIS installer and the incomplete desktop exe. The
  * Linux tarball is the legacy Python v1.2.7 build, kept as a fallback until a
  * native Linux build ships. The installer is NOT code-signed yet.
  *
@@ -56,7 +56,7 @@ export const PRIMARY_ASSETS: Record<Os, PrimaryAsset> = {
   },
 };
 
-/** Portable standalone exe (no install) — second Windows option. */
+/** Desktop executable only; it does not include the CLI or resources. */
 export const PORTABLE_ASSET = {
   filename: "liveaudio-desktop.exe",
   url: `${RELEASE_BASE}/liveaudio-desktop.exe`,
@@ -91,7 +91,7 @@ export interface DownloadCopy {
   linuxLabel: string;
   downloadVerb: string; // verb used inside the giant CTA label
   latestLinkLabel: string; // "Always-latest release →"
-  portableLabel: string; // label for the portable standalone exe link
+  portableLabel: string; // label for the separate desktop executable link
   portableHint: string; // one-line hint: no install needed
   legacyNote: string; // honest flag: Linux build is still the legacy v1.2.7
 
@@ -125,12 +125,12 @@ export interface DownloadCopy {
 const EN: DownloadCopy = {
   title: "Download LiveAudio v1.5.1 — Windows x64 Rust build (free)",
   description:
-    "Download LiveAudio v1.5.1 free for Windows x64. Rewritten in Rust + Tauri 2: faster startup, lower footprint, memory-safe — no Python runtime. Windows installer + portable exe. 100% local, MIT open-source.",
+    "Download the official LiveAudio v1.5.1 Windows x64 installer for local transcription. Free and open-source, with Rust, Tauri and a Python inference worker.",
 
   consoleEyebrow: "// download · v1.5.1 · rust + tauri 2",
   heading: "Download LiveAudio v1.5.1.",
   subheading:
-    "Free & open-source (MIT). Rewritten in Rust with a Tauri 2 desktop shell: faster startup, lower RAM, and memory-safe transcription — with no Python runtime to provision. Windows x64 below; Linux users stay on the legacy v1.2.7 build for now.",
+    "Free and open-source (MIT). LiveAudio combines Rust and Tauri with a Python inference worker. Use the Windows x64 installer below; Linux has a legacy v1.2.7 build.",
   detecting: "Detecting OS…",
   detectedPrefix: "Detected:",
   recommendedTag: "recommended",
@@ -139,8 +139,8 @@ const EN: DownloadCopy = {
   linuxLabel: "Linux",
   downloadVerb: "Download",
   latestLinkLabel: "Always-latest release",
-  portableLabel: "Portable standalone (no install)",
-  portableHint: "liveaudio-desktop.exe · ~16.2 MB · just run it",
+  portableLabel: "Desktop executable (incomplete)",
+  portableHint: "liveaudio-desktop.exe · ~16.2 MB · lacks CLI and resources; use the installer",
   legacyNote:
     "v1.5.1 is Windows x64. The Linux build below is the legacy Python v1.2.7.",
 
@@ -162,7 +162,7 @@ const EN: DownloadCopy = {
       filename: "liveaudio-desktop.exe",
       url: `${RELEASE_BASE}/liveaudio-desktop.exe`,
       size: "~16.2 MB",
-      use: "Windows x64 portable — standalone, no install, just run it",
+      use: "Windows desktop executable only — lacks CLI and resources; use the installer",
     },
     {
       filename: "LiveAudio-1.2.7-linux-x64.tar.gz",
@@ -189,17 +189,17 @@ const EN: DownloadCopy = {
     {
       tag: "migration",
       title: "Upgrading from the Python version",
-      body: "Coming from v1.0.0–v1.2.7? The installer finds the legacy Python build (32/64-bit registry), runs its uninstaller silently, stops leftover processes and removes the obsolete Python folders. Your settings and sessions in %APPDATA%\\LiveAudio are preserved.",
+      body: "Before upgrading from a legacy version, back up your settings and sessions and consult the release notes for installation guidance.",
     },
     {
       tag: "rust",
-      title: "Why Rust is safer to download",
-      body: "v1.5.1 is a native binary — there is no Python runtime, no pip dependency chain and no multi-gigabyte first-run provisioning. The installer (~26.2 MB) is the whole app; only transcription models download on first use.",
+      title: "Runtime and model downloads",
+      body: "The installer download is approximately 26.2 MB. The Python inference worker, its dependencies and transcription models require additional storage and may require internet to provision or download.",
     },
     {
       tag: "updates",
       title: "Updates",
-      body: "Update in one click from inside the app. New releases are published on GitHub Releases.",
+      body: "New releases and publisher hashes are available on GitHub Releases. Back up settings and sessions before upgrading.",
     },
   ],
 
@@ -212,8 +212,8 @@ const EN: DownloadCopy = {
         { k: "os", v: "Windows 10/11 x64 (v1.5.1); Linux x86_64 legacy v1.2.7" },
         { k: "gpu", v: "optional — CPU works" },
         { k: "ram", v: "8 GB (16 GB recommended)" },
-        { k: "disk", v: "installer ~26.2 MB + transcription models" },
-        { k: "internet", v: "first run only, then fully offline" },
+        { k: "disk", v: "installer ~26.2 MB plus runtime, dependencies and models" },
+        { k: "internet", v: "may be needed for setup and model downloads" },
       ],
     },
     {
@@ -222,7 +222,7 @@ const EN: DownloadCopy = {
         { k: "vendor", v: "NVIDIA CUDA, auto-detected" },
         { k: "driver", v: ">= 525" },
         { k: "vram", v: ">= 4 GiB" },
-        { k: "python", v: "not needed — v1.5.1 is a native Rust binary" },
+        { k: "runtime", v: "Python inference worker; CUDA also needs runtime libraries" },
         { k: "linux dep", v: "libportaudio2 (sudo apt install libportaudio2)" },
       ],
     },
@@ -231,19 +231,19 @@ const EN: DownloadCopy = {
   closingEyebrow: "// get started",
   closingHeading: "Free, local, and yours in one download.",
   closingBody:
-    "No account, no API key, no per-minute cost. Grab the build above, run it, and your captions stream to OBS over a local WebSocket — fully offline after the first run.",
+    "No account, API key or per-minute cost for local transcription. Download the installer and connect OBS through the local overlay.",
   download: "Download LiveAudio v1.5.1 (free)",
 };
 
 const ES: DownloadCopy = {
   title: "Descargar LiveAudio v1.5.1 — Windows x64 build Rust (gratis)",
   description:
-    "Descarga LiveAudio v1.5.1 gratis para Windows x64. Reescrito en Rust + Tauri 2: arranque más rápido, menor huella, transcripción con memoria segura — sin runtime de Python. Instalador de Windows + portable. 100% local, código abierto MIT.",
+    "Descarga el instalador oficial de LiveAudio v1.5.1 para Windows x64 y transcribe localmente. Gratis y de código abierto, con Rust, Tauri y un worker de inferencia Python.",
 
   consoleEyebrow: "// descargar · v1.5.1 · rust + tauri 2",
   heading: "Descargar LiveAudio v1.5.1.",
   subheading:
-    "Gratis y de código abierto (MIT). Reescrito en Rust con interfaz Tauri 2: arranque más rápido, menos RAM y transcripción con memoria segura — sin runtime de Python por provisionar. Windows x64 abajo; en Linux sigue la versión heredada v1.2.7 por ahora.",
+    "Gratis y de código abierto (MIT). LiveAudio combina Rust y Tauri con un worker de inferencia Python. Usa el instalador de Windows x64; Linux tiene una versión heredada v1.2.7.",
   detecting: "Detectando SO…",
   detectedPrefix: "Detectado:",
   recommendedTag: "recomendado",
@@ -252,8 +252,8 @@ const ES: DownloadCopy = {
   linuxLabel: "Linux",
   downloadVerb: "Descargar",
   latestLinkLabel: "Versión siempre más reciente",
-  portableLabel: "Portable standalone (sin instalar)",
-  portableHint: "liveaudio-desktop.exe · ~16.2 MB · solo ejecútalo",
+  portableLabel: "Ejecutable de escritorio (incompleto)",
+  portableHint: "liveaudio-desktop.exe · ~16.2 MB · no incluye CLI ni recursos; usa el instalador",
   legacyNote:
     "La v1.5.1 es Windows x64. La versión de Linux abajo es la heredada Python v1.2.7.",
 
@@ -275,7 +275,7 @@ const ES: DownloadCopy = {
       filename: "liveaudio-desktop.exe",
       url: `${RELEASE_BASE}/liveaudio-desktop.exe`,
       size: "~16.2 MB",
-      use: "Portable de Windows x64 — standalone, sin instalación, solo ejecútalo",
+      use: "Solo ejecutable de escritorio — sin CLI ni recursos; usa el instalador",
     },
     {
       filename: "LiveAudio-1.2.7-linux-x64.tar.gz",
@@ -302,17 +302,17 @@ const ES: DownloadCopy = {
     {
       tag: "migración",
       title: "Si vienes de la versión Python",
-      body: "¿Vienes de v1.0.0–v1.2.7? El instalador encuentra la versión Python heredada (registro de 32/64 bits), ejecuta su desinstalador en silencio, detiene procesos restantes y elimina las carpetas Python obsoletas. Tu configuración y sesiones en %APPDATA%\\LiveAudio se conservan.",
+      body: "Antes de actualizar desde una versión heredada, respalda tu configuración y sesiones y consulta las notas de la versión para obtener instrucciones de instalación.",
     },
     {
       tag: "rust",
-      title: "Por qué Rust es más seguro de descargar",
-      body: "La v1.5.1 es un binario nativo — no hay runtime de Python, ni cadena de dependencias pip, ni provisión multi-gigabyte en el primer arranque. El instalador (~26.2 MB) es la app completa; solo los modelos de transcripción se descargan en el primer uso.",
+      title: "Descargas del runtime y los modelos",
+      body: "La descarga del instalador ocupa aproximadamente 26.2 MB. El worker de inferencia Python, sus dependencias y los modelos requieren almacenamiento adicional y pueden necesitar internet para prepararse o descargarse.",
     },
     {
       tag: "actualizaciones",
       title: "Actualizaciones",
-      body: "Actualiza con un clic desde la app. Las versiones nuevas se publican en GitHub Releases.",
+      body: "Las versiones nuevas y los hashes publicados están en GitHub Releases. Respalda la configuración y las sesiones antes de actualizar.",
     },
   ],
 
@@ -325,8 +325,8 @@ const ES: DownloadCopy = {
         { k: "so", v: "Windows 10/11 x64 (v1.5.1); Linux x86_64 heredado v1.2.7" },
         { k: "gpu", v: "opcional — la CPU funciona" },
         { k: "ram", v: "8 GB (16 GB recomendado)" },
-        { k: "disco", v: "instalador ~26.2 MB + modelos de transcripción" },
-        { k: "internet", v: "solo la primera vez, luego sin conexión" },
+        { k: "disco", v: "instalador ~26.2 MB más runtime, dependencias y modelos" },
+        { k: "internet", v: "puede requerirse para configurar y descargar modelos" },
       ],
     },
     {
@@ -335,7 +335,7 @@ const ES: DownloadCopy = {
         { k: "fabricante", v: "NVIDIA CUDA, autodetectado" },
         { k: "driver", v: ">= 525" },
         { k: "vram", v: ">= 4 GiB" },
-        { k: "python", v: "no necesario — v1.5.1 es un binario Rust nativo" },
+        { k: "runtime", v: "worker de inferencia Python; CUDA también necesita bibliotecas" },
         { k: "dep linux", v: "libportaudio2 (sudo apt install libportaudio2)" },
       ],
     },
@@ -344,7 +344,7 @@ const ES: DownloadCopy = {
   closingEyebrow: "// empezar",
   closingHeading: "Gratis, local y tuyo en una sola descarga.",
   closingBody:
-    "Sin cuenta, sin API key, sin costo por minuto. Descarga la versión de arriba, ejecútala y tus subtítulos van a OBS por un WebSocket local — sin conexión después de la primera ejecución.",
+    "Sin cuenta, clave API ni costo por minuto para transcribir localmente. Descarga el instalador y conecta OBS mediante el overlay local.",
   download: "Descargar LiveAudio v1.5.1 (gratis)",
 };
 

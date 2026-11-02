@@ -11,7 +11,7 @@
  *   04  pick profile + go    Fast/Balanced/Quality/Stable Streaming -> START SYSTEM
  *
  * Every claim is traceable to the v1.5.1 release:
- *   - install / first run (native Rust binary, no Python runtime)
+ *   - installation and initial Python worker provisioning
  *   - GPU optional; CUDA driver >= 525, VRAM >= 4 GiB; CPU works
  *   - installer ~26.2 MB / portable ~16.2 MB; SmartScreen (not code-signed yet);
  *     legacy Python v1.0.0–v1.2.7 auto-migration preserving %APPDATA%\LiveAudio
@@ -118,32 +118,31 @@ export interface GettingStartedCopy {
 const EN: GettingStartedCopy = {
   title: "Getting started — activate LiveAudio v1.5.1 (Windows x64)",
   description:
-    "Activate LiveAudio v1.5.1: run the native Rust installer or the portable exe, let the first run fetch transcription models, auto-detect your GPU, pick a profile, and START SYSTEM. Windows x64, 100% local.",
+    "Get started with the LiveAudio v1.5.1 Windows installer, select a model and audio device, and start local transcription.",
   eyebrow: "// getting-started",
   h1: "Activate LiveAudio in four real steps.",
   intro:
-    "Install the app (or run the portable exe), let the first run fetch transcription models, let LiveAudio auto-detect your GPU, then pick a profile and START SYSTEM. No Python runtime to provision. Internet is needed only on the first run; after that it is 100% local.",
+    "Install the app, select a model and audio device, then start the system. Initial setup can require internet for the Python worker and dependencies; selecting a new model may require a download.",
   spineLabel: "ACTIVATION SEQUENCE",
   steps: [
     {
       num: "01",
       kicker: "// get",
-      title: "Get LiveAudio — installer, portable, or source.",
-      lede: "Most people just download and run. Three real paths: the graphical installer (recommended), the portable standalone exe, or building from source if you are a developer.",
+      title: "Get LiveAudio — installer or source.",
+      lede: "Use the recommended Windows installer, or build from source if you are a developer.",
       tracks: [
         {
           kicker: "// installer",
           title: "Installer (recommended)",
-          body: "Windows x64: download LiveAudio_1.5.1_x64-setup.exe and run it — no Python to install, the app is a native Rust binary. Coming from v1.0.0–v1.2.7? The installer removes the legacy Python build silently and preserves your settings in %APPDATA%\\LiveAudio. Prefer no install? Grab liveaudio-desktop.exe (~16.2 MB) and just run it. Linux: use the legacy v1.2.7 tarball for now.",
+          body: "Windows x64: download LiveAudio_1.5.1_x64-setup.exe from the official release. The separate desktop executable lacks the CLI and resources and is not a complete portable package. Linux has a legacy v1.2.7 tarball.",
           code: {
             tab: "windows x64",
             lines: [
-              { kind: "comment", text: "# Installer (recommended) or portable:" },
+              { kind: "comment", text: "# Official Windows installer:" },
               {
                 kind: "command",
                 text: "LiveAudio_1.5.1_x64-setup.exe",
               },
-              { kind: "command", text: "liveaudio-desktop.exe" },
             ],
           },
           flag: "Windows: not code-signed yet",
@@ -170,20 +169,20 @@ const EN: GettingStartedCopy = {
     {
       num: "02",
       kicker: "// first-run",
-      title: "First run fetches the models.",
-      lede: "The first launch downloads the transcription models, then caches them. Models download on first transcription. Every later start is instant and fully offline.",
-      flag: "First run: internet required",
-      note: "No Python, no pip chain: the installer (~26.2 MB) is the whole app. Your settings and sessions in %APPDATA%\\LiveAudio survive updates and the Python-to-Rust migration.",
+      title: "Prepare the runtime and models.",
+      lede: "Setup may require internet to provision the Python inference worker and dependencies. A newly selected model may also need downloading; transcription can run offline once all required components are available.",
+      flag: "Setup and model downloads may need internet",
+      note: "The ~26.2 MB installer download does not include the storage needed by every runtime dependency and model.",
     },
     {
       num: "03",
       kicker: "// detect",
       title: "LiveAudio auto-detects your GPU.",
-      lede: "A GPU is optional — the CPU works. On launch, LiveAudio checks for a usable NVIDIA CUDA GPU and falls back to CPU automatically. You can always override the choice.",
+      lede: "A GPU is optional; CPU transcription is available. LiveAudio can detect an NVIDIA GPU, but CUDA inference also needs compatible runtime libraries.",
       rungs: [
         {
           label: "CUDA",
-          detail: "NVIDIA driver ≥ 525 and VRAM ≥ 4 GiB → CUDA is used.",
+          detail: "Requires a compatible NVIDIA GPU, driver and CUDA runtime libraries.",
           tone: "go",
         },
         {
@@ -197,7 +196,7 @@ const EN: GettingStartedCopy = {
           tone: "warn",
         },
       ],
-      note: "GPU optional; CPU works. CUDA needs driver ≥ 525, VRAM ≥ 4 GiB.",
+      note: "GPU detection alone does not guarantee CUDA runtime readiness.",
     },
     {
       num: "04",
@@ -210,7 +209,7 @@ const EN: GettingStartedCopy = {
         { name: "Quality", note: "higher accuracy, more VRAM" },
         { name: "Stable Streaming", note: "reduces GPU load while gaming" },
       ],
-      note: "Editing a built-in profile creates a Custom one. Apply changes to activate.",
+      note: "For OBS, start the system, then copy the overlay URL. Copy it again if the active port changes.",
     },
   ],
   closingEyebrow: "// download",
@@ -227,32 +226,31 @@ const EN: GettingStartedCopy = {
 const ES: GettingStartedCopy = {
   title: "Primeros pasos — activa LiveAudio v1.5.1 (Windows x64)",
   description:
-    "Activa LiveAudio v1.5.1: ejecuta el instalador Rust nativo o el portable, deja que la primera ejecución descargue los modelos, detecte la GPU, elige un perfil e INICIAR SISTEMA. Windows x64, 100% local.",
+    "Empieza con el instalador de LiveAudio v1.5.1 para Windows, selecciona un modelo y un dispositivo de audio e inicia la transcripción local.",
   eyebrow: "// primeros-pasos",
   h1: "Activa LiveAudio en cuatro pasos reales.",
   intro:
-    "Instala la app (o ejecuta el portable), deja que la primera ejecución descargue los modelos de transcripción, deja que LiveAudio detecte tu GPU y después elige un perfil e INICIAR SISTEMA. Sin runtime de Python por provisionar. Internet solo en la primera ejecución; después es 100% local.",
+    "Instala la app, selecciona un modelo y un dispositivo de audio e inicia el sistema. La configuración inicial puede necesitar internet para el worker Python y sus dependencias; seleccionar un modelo nuevo puede requerir una descarga.",
   spineLabel: "SECUENCIA DE ACTIVACIÓN",
   steps: [
     {
       num: "01",
       kicker: "// obtener",
-      title: "Obtén LiveAudio — instalador, portable o código.",
-      lede: "La mayoría solo descarga y ejecuta. Tres rutas reales: el instalador gráfico (recomendado), el portable standalone, o compilar desde el código si eres desarrollador.",
+      title: "Obtén LiveAudio — instalador o código.",
+      lede: "Usa el instalador recomendado de Windows o compila desde el código si eres desarrollador.",
       tracks: [
         {
           kicker: "// instalador",
           title: "Instalador (recomendado)",
-          body: "Windows x64: descarga LiveAudio_1.5.1_x64-setup.exe y ejecútalo — sin Python por instalar, la app es un binario Rust nativo. ¿Vienes de v1.0.0–v1.2.7? El instalador elimina la versión Python heredada en silencio y conserva tu configuración en %APPDATA%\\LiveAudio. ¿Prefieres no instalar? Toma liveaudio-desktop.exe (~16.2 MB) y ejecútalo. Linux: usa el tarball heredado v1.2.7 por ahora.",
+          body: "Windows x64: descarga LiveAudio_1.5.1_x64-setup.exe de la versión oficial. El ejecutable de escritorio separado no incluye la CLI ni los recursos y no es un paquete portable completo. Linux tiene un tarball heredado v1.2.7.",
           code: {
             tab: "windows x64",
             lines: [
-              { kind: "comment", text: "# Instalador (recomendado) o portable:" },
+              { kind: "comment", text: "# Instalador oficial de Windows:" },
               {
                 kind: "command",
                 text: "LiveAudio_1.5.1_x64-setup.exe",
               },
-              { kind: "command", text: "liveaudio-desktop.exe" },
             ],
           },
           flag: "Windows: aún sin firma de código",
@@ -279,20 +277,20 @@ const ES: GettingStartedCopy = {
     {
       num: "02",
       kicker: "// primera-ejecución",
-      title: "La primera ejecución descarga los modelos.",
-      lede: "El primer arranque descarga los modelos de transcripción y luego los guarda en caché. Los modelos se descargan en la primera transcripción. Cada arranque posterior es instantáneo y sin conexión.",
-      flag: "Primera ejecución: requiere internet",
-      note: "Sin Python ni cadena pip: el instalador (~26.2 MB) es la app completa. Tu configuración y sesiones en %APPDATA%\\LiveAudio sobreviven a las actualizaciones y a la migración de Python a Rust.",
+      title: "Prepara el runtime y los modelos.",
+      lede: "La configuración puede necesitar internet para preparar el worker de inferencia Python y sus dependencias. Un modelo recién seleccionado también puede requerir una descarga; la transcripción puede funcionar sin conexión cuando están disponibles los componentes necesarios.",
+      flag: "La configuración y las descargas pueden necesitar internet",
+      note: "La descarga del instalador (~26.2 MB) no incluye el almacenamiento necesario para todas las dependencias y modelos.",
     },
     {
       num: "03",
       kicker: "// detectar",
       title: "LiveAudio detecta tu GPU sola.",
-      lede: "La GPU es opcional — la CPU funciona. Al arrancar, LiveAudio busca una GPU NVIDIA CUDA utilizable y vuelve a CPU automáticamente. Siempre puedes anular la elección.",
+      lede: "La GPU es opcional; la transcripción puede usar la CPU. LiveAudio puede detectar una GPU NVIDIA, pero la inferencia CUDA también necesita bibliotecas compatibles.",
       rungs: [
         {
           label: "CUDA",
-          detail: "Driver NVIDIA ≥ 525 y VRAM ≥ 4 GiB → se usa CUDA.",
+          detail: "Requiere una GPU NVIDIA, un driver y bibliotecas CUDA compatibles.",
           tone: "go",
         },
         {
@@ -307,7 +305,7 @@ const ES: GettingStartedCopy = {
           tone: "warn",
         },
       ],
-      note: "GPU opcional; la CPU funciona. CUDA necesita driver ≥ 525, VRAM ≥ 4 GiB.",
+      note: "Detectar la GPU no garantiza que el runtime CUDA esté preparado.",
     },
     {
       num: "04",
@@ -320,7 +318,7 @@ const ES: GettingStartedCopy = {
         { name: "Quality", note: "más precisión, más VRAM" },
         { name: "Stable Streaming", note: "reduce carga de GPU al jugar" },
       ],
-      note: "Editar un perfil integrado crea uno Custom. Aplica los cambios para activar.",
+      note: "Para OBS, inicia el sistema y después copia la URL del overlay. Cópiala de nuevo si cambia el puerto activo.",
     },
   ],
   closingEyebrow: "// descargar",

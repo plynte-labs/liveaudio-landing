@@ -15,17 +15,15 @@ subtitle JSON over `ws://127.0.0.1:8765` to OBS Browser Source or any HTML/WebSo
 client on localhost.
 
 - **Free & open-source (MIT).** No subscription, no API key, no per-minute cost.
-- **Platforms:** Windows 10/11 x64 (v1.5.1 Rust: installer `LiveAudio_1.5.1_x64-setup.exe` ~26.2 MB + portable `liveaudio-desktop.exe` ~16.2 MB) and Linux x86_64 legacy
+- **Platforms:** Windows 10/11 x64 (v1.5.1 installer `LiveAudio_1.5.1_x64-setup.exe` ~26.2 MB) and Linux x86_64 legacy
   (mic capture; needs `libportaudio2`). System-audio loopback is **Windows-only**.
-- **GPU optional;** CPU works. NVIDIA CUDA is optional but recommended (driver ≥ 525,
-  VRAM ≥ 4 GiB), auto-detected.
-- **100% local processing;** no telemetry. Internet only on first run to download
-  transcription models — fully offline afterward. No Python runtime to provision.
-- **New in v1.5.0:** rewritten in Rust with a Tauri 2 desktop shell — faster startup, lower RAM, memory-safe transcription. Ships as a single native binary. The installer auto-removes legacy Python builds (v1.0.0–v1.2.7) and preserves settings/sessions in `%APPDATA%\LiveAudio`. **Not code-signed yet** — SmartScreen may warn (More info → Run anyway).
+- **GPU optional;** CPU transcription is available. CUDA also needs compatible runtime libraries, not just a detected GPU.
+- **Local transcription:** Rust capture and VAD work with a supervised Python inference worker. Setup and model downloads may require internet; transcription can run offline when required components are available.
+- **Installer:** The installer download size excludes additional runtime dependencies and models. The separately published desktop executable lacks the CLI and resources; it is not a complete portable package. The installer is not code-signed; SmartScreen may warn.
 
 Real v1.5.1 download assets live at
 `https://github.com/plynte-labs/LiveAudio/releases/download/v1.5.1/` (Windows installer
-`.exe`, portable `.exe`); legacy Linux v1.2.7 tarball at
+`.exe`, incomplete desktop `.exe`); legacy Linux v1.2.7 tarball at
 `https://github.com/plynte-labs/LiveAudio/releases/download/v1.2.7/`; always-latest at
 `https://github.com/plynte-labs/LiveAudio/releases/latest`.
 
@@ -55,7 +53,7 @@ EN lives at `/`; every marketing page is mirrored under `/es/…`.
 |---|---|
 | `/` · `/es/` | Home — answer-first hero + conversion funnel |
 | `/download/` · `/es/download/` | Real v1.5.1 download assets, OS detection, SmartScreen + checksum notes, system requirements |
-| `/getting-started/` · `/es/getting-started/` | Activation: installer / portable vs. source (Rust + Tauri 2), first run, GPU auto-detect, profiles |
+| `/getting-started/` · `/es/getting-started/` | Activation: installer or source, runtime and models, hardware, profiles |
 | `/obs-setup/` · `/es/obs-setup/` | OBS Browser Source step-by-step |
 | `/docs/[section]/` · `/es/docs/[section]/` | overview · getting_started · websocket_obs · troubleshooting · config |
 | `/faq/` · `/es/faq/` | Citable Q&A |

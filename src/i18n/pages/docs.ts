@@ -2,8 +2,8 @@
  * Docs content model — LiveAudio v1.5.1 · 5 sections, bilingual.
  *
  * This is the CONTENT source for /docs/[section]/ (EN) + /es/docs/[section]/ (ES).
- * v1.5.1 is a native Rust + Tauri 2 Windows x64 build: no Python runtime, no uv /
- * torch provisioning. The legacy Python line (v1.0.0–v1.2.7) is covered only as a
+ * v1.5.1 combines Rust and Tauri with a managed Python inference worker.
+ * The legacy Python line (v1.0.0–v1.2.7) is covered only as a
  * migration source and as the Linux fallback tarball.
  *
  * Structure-only port of the OLD DocViewer.tsx; EVERY product fact is reconciled
@@ -204,17 +204,12 @@ const WS_HTML_CLIENT = `<!-- open this file in a browser, or load it as an OBS B
   connect();
 </script>`;
 
-/**
- * Native install flow — what the v1.5.1 NSIS installer does: detect and remove
- * legacy Python builds, preserve user data, install the Rust binary.
- */
-const NATIVE_INSTALL_FLOW = `LiveAudio_1.5.1_x64-setup.exe  /  liveaudio-desktop.exe
+/** Installer and provisioning overview; actual recovery requires verification. */
+const NATIVE_INSTALL_FLOW = `LiveAudio_1.5.1_x64-setup.exe
   │
-  ├─ 1. Detect legacy Python builds (v1.0.0–v1.2.7) via the Windows registry
-  ├─ 2. Run the legacy uninstaller silently + stop leftover processes
-  ├─ 3. Remove obsolete Python folders (settings in %APPDATA%\\LiveAudio kept)
-  ├─ 4. Install the native Rust + Tauri 2 desktop app (~26.2 MB, no Python)
-  └─ 5. Launch — transcription models download once on first use`;
+  ├─ Back up settings and sessions before upgrading
+  ├─ Consult the release notes and run the installer
+  └─ Runtime setup and newly selected models may require downloads`;
 
 /** config.json example — §8 values, blacklist trimmed to verbatim words. */
 const CONFIG_EXAMPLE_EN = `{
@@ -290,13 +285,13 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "<strong>Plynte LiveAudio</strong> is a local-first speech-recognition engine for streamers and creators. It transcribes with <strong>Whisper</strong> (<code>tiny</code>, <code>base</code>, <code>small</code>, <code>turbo</code>), trims silence with <strong>Silero VAD</strong>, and broadcasts subtitle JSON over a local WebSocket so OBS — or any localhost client — can render live captions. v1.5.1 is a native <strong>Rust + Tauri 2</strong> desktop app: faster startup, lower RAM, and no Python runtime.",
+        html: "<strong>Plynte LiveAudio</strong> transcribes speech locally with Whisper and sends captions to OBS or other local WebSocket clients. Its Rust core and Tauri desktop use a Python inference worker.",
       },
       {
         type: "list",
         items: [
-          "<strong>Local processing.</strong> No audio or transcribed text leaves your machine. No telemetry.",
-          "<strong>Memory-safe core.</strong> The transcription engine is written in Rust, so entire classes of memory bugs are ruled out at compile time.",
+          "<strong>Local transcription.</strong> Audio is transcribed on your machine without a cloud transcription service.",
+          "<strong>Hybrid pipeline.</strong> Rust handles capture and voice activity detection; a supervised Python worker performs inference.",
           "<strong>Hot-swap.</strong> Change the audio device or model size without restarting the app.",
         ],
       },
@@ -315,27 +310,27 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
           ],
           [
             "GPU",
-            "<strong>Optional</strong> — CPU works. NVIDIA CUDA is recommended and auto-detected; needs driver <code>&ge; 525</code> and VRAM <code>&ge; 4 GiB</code>.",
+            "<strong>Optional</strong> — CPU works. CUDA needs compatible GPU drivers and runtime libraries; detection alone is not enough.",
           ],
           ["RAM", "8 GB minimum, 16 GB recommended."],
           [
             "Disk",
-            "Installer ~26.2 MB (portable exe ~16.2 MB), plus transcription-model storage.",
+            "Installer download ~26.2 MB, plus runtime dependencies and model storage.",
           ],
           [
             "Runtime",
-            "None — v1.5.1 is a native binary. No Python runtime.",
+            "Python inference worker and dependencies, managed by LiveAudio.",
           ],
           [
             "Internet",
-            "First run only (downloads transcription models). Fully offline afterward.",
+            "May be needed for runtime setup and downloads of selected models.",
           ],
         ],
       },
       {
         type: "callout",
-        flag: "first run: internet",
-        html: "Only the first run needs a connection, to download transcription models (Silero VAD ~2 MB; Whisper <code>tiny</code> ~150 MB / <code>base</code> ~300 MB / <code>small</code> ~480 MB / <code>turbo</code> ~1.5 GB). Every run after that is 100% offline.",
+        flag: "setup and models: internet may be needed",
+        html: "Setup may need internet for the Python worker and dependencies. A newly selected model may also need downloading. Transcription can run offline when required components are available.",
       },
       {
         type: "heading",
@@ -358,7 +353,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "What you download is the whole app — a native Rust + Tauri 2 binary, not a bootstrapper. The Windows installer (<code>LiveAudio_1.5.1_x64-setup.exe</code>, ~26.2 MB) sets up the desktop app directly: no Python runtime, no dependency provisioning. On first transcription it downloads only the transcription models, then runs fully offline.",
+        html: "Use the official Windows installer (<code>LiveAudio_1.5.1_x64-setup.exe</code>, ~26.2 MB). The Python worker, dependencies and models require additional storage and may need downloads.",
       },
       {
         type: "code",
@@ -367,7 +362,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Your settings and sessions live in <code>%APPDATA%\\LiveAudio</code> and survive updates. Coming from a Python build (v1.0.0–v1.2.7)? The installer removes it silently first — your data is preserved.",
+        html: "Before upgrading, back up your settings and sessions and consult the release notes for installation guidance.",
       },
       {
         type: "heading",
@@ -376,7 +371,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "v1.5.1 keeps your data in one place — no virtual environments, no managed Python:",
+        html: "LiveAudio uses managed Python for inference. The following locations describe application data:",
       },
       {
         type: "table",
@@ -384,7 +379,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
         rows: [
           [
             "<code>%APPDATA%\\LiveAudio</code>",
-            "Your settings (<code>config.json</code>) and <code>sessions/</code> — preserved across installs and the Python-to-Rust migration.",
+            "Settings (<code>config.json</code>) and <code>sessions/</code> — back these up before upgrading.",
           ],
           [
             "Legacy Python installs (v1.0.0–v1.2.7)",
@@ -416,7 +411,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: `Update in one click from inside the app. New releases — installer, portable exe, changelog and hashes — are published on <a href="${REPO}/releases/latest" target="_blank" rel="noopener noreferrer">GitHub Releases</a>. Your settings and sessions in <code>%APPDATA%\\LiveAudio</code> are preserved.`,
+        html: `Find the installer, changelog and publisher hashes on <a href="${REPO}/releases/latest" target="_blank" rel="noopener noreferrer">GitHub Releases</a>. Back up your settings and sessions before upgrading.`,
       },
     ],
   },
@@ -426,11 +421,11 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
     navLabel: "getting-started",
     metaTitle: "LiveAudio docs — Getting started",
     metaDescription:
-      "Install and run LiveAudio v1.5.1 on Windows x64: the native installer or portable exe, legacy Python auto-migration, first-run GPU auto-detect, FPS-aware profiles, the verbatim hallucination blacklist, and session files.",
+      "Install and run LiveAudio v1.5.1 on Windows x64, prepare the runtime and models, and choose an audio device and profile.",
     eyebrow: "// docs / getting-started",
     h1: "Getting started",
     lede:
-      "Two ways to run LiveAudio v1.5.1 on Windows: the prebuilt installer (recommended) or the portable standalone exe. No Python installed, no runtime to provision — the app is a native binary.",
+      "Use the official Windows installer. The Rust and Tauri desktop uses a Python inference worker; setup and models may require downloads.",
     blocks: [
       {
         type: "heading",
@@ -445,13 +440,13 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
         type: "list",
         items: [
           "<strong>Windows x64:</strong> <code>LiveAudio_1.5.1_x64-setup.exe</code> (graphical installer, ~26.2 MB).",
-          "<strong>Windows portable:</strong> <code>liveaudio-desktop.exe</code> (~16.2 MB) — standalone, no install.",
+          "<strong>Desktop executable:</strong> <code>liveaudio-desktop.exe</code> lacks the CLI and resources; use the installer.",
           "<strong>Linux:</strong> legacy <code>LiveAudio-1.2.7-linux-x64.tar.gz</code> — extract, then run <code>./liveaudio-launcher</code>.",
         ],
       },
       {
         type: "prose",
-        html: "The <strong>first run</strong> downloads transcription models and auto-detects your GPU. Later runs start instantly. Coming from v1.0.0–v1.2.7? The installer removes the legacy Python build silently and preserves your settings in <code>%APPDATA%\\LiveAudio</code>.",
+        html: "Setup can require internet for the Python worker and its dependencies; a newly selected transcription model may also need a download.",
       },
       {
         type: "callout",
@@ -488,7 +483,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "v1.5.1 configures everything from the GUI — the <strong>Advanced</strong> tab picks the compute device (CUDA/CPU) and model without a restart. <strong>Updates</strong> arrive in one click from inside the app. If an install ever breaks, re-run <code>LiveAudio_1.5.1_x64-setup.exe</code>: it repairs the install and preserves your settings and sessions in <code>%APPDATA%\\LiveAudio</code>.",
+        html: "Consult GitHub Releases for current installation guidance. Back up settings and sessions before upgrading or attempting recovery.",
       },
       {
         type: "heading",
@@ -497,7 +492,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "On startup LiveAudio checks for an NVIDIA GPU. If one is available it defaults to <code>cuda</code>; otherwise it falls back to <code>cpu</code> automatically. CUDA needs driver <code>&ge; 525</code> and VRAM <code>&ge; 4 GiB</code> — no manual configuration required.",
+        html: "LiveAudio can detect an NVIDIA GPU. CUDA inference also needs compatible runtime libraries; detection alone does not establish that CUDA is ready. CPU transcription is available.",
       },
       {
         type: "heading",
@@ -546,7 +541,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Pick a model in the <strong>Model &amp; Hardware</strong> tab. Larger models are more accurate but slower and use more VRAM; each one downloads once on first use, then runs offline.",
+        html: "Pick a model in the <strong>Model &amp; Hardware</strong> tab. Larger models can need more memory and processing time. A newly selected model may require a download.",
       },
       {
         type: "table",
@@ -569,7 +564,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       {
         type: "callout",
         flag: "first use: internet",
-        html: "On a metered connection, note that <code>turbo</code> pulls ~1.5 GB the first time you transcribe with it — over a gigabyte more than <code>tiny</code>. Silero VAD (~2 MB) also downloads once. After that, everything runs offline.",
+        html: "On a metered connection, allow for runtime dependencies and model downloads. The required storage and download size depend on the components selected.",
       },
       {
         type: "heading",
@@ -665,7 +660,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
           [
             "<code>total_delay</code>",
             "number",
-            "Total delay from audio capture to a ready subtitle (sub-second to ~1 s on a typical setup).",
+            "Total delay from audio capture to a ready subtitle.",
           ],
           [
             "<code>latency</code>",
@@ -687,7 +682,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       {
         type: "callout",
         flag: "timing",
-        html: "<code>total_delay</code> and <code>latency</code> are measured in <strong>seconds</strong> — typically sub-second to about one second. LiveAudio does not publish a fixed millisecond figure.",
+        html: "<code>total_delay</code> and <code>latency</code> are measured in <strong>seconds</strong>. Actual latency depends on segmentation, model, hardware and load.",
       },
       {
         type: "prose",
@@ -788,10 +783,10 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
         type: "list",
         items: [
           "In OBS, <strong>Sources &rarr; + &rarr; Browser</strong>.",
-          "Choose <strong>Local file</strong> and select <code>subtitulos_obs.html</code> (in <code>liveaudio/assets/</code>). Set size <strong>1920&times;200</strong>.",
+          "Start the system, then copy the overlay URL from LiveAudio. Leave <strong>Local file</strong> unchecked in OBS and paste the URL. Set size <strong>1920&times;200</strong>.",
           "Set <strong>FPS</strong> to <code>30</code> or <code>60</code>, and place the source <strong>bottom-center</strong> in your scene.",
           'Disable <strong>"Shut down source when not visible"</strong> and "Refresh browser when scene becomes active" — both can drop the WebSocket connection.',
-          "For a custom port, set <code>ws_port</code> in <code>config.json</code>; the OBS HTML reads <code>?port=XXXX</code> from its URL (default <code>8765</code>).",
+          "While the system is running, the copied overlay URL includes the active WebSocket port. The server starts at <code>8765</code> and may use an alternative through <code>8774</code>; copy the URL again if the port changes.",
         ],
       },
       {
@@ -901,7 +896,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "v1.5.0 replaces the Python builds with a native Rust + Tauri 2 app. The installer detects legacy installs through the Windows registry (32- and 64-bit views), runs the old uninstaller silently (NSIS and Inno Setup), stops leftover processes, and removes the obsolete Python folders — while your settings and sessions in <code>%APPDATA%\\LiveAudio</code> are preserved.",
+        html: "Before upgrading a legacy installation, back up settings and sessions and consult the release notes.",
       },
       {
         type: "heading",
@@ -919,7 +914,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Close every LiveAudio window first — the v1.5.1 installer stops leftover Python-era processes automatically, but stop a transcription in progress from the app (<strong>Stop Transcription</strong>) before upgrading.",
+        html: "Stop any transcription and close LiveAudio before upgrading. Back up settings and sessions first.",
       },
       {
         type: "heading",
@@ -947,7 +942,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Most install problems are fixed by re-running the installer — it repairs the app and preserves your settings and sessions:",
+        html: "For installation problems, back up settings and sessions first, then consult the release notes and troubleshooting guidance:",
       },
       {
         type: "table",
@@ -963,11 +958,11 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
           ],
           [
             "Corrupted install",
-            "Re-run <code>LiveAudio_1.5.1_x64-setup.exe</code> — it repairs the install and keeps <code>%APPDATA%\\LiveAudio</code> intact.",
+            "Review the release notes before re-running the installer; back up settings and sessions first.",
           ],
           [
             "Coming from the Python version",
-            "The installer removes legacy v1.0.0–v1.2.7 builds automatically and preserves your settings.",
+            "Before upgrading a legacy build, back up its settings and sessions.",
           ],
           [
             "Where are the logs?",
@@ -1021,7 +1016,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "v1.5.1 keeps your settings and sessions under <code>%APPDATA%\\LiveAudio</code> on Windows — the installer preserves this folder when it removes legacy Python builds.",
+        html: "Settings and sessions may be stored under <code>%APPDATA%\\LiveAudio</code> on Windows. Back them up before upgrading.",
       },
       {
         type: "table",
@@ -1034,11 +1029,11 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       {
         type: "callout",
         flag: "migration",
-        html: "Upgrading from v1.0.0–v1.2.7? The installer migrates this folder automatically — your <code>config.json</code> and <code>sessions/</code> survive the move to Rust.",
+        html: "Before upgrading a legacy version, back up <code>config.json</code> and <code>sessions/</code> and consult the release notes.",
       },
       {
         type: "prose",
-        html: "<strong>Portable:</strong> prefer no install? Run <code>liveaudio-desktop.exe</code> (~16.2 MB) — the standalone Windows build needs no setup.",
+        html: "Use the official Windows installer; the separate desktop executable lacks the CLI and resources.",
       },
       {
         type: "heading",
@@ -1190,13 +1185,13 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "<strong>Plynte LiveAudio</strong> es un motor de reconocimiento de voz local-first para streamers y creadores. Transcribe con <strong>Whisper</strong> (<code>tiny</code>, <code>base</code>, <code>small</code>, <code>turbo</code>), recorta silencios con <strong>Silero VAD</strong> y emite los subtítulos en JSON por un WebSocket local para que OBS — o cualquier cliente en localhost — muestre los subtítulos en vivo. La v1.5.1 es una app de escritorio nativa <strong>Rust + Tauri 2</strong>: arranque más rápido, menos RAM y sin runtime de Python.",
+        html: "<strong>Plynte LiveAudio</strong> transcribe voz localmente con Whisper y envía subtítulos a OBS u otros clientes WebSocket locales. Su núcleo Rust y escritorio Tauri usan un worker de inferencia Python.",
       },
       {
         type: "list",
         items: [
-          "<strong>Procesamiento local.</strong> Ningún audio ni texto transcrito sale de tu equipo. Sin telemetría.",
-          "<strong>Núcleo con memoria segura.</strong> El motor de transcripción está escrito en Rust, así que clases enteras de errores de memoria quedan descartadas en compilación.",
+          "<strong>Transcripción local.</strong> El audio se transcribe en tu equipo sin un servicio de transcripción en la nube.",
+          "<strong>Pipeline híbrido.</strong> Rust gestiona la captura y la detección de voz; un worker Python supervisado realiza la inferencia.",
           "<strong>Hot-swap.</strong> Cambia el dispositivo de audio o el tamaño del modelo sin reiniciar la app.",
         ],
       },
@@ -1215,27 +1210,27 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
           ],
           [
             "GPU",
-            "<strong>Opcional</strong> — la CPU funciona. NVIDIA CUDA es recomendada y se detecta sola; necesita driver <code>&ge; 525</code> y VRAM <code>&ge; 4 GiB</code>.",
+            "<strong>Opcional</strong> — la CPU funciona. CUDA necesita drivers y bibliotecas compatibles; la detección por sí sola no es suficiente.",
           ],
           ["RAM", "8 GB mínimo, 16 GB recomendados."],
           [
             "Disco",
-            "Instalador ~26.2 MB (portable ~16.2 MB), más el almacenamiento de modelos de transcripción.",
+            "Descarga del instalador ~26.2 MB, más dependencias del runtime y almacenamiento de modelos.",
           ],
           [
             "Runtime",
-            "Ninguno — la v1.5.1 es un binario nativo. Sin runtime de Python.",
+            "Worker de inferencia Python y dependencias gestionadas por LiveAudio.",
           ],
           [
             "Internet",
-            "Solo en la primera ejecución (descarga los modelos de transcripción). Después funciona sin conexión.",
+            "Puede necesitarse para preparar el runtime y descargar los modelos seleccionados.",
           ],
         ],
       },
       {
         type: "callout",
-        flag: "primera ejecución: internet",
-        html: "Solo la primera ejecución necesita conexión, para descargar los modelos de transcripción (Silero VAD ~2 MB; Whisper <code>tiny</code> ~150 MB / <code>base</code> ~300 MB / <code>small</code> ~480 MB / <code>turbo</code> ~1.5 GB). Cada ejecución posterior es 100% offline.",
+        flag: "configuración y modelos: puede necesitar internet",
+        html: "La configuración puede necesitar internet para el worker Python y sus dependencias. Un modelo recién seleccionado también puede requerir descarga. La transcripción puede funcionar sin conexión cuando estén disponibles los componentes necesarios.",
       },
       {
         type: "heading",
@@ -1258,7 +1253,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Lo que descargas es la app completa — un binario nativo Rust + Tauri 2, no un bootstrapper. El instalador de Windows (<code>LiveAudio_1.5.1_x64-setup.exe</code>, ~26.2 MB) instala la app de escritorio directamente: sin runtime de Python, sin provisión de dependencias. En la primera transcripción descarga solo los modelos, y después funciona sin conexión.",
+        html: "Usa el instalador oficial de Windows (<code>LiveAudio_1.5.1_x64-setup.exe</code>, ~26.2 MB). El worker Python, sus dependencias y los modelos requieren almacenamiento adicional y pueden necesitar descargas.",
       },
       {
         type: "code",
@@ -1267,7 +1262,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Tu configuración y sesiones viven en <code>%APPDATA%\\LiveAudio</code> y sobreviven a las actualizaciones. ¿Vienes de una versión Python (v1.0.0–v1.2.7)? El instalador la elimina en silencio primero — tus datos se conservan.",
+        html: "Antes de actualizar, respalda tu configuración y sesiones y consulta las notas de la versión para obtener instrucciones de instalación.",
       },
       {
         type: "heading",
@@ -1276,7 +1271,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "La v1.5.1 guarda tus datos en un solo lugar — sin entornos virtuales, sin Python gestionado:",
+        html: "LiveAudio usa Python gestionado para la inferencia. Estas ubicaciones describen los datos de la aplicación:",
       },
       {
         type: "table",
@@ -1284,7 +1279,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
         rows: [
           [
             "<code>%APPDATA%\\LiveAudio</code>",
-            "Tu configuración (<code>config.json</code>) y <code>sessions/</code> — se conservan entre instalaciones y en la migración de Python a Rust.",
+            "Tu configuración (<code>config.json</code>) y <code>sessions/</code> — haz una copia de seguridad antes de actualizar.",
           ],
           [
             "Instalaciones Python heredadas (v1.0.0–v1.2.7)",
@@ -1316,7 +1311,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: `Actualiza con un clic desde la app. Las versiones nuevas — instalador, portable, changelog y hashes — se publican en <a href="${REPO}/releases/latest" target="_blank" rel="noopener noreferrer">GitHub Releases</a>. Tu configuración y sesiones en <code>%APPDATA%\\LiveAudio</code> se conservan.`,
+        html: `Encontrarás el instalador, los cambios y los hashes publicados en <a href="${REPO}/releases/latest" target="_blank" rel="noopener noreferrer">GitHub Releases</a>. Respalda tu configuración y sesiones antes de actualizar.`,
       },
     ],
   },
@@ -1326,11 +1321,11 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
     navLabel: "primeros-pasos",
     metaTitle: "Docs de LiveAudio — Primeros pasos",
     metaDescription:
-      "Instala y ejecuta LiveAudio v1.5.1 en Windows x64: el instalador nativo o el portable, la migración automática desde Python, la detección automática de GPU en la primera ejecución, los perfiles, la blacklist de alucinaciones verbatim y los archivos de sesión.",
+      "Instala LiveAudio v1.5.1 en Windows x64, prepara el runtime y los modelos, y elige un dispositivo de audio y un perfil.",
     eyebrow: "// docs / primeros-pasos",
     h1: "Primeros pasos",
     lede:
-      "Dos maneras de ejecutar LiveAudio v1.5.1 en Windows: el instalador prearmado (recomendado) o el portable standalone. Sin Python instalado, sin runtime por provisionar — la app es un binario nativo.",
+      "Usa el instalador oficial de Windows. El escritorio Rust y Tauri utiliza un worker de inferencia Python; la configuración y los modelos pueden requerir descargas.",
     blocks: [
       {
         type: "heading",
@@ -1345,13 +1340,13 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
         type: "list",
         items: [
           "<strong>Windows x64:</strong> <code>LiveAudio_1.5.1_x64-setup.exe</code> (instalador gráfico, ~26.2 MB).",
-          "<strong>Windows portable:</strong> <code>liveaudio-desktop.exe</code> (~16.2 MB) — standalone, sin instalación.",
+          "<strong>Ejecutable de escritorio:</strong> <code>liveaudio-desktop.exe</code> no incluye la CLI ni los recursos; usa el instalador.",
           "<strong>Linux:</strong> <code>LiveAudio-1.2.7-linux-x64.tar.gz</code> heredado — extrae y ejecuta <code>./liveaudio-launcher</code>.",
         ],
       },
       {
         type: "prose",
-        html: "La <strong>primera ejecución</strong> descarga los modelos de transcripción y detecta tu GPU automáticamente. Las ejecuciones siguientes arrancan al instante. ¿Vienes de v1.0.0–v1.2.7? El instalador elimina la versión Python heredada en silencio y conserva tu configuración en <code>%APPDATA%\\LiveAudio</code>.",
+        html: "La configuración puede necesitar internet para el worker Python y sus dependencias; un modelo recién seleccionado también puede requerir una descarga.",
       },
       {
         type: "callout",
@@ -1388,7 +1383,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "La v1.5.1 configura todo desde la GUI — la pestaña <strong>Avanzado</strong> elige el dispositivo de cómputo (CUDA/CPU) y el modelo sin reiniciar. Las <strong>actualizaciones</strong> llegan en un clic desde la app. Si una instalación se rompe, vuelve a ejecutar <code>LiveAudio_1.5.1_x64-setup.exe</code>: repara la instalación y conserva tu configuración y sesiones en <code>%APPDATA%\\LiveAudio</code>.",
+        html: "Consulta GitHub Releases para conocer las instrucciones de instalación. Respalda la configuración y las sesiones antes de actualizar o intentar recuperar la instalación.",
       },
       {
         type: "heading",
@@ -1397,7 +1392,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Al iniciar, LiveAudio busca una GPU NVIDIA. Si hay una disponible usa <code>cuda</code> por defecto; si no, cambia a <code>cpu</code> automáticamente. CUDA necesita driver <code>&ge; 525</code> y VRAM <code>&ge; 4 GiB</code> — no hace falta configurar nada a mano.",
+        html: "LiveAudio puede detectar una GPU NVIDIA. La inferencia CUDA también requiere bibliotecas compatibles; la detección no garantiza que CUDA esté preparado. La transcripción puede usar la CPU.",
       },
       {
         type: "heading",
@@ -1446,7 +1441,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Elige un modelo en la pestaña <strong>Modelo y Hardware</strong>. Los modelos más grandes son más precisos pero más lentos y usan más VRAM; cada uno se descarga una vez en el primer uso y después funciona sin conexión.",
+        html: "Elige un modelo en la pestaña <strong>Modelo y Hardware</strong>. Los modelos más grandes pueden necesitar más memoria y tiempo de procesamiento. Un modelo recién seleccionado puede requerir una descarga.",
       },
       {
         type: "table",
@@ -1469,7 +1464,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       {
         type: "callout",
         flag: "primer uso: internet",
-        html: "En una conexión con límite de datos, ten en cuenta que <code>turbo</code> descarga ~1.5 GB la primera vez que transcribes con él — más de un gigabyte más que <code>tiny</code>. Silero VAD (~2 MB) también se descarga una vez. Después, todo funciona sin conexión.",
+        html: "En una conexión con límite de datos, considera las descargas de dependencias y modelos. El tamaño y el almacenamiento necesarios dependen de los componentes seleccionados.",
       },
       {
         type: "heading",
@@ -1565,7 +1560,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
           [
             "<code>total_delay</code>",
             "number",
-            "Atraso total desde la captura hasta el subtítulo listo (de sub-segundo a ~1 s en un equipo típico).",
+            "Atraso total desde la captura hasta el subtítulo listo.",
           ],
           [
             "<code>latency</code>",
@@ -1587,7 +1582,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       {
         type: "callout",
         flag: "timing",
-        html: "<code>total_delay</code> y <code>latency</code> se miden en <strong>segundos</strong> — normalmente de sub-segundo a alrededor de un segundo. LiveAudio no publica una cifra fija en milisegundos.",
+        html: "<code>total_delay</code> y <code>latency</code> se miden en <strong>segundos</strong>. La latencia depende de la segmentación, el modelo, el hardware y la carga.",
       },
       {
         type: "prose",
@@ -1688,10 +1683,10 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
         type: "list",
         items: [
           "En OBS, <strong>Fuentes &rarr; + &rarr; Navegador</strong>.",
-          "Elige <strong>Archivo local</strong> y selecciona <code>subtitulos_obs.html</code> (en <code>liveaudio/assets/</code>). Tamaño <strong>1920&times;200</strong>.",
+          "Inicia el sistema y después copia la URL del overlay desde LiveAudio. Deja <strong>Archivo local</strong> desmarcado en OBS y pega la URL. Tamaño <strong>1920&times;200</strong>.",
           "Pon los <strong>FPS</strong> en <code>30</code> o <code>60</code> y ubica la fuente en la parte <strong>inferior central</strong> de la escena.",
           'Desactiva <strong>"Apagar la fuente cuando no esté visible"</strong> y "Actualizar el navegador cuando la escena se active" — ambas pueden cortar la conexión WebSocket.',
-          "Para un puerto personalizado, configura <code>ws_port</code> en <code>config.json</code>; el HTML de OBS lee <code>?port=XXXX</code> de su URL (default <code>8765</code>).",
+          "Mientras el sistema está iniciado, la URL copiada del overlay incluye el puerto WebSocket activo. El servidor comienza en <code>8765</code> y puede usar una alternativa hasta <code>8774</code>; copia de nuevo la URL si cambia el puerto.",
         ],
       },
       {
@@ -1801,7 +1796,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "La v1.5.0 reemplaza las versiones Python con una app nativa Rust + Tauri 2. El instalador detecta instalaciones heredadas vía el registro de Windows (vistas de 32 y 64 bits), ejecuta el desinstalador viejo en silencio (NSIS e Inno Setup), detiene procesos restantes y elimina las carpetas Python obsoletas — mientras tu configuración y sesiones en <code>%APPDATA%\\LiveAudio</code> se conservan.",
+        html: "Antes de actualizar una instalación heredada, respalda la configuración y las sesiones y consulta las notas de la versión.",
       },
       {
         type: "heading",
@@ -1819,7 +1814,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Cierra todas las ventanas de LiveAudio primero — el instalador v1.5.1 detiene automáticamente los procesos restantes de la era Python, pero conviene detener una transcripción en curso desde la app (<strong>Detener Transcripción</strong>) antes de actualizar.",
+        html: "Detén cualquier transcripción y cierra LiveAudio antes de actualizar. Respalda primero la configuración y las sesiones.",
       },
       {
         type: "heading",
@@ -1847,7 +1842,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "La mayoría de los problemas de instalación se arreglan volviendo a ejecutar el instalador — repara la app y conserva tu configuración y sesiones:",
+        html: "Ante problemas de instalación, respalda primero la configuración y las sesiones y consulta las notas de la versión y la guía de resolución de problemas:",
       },
       {
         type: "table",
@@ -1863,11 +1858,11 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
           ],
           [
             "Instalación corrupta",
-            "Vuelve a ejecutar <code>LiveAudio_1.5.1_x64-setup.exe</code> — repara la instalación y mantiene <code>%APPDATA%\\LiveAudio</code> intacto.",
+            "Consulta las notas de la versión antes de volver a ejecutar el instalador; respalda primero la configuración y las sesiones.",
           ],
           [
             "Vienes de la versión Python",
-            "El instalador elimina las versiones heredadas v1.0.0–v1.2.7 automáticamente y conserva tu configuración.",
+            "Antes de actualizar una versión heredada, respalda su configuración y sesiones.",
           ],
           [
             "¿Dónde están los logs?",
@@ -1921,7 +1916,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "La v1.5.1 guarda tu configuración y sesiones en <code>%APPDATA%\\LiveAudio</code> en Windows — el instalador conserva esta carpeta cuando elimina las versiones Python heredadas.",
+        html: "La configuración y las sesiones pueden estar en <code>%APPDATA%\\LiveAudio</code> en Windows. Haz una copia de seguridad antes de actualizar.",
       },
       {
         type: "table",
@@ -1934,11 +1929,11 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       {
         type: "callout",
         flag: "migración",
-        html: "¿Actualizas desde v1.0.0–v1.2.7? El instalador migra esta carpeta automáticamente — tu <code>config.json</code> y <code>sessions/</code> sobreviven el paso a Rust.",
+        html: "Antes de actualizar una versión heredada, respalda <code>config.json</code> y <code>sessions/</code> y consulta las notas de la versión.",
       },
       {
         type: "prose",
-        html: "<strong>Portable:</strong> ¿prefieres no instalar? Ejecuta <code>liveaudio-desktop.exe</code> (~16.2 MB) — la versión standalone de Windows no necesita instalación.",
+        html: "Usa el instalador oficial de Windows; el ejecutable de escritorio separado no incluye la CLI ni los recursos.",
       },
       {
         type: "heading",
