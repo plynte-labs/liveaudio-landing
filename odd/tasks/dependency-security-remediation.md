@@ -27,7 +27,7 @@
 - [x] Every currently confirmed advisory is resolved with patched dependencies; scoped minimatch overrides remain outside upstream consumer semver ranges and have explicit behavioral proof. No advisory was dismissed or hidden.
 - [x] Existing tests and build results were observed; three focused tests cover the overridden consumers and matching paths.
 - [x] No broad latest-major upgrades or unrelated app/toolchain changes.
-- [ ] Local work-unit commit(s) are recorded as evidence after applicable checks; no push, PR, merge, deploy, or remote alert changes.
+- [x] Local dependency work-unit commit `642e703867861d11419f4ddaeffe1147b3599387` contains the fixes, compatibility tests and recovery tracker after observed checks; no push, PR, merge, deploy, or remote alert changes.
 
 ## Baseline checks
 
@@ -58,6 +58,7 @@ An initial config overwrite accidentally removed existing `allowBuilds` policy a
 ## Delivery and maintenance boundary
 
 - Local commit includes only `pnpm-workspace.yaml`, `pnpm-lock.yaml`, the focused dependency test, and this tracker. Rollback is the inverse of that single dependency work unit; preserve the unrelated owner email edit.
+- Commit evidence: `642e703867861d11419f4ddaeffe1147b3599387` (`fix(deps): patch undici and scoped minimatch consumers`), 4 paths, 169 additions and 10 deletions. The owner email edit remains uncommitted and excluded.
 - No push, merge, deployment, or alert dismissal is authorized for this feature. GitHub alert closure remains unverified until an authorized push and rescan.
 - Remove the three scoped overrides when upstream consumers accept a patched minimatch range, and rerun the compatibility tests and audit; passing the current tests is not universal API-compatibility proof.
 
