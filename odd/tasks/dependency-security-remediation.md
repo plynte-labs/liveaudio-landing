@@ -6,9 +6,9 @@
 
 **Why:** The user asked to address website security vulnerabilities. Current advisory data and resolved dependency paths must guide the fix rather than alert counts alone.
 
-**Scope:** `package.json`, `pnpm-lock.yaml`, and focused tests or documentation only if needed to demonstrate compatibility. A root `pnpm-workspace.yaml` is in-scope only if a scoped pnpm override is selected, because pnpm 11 reads overrides there rather than from `package.json#pnpm`. No unrelated lint, app, analytics, UI, or design changes. No remote push, merge, deploy, Dependabot alert dismissal, issue creation, or PR creation without a separate user request.
+**Scope:** `package.json`, `pnpm-lock.yaml`, and focused tests or documentation only if needed to demonstrate compatibility. A root `pnpm-workspace.yaml` is in-scope only if a scoped pnpm override is selected, because pnpm 11 reads overrides there rather than from `package.json#pnpm`. No unrelated lint, app, analytics, UI, or design changes. The initial authorization excluded remote push, merge, deploy, and alert dismissal; that boundary is superseded for integrated delivery by the user's later explicit request to include their English privacy contact change in the master merge/push. Alert dismissal, deploy, issue creation, and PR creation remain unauthorized.
 
-**Authorized scope:** Local dependency remediation and local work-unit commits are authorized under ODD. Remote reads are limited to the repository's current known GitHub session. No remote writes are authorized.
+**Authorized scope:** Local dependency remediation and local work-unit commits are authorized under ODD. The user later explicitly authorized merging/pushing the security fixes together with their owner-provided contact update to `master` in `plynte-labs/liveaudio-landing`, using the current GitHub CLI session; no alert dismissal, deployment, issue creation, or PR creation was authorized. This agent performs no commit or remote operation; parent owns that delivery.
 
 **Route:** Delegated direct. Evidence: resolving the transitive dependency paths and writing dependency/lock changes needs multi-file preparation and compatibility analysis.
 
@@ -21,13 +21,15 @@
 - [x] **T1 — Diagnose current dependency alerts.** Read-only baseline: clean `master` at `7d4718b52bc111a0b688a180cf1c1646f0edf8c8`, same as remote master; Node `v22.23.4`, pnpm `11.6.0`; `pnpm audit --json` exits 1 with 8 undici findings and 1 minimatch finding. GitHub lists 43 alerts (2 critical, 20 high, 17 medium, 4 low), with stale examples tied to Astro `6.4.8` despite current manifest/lock at Astro `7.3.8`. `undici` path is Astro → unifont 0.7.5 → undici 8.11.2; minimatch consumers are ESLint, `@eslint/config-array`, and `@typescript-eslint/typescript-estree`. Evidence: delegated diagnosis, 2026-11-01.
 - [x] **T2 — Select and implement the smallest compatible dependency remediation.** Refreshed undici within unifont's existing range from 8.11.2 to 8.12.3 using `pnpm update undici --lockfile-only --depth Infinity`. Added exact 11.0.3 pnpm overrides only for ESLint, `@eslint/config-array`, and `@typescript-eslint/typescript-estree`; the latter was added only after full audit paths and installed caller source were checked and its project-service allowlist behavior was covered by a focused test. `package.json` is unchanged. Writer verification: frozen install passes; audit now reports 0 vulnerabilities; focused compatibility tests pass 3/3; existing web-content tests pass 9/9; build passes. Lint remains at the known 7 baseline errors. Independent verification remains T3.
 - [x] **T3 — Independently verify local result and delivery boundary.** A fresh Luna verifier inspected the complete config/lock/test diff, verified actual consumer resolutions, and observed audit 0 findings, combined tests 12/12, build 29 pages, and clean diff check. Lint retained exactly seven baseline errors (six generated Astro declarations and one OsDetect hook). Parent independently repeated audit and all 12 tests successfully. No remote mutations occurred; local work-unit commit evidence follows below.
+- [ ] **T4 — Integrate the owner's contact update and prepare authorized delivery.** Local parity is implemented and verified: the existing English owner edit was preserved; the same supplied address now appears only in the Spanish privacy contact's visible text and `mailto`, with the Spanish label retained. Added a focused route-pair regression test. Its RED run failed because the Spanish route still contained the placeholder; after the Spanish change it passed. Both generated routes contain the correct mailto. Local checks are complete; the parent-owned authorized master merge/push remains pending. This agent performed no commit or remote operation.
 
 ## Acceptance criteria
 
 - [x] Every currently confirmed advisory is resolved with patched dependencies; scoped minimatch overrides remain outside upstream consumer semver ranges and have explicit behavioral proof. No advisory was dismissed or hidden.
 - [x] Existing tests and build results were observed; three focused tests cover the overridden consumers and matching paths.
 - [x] No broad latest-major upgrades or unrelated app/toolchain changes.
-- [x] Local dependency work-unit commit `642e703867861d11419f4ddaeffe1147b3599387` contains the fixes, compatibility tests and recovery tracker after observed checks; no push, PR, merge, deploy, or remote alert changes.
+- [x] Local dependency work-unit commit `642e703867861d11419f4ddaeffe1147b3599387` contains the fixes, compatibility tests and recovery tracker after observed checks.
+- [x] The owner-provided privacy contact is synchronized across English and Spanish privacy routes and regression-tested; parent delivery to master is pending.
 
 ## Baseline checks
 
@@ -59,8 +61,17 @@ An initial config overwrite accidentally removed existing `allowBuilds` policy a
 
 - Local commit includes only `pnpm-workspace.yaml`, `pnpm-lock.yaml`, the focused dependency test, and this tracker. Rollback is the inverse of that single dependency work unit; preserve the unrelated owner email edit.
 - Commit evidence: `642e703867861d11419f4ddaeffe1147b3599387` (`fix(deps): patch undici and scoped minimatch consumers`), 4 paths, 169 additions and 10 deletions. The owner email edit remains uncommitted and excluded.
-- No push, merge, deployment, or alert dismissal is authorized for this feature. GitHub alert closure remains unverified until an authorized push and rescan.
+- Current local work preserves the user's English privacy edit and adds only corresponding Spanish contact parity plus its test. Parent owns the authorized master merge/push; no remote action has yet been performed by this writer. GitHub alert closure remains unverified until that push and a rescan.
 - Remove the three scoped overrides when upstream consumers accept a patched minimatch range, and rerun the compatibility tests and audit; passing the current tests is not universal API-compatibility proof.
+
+## T4 local verification (2026-11-01)
+
+- `node --test tests/privacy-contact.test.mjs` — RED before the Spanish change: expected failure because `src/pages/es/privacy.astro` contained `contact@opencohost.com`; GREEN after changing only the Spanish contact anchor to the owner-provided `gitrafuh@gmail.com` (the localized “Correo electrónico” label was unchanged).
+- `node --test tests/privacy-contact.test.mjs tests/dependency-security.test.mjs tests/web-content.test.mjs` — passed, 13/13.
+- `pnpm audit --json` — passed, 0 vulnerabilities across 503 dependency entries.
+- `pnpm build` — passed, 29 pages generated; `dist/privacy/index.html` and `dist/es/privacy/index.html` both contain `mailto:gitrafuh@gmail.com` and neither contains the placeholder.
+- `pnpm lint` — failed with the same 7 known baseline errors (6 generated `.astro` diagnostics and 1 `OsDetect.tsx` hook error); no unrelated lint fixes were made.
+- `git diff --check` — passed. English owner edit was read and preserved unchanged; no commit or remote operation was performed by this agent. Parent merge/push remains pending.
 
 ## Relevant files
 
@@ -69,3 +80,4 @@ An initial config overwrite accidentally removed existing `allowBuilds` policy a
 - `pnpm-workspace.yaml` — existing pnpm policy and dependency overrides; added three exact package-scoped minimatch overrides, preserved prior policy.
 - `pnpm-lock.yaml` — replaces minimatch 10.2.6 with 11.0.3 for the three consumers and undici 8.11.2 with 8.12.3.
 - `tests/dependency-security.test.mjs` — verifies patched minimatch resolution in each consumer and ESLint/TypeScript parser matching behavior.
+- `tests/privacy-contact.test.mjs` — verifies the two privacy routes expose the same visible mailto address and neither contains the prior placeholder.
