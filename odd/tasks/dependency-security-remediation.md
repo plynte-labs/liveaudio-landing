@@ -21,7 +21,7 @@
 - [x] **T1 — Diagnose current dependency alerts.** Read-only baseline: clean `master` at `7d4718b52bc111a0b688a180cf1c1646f0edf8c8`, same as remote master; Node `v22.23.4`, pnpm `11.6.0`; `pnpm audit --json` exits 1 with 8 undici findings and 1 minimatch finding. GitHub lists 43 alerts (2 critical, 20 high, 17 medium, 4 low), with stale examples tied to Astro `6.4.8` despite current manifest/lock at Astro `7.3.8`. `undici` path is Astro → unifont 0.7.5 → undici 8.11.2; minimatch consumers are ESLint, `@eslint/config-array`, and `@typescript-eslint/typescript-estree`. Evidence: delegated diagnosis, 2026-11-01.
 - [x] **T2 — Select and implement the smallest compatible dependency remediation.** Refreshed undici within unifont's existing range from 8.11.2 to 8.12.3 using `pnpm update undici --lockfile-only --depth Infinity`. Added exact 11.0.3 pnpm overrides only for ESLint, `@eslint/config-array`, and `@typescript-eslint/typescript-estree`; the latter was added only after full audit paths and installed caller source were checked and its project-service allowlist behavior was covered by a focused test. `package.json` is unchanged. Writer verification: frozen install passes; audit now reports 0 vulnerabilities; focused compatibility tests pass 3/3; existing web-content tests pass 9/9; build passes. Lint remains at the known 7 baseline errors. Independent verification remains T3.
 - [x] **T3 — Independently verify local result and delivery boundary.** A fresh Luna verifier inspected the complete config/lock/test diff, verified actual consumer resolutions, and observed audit 0 findings, combined tests 12/12, build 29 pages, and clean diff check. Lint retained exactly seven baseline errors (six generated Astro declarations and one OsDetect hook). Parent independently repeated audit and all 12 tests successfully. No remote mutations occurred; local work-unit commit evidence follows below.
-- [ ] **T4 — Integrate the owner's contact update and prepare authorized delivery.** Local parity is implemented and verified: the existing English owner edit was preserved; the same supplied address now appears only in the Spanish privacy contact's visible text and `mailto`, with the Spanish label retained. Added a focused route-pair regression test. Its RED run failed because the Spanish route still contained the placeholder; after the Spanish change it passed. Both generated routes contain the correct mailto. Local checks are complete; the parent-owned authorized master merge/push remains pending. This agent performed no commit or remote operation.
+- [x] **T4 — Integrate the owner's contact update and complete authorized delivery.** Preserved the owner's English edit, synchronized the Spanish contact, and added a route-pair test with observed RED then GREEN. Parent committed `850e7036742f0a00a1bc4d91492d574f3d729e98`, fast-forward merged into `master`, and pushed using the authorized GitHub CLI session. Git and fresh REST reads confirmed the remote SHA; Vercel reported successful deployment, and fresh public EN/ES privacy responses contained the supplied contact.
 
 ## Acceptance criteria
 
@@ -29,7 +29,7 @@
 - [x] Existing tests and build results were observed; three focused tests cover the overridden consumers and matching paths.
 - [x] No broad latest-major upgrades or unrelated app/toolchain changes.
 - [x] Local dependency work-unit commit `642e703867861d11419f4ddaeffe1147b3599387` contains the fixes, compatibility tests and recovery tracker after observed checks.
-- [x] The owner-provided privacy contact is synchronized across English and Spanish privacy routes and regression-tested; parent delivery to master is pending.
+- [x] The owner-provided privacy contact is synchronized across English and Spanish privacy routes, regression-tested, and served from the public site after authorized delivery.
 
 ## Baseline checks
 
@@ -59,9 +59,10 @@ An initial config overwrite accidentally removed existing `allowBuilds` policy a
 
 ## Delivery and maintenance boundary
 
-- Local commit includes only `pnpm-workspace.yaml`, `pnpm-lock.yaml`, the focused dependency test, and this tracker. Rollback is the inverse of that single dependency work unit; preserve the unrelated owner email edit.
-- Commit evidence: `642e703867861d11419f4ddaeffe1147b3599387` (`fix(deps): patch undici and scoped minimatch consumers`), 4 paths, 169 additions and 10 deletions. The owner email edit remains uncommitted and excluded.
-- Current local work preserves the user's English privacy edit and adds only corresponding Spanish contact parity plus its test. Parent owns the authorized master merge/push; no remote action has yet been performed by this writer. GitHub alert closure remains unverified until that push and a rescan.
+- Dependency commit `642e703867861d11419f4ddaeffe1147b3599387` contains only workspace policy, lockfile, compatibility tests and this tracker. Its inverse is the independent dependency rollback boundary.
+- The contact remained excluded during the initial dependency work, then the owner explicitly authorized its inclusion. Contact commit `850e7036742f0a00a1bc4d91492d574f3d729e98` includes the preserved English edit, Spanish parity, regression test and authorization record. Reverting that commit is a separate contact rollback boundary.
+- Parent pushed the integrated branch to `master`; Git and cache-busted REST reads confirmed `850e7036742f0a00a1bc4d91492d574f3d729e98`. Vercel's commit status reported success. Public `/privacy/` and `/es/privacy/` returned HTTP 200 with the supplied mailto and without the old address. No Vercel credentials or manual deployment operation were used.
+- A fresh GitHub Dependabot query still reports 43 open records after the push, while the local patched audit reports zero. Do not claim those remote alerts are closed; no alerts were dismissed. Initially conflicting cached REST responses were reconciled by fresh cache-busted reads; do not infer token permissions or deployment failure from those stale responses.
 - Remove the three scoped overrides when upstream consumers accept a patched minimatch range, and rerun the compatibility tests and audit; passing the current tests is not universal API-compatibility proof.
 
 ## T4 local verification (2026-11-01)
