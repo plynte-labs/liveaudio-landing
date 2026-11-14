@@ -6,7 +6,7 @@
  * ~28 Spanish literals: preset names Rápido/Balanceado, "Esperando audio",
  * device names, "[PANTALLA CONGELADA...]", etc.).
  *
- * Fact-checked against the v1.5.1 release (Rust + Tauri 2 rewrite):
+ * Fact-checked against the v1.6.0 release (100% native Rust + ONNX Runtime DirectML / CPU rewrite):
  *   - Profiles: Fast / Balanced / Quality / Stable Streaming. FPS-aware,
  *     never "no FPS drops". Stable Streaming = "reduces GPU
  *     load while gaming" — no third-party game name.
@@ -18,8 +18,8 @@
  *     live in OBS; everything valid is always saved.
  *   - Hot-swap device/model without restart. Loopback is Windows-only
  *     → amber flag on the loopback device.
- *   - Silero VAD trims silence. GPU optional; CPU works; CUDA driver ≥525,
- *     VRAM ≥4 GiB. Latency "well under a second", never
+ *   - Silero VAD trims silence. GPU acceleration via DirectML (DirectX 12);
+ *     CPU works; optional CT2 CUDA worker. Latency "well under a second", never
  *     "milliseconds".
  */
 
@@ -210,9 +210,9 @@ export const features: Record<Lang, FeaturesStrings> = {
       },
       tipLabel: "Sizing tip",
       tipTurbo:
-        "GPU is optional and CPU works. CUDA also requires compatible runtime libraries; detection alone does not guarantee readiness. turbo is the largest model.",
+        "GPU acceleration is native via DirectML (DirectX 12) or optional CUDA (CTranslate2 worker); CPU fallback works automatically. turbo is the most accurate model.",
       tipSmall:
-        "small / base is the streamer sweet spot: fast transcription, modest footprint. GPU optional — CPU works fine.",
+        "small / base is the streamer sweet spot: fast transcription, modest footprint. Runs accelerated on DirectX 12 GPUs or CPU.",
     },
     blacklist: {
       title: "Hallucination blacklist",
@@ -295,17 +295,17 @@ export const features: Record<Lang, FeaturesStrings> = {
     eyebrow: "// sandboxes interactivos",
     title: "Seis controles, seis sandboxes en vivo.",
     subtitle:
-      "Cada ajuste de LiveAudio es una perilla que podés probar antes de descargar. Perfiles, modelos Whisper, la blacklist de alucinaciones, la política de backlog de OBS, cambio de dispositivos en caliente y Silero VAD — probá cada uno abajo.",
+      "Cada ajuste de LiveAudio es un control que puedes probar antes de descargar. Perfiles, modelos Whisper, la blacklist de alucinaciones, la política de backlog de OBS, cambio de dispositivos en caliente y Silero VAD — prueba cada uno abajo.",
     cards: [
-      ["Perfiles", "Fast, Balanced, Quality, Stable Streaming — presets que tienen en cuenta los FPS y cambiás al vuelo."],
-      ["Modelos Whisper", "tiny, base, small, turbo. Cambiás huella por precisión, sin reiniciar."],
+      ["Perfiles", "Fast, Balanced, Quality, Stable Streaming — presets que tienen en cuenta los FPS y cambias al vuelo."],
+      ["Modelos Whisper", "tiny, base, small, turbo. Cambias huella por precisión, sin reiniciar."],
       ["Blacklist de alucinaciones", "Una lista editable quita las muletillas de Whisper antes de que lleguen a OBS."],
-      ["Política de backlog de OBS", "Auto, Live only o Send all — decidís qué se muestra en vivo cuando el motor se pone al día."],
-      ["Dispositivos en caliente", "Cambiás micrófono o audio del sistema en medio del stream — sin reiniciar, sin perder subtítulos."],
+      ["Política de backlog de OBS", "Auto, Live only o Send all — decides qué se muestra en vivo cuando el motor se pone al día."],
+      ["Dispositivos en caliente", "Cambias micrófono o audio del sistema en medio del stream — sin reiniciar, sin perder subtítulos."],
       ["Silero VAD", "La detección de actividad de voz filtra el stream para que el silencio nunca despierte a Whisper."],
     ],
     activePanelLabel: "sandbox activo",
-    runtimeNote: "Elegí un control a la izquierda para abrir su sandbox.",
+    runtimeNote: "Elige un control a la izquierda para abrir su sandbox.",
     simLabel: "Simulado / ilustrativo",
     simBannerNote:
       "Estos sandboxes son una vista previa interactiva — imitan los controles, no la app real. Los números mostrados son ilustrativos.",
@@ -314,7 +314,7 @@ export const features: Record<Lang, FeaturesStrings> = {
     profiles: {
       title: "Perfiles que consideran los FPS",
       description:
-        "Fast, Balanced, Quality y Stable Streaming reajustan latencia, modelo y filtro de silencio en conjunto. Editar uno integrado crea un perfil Custom; aplicá los cambios para activarlo.",
+        "Fast, Balanced, Quality y Stable Streaming reajustan latencia, modelo y filtro de silencio en conjunto. Editar uno integrado crea un perfil Custom; aplica los cambios para activarlo.",
       kicker: "// perfiles",
       presetNames: { fast: "Fast", balanced: "Balanced", quality: "Quality", stable: "Stable Streaming" },
       presetSubs: {
@@ -327,7 +327,7 @@ export const features: Record<Lang, FeaturesStrings> = {
         fast: "Ajustado para la menor latencia práctica.",
         balanced: "El balance recomendado entre velocidad y precisión.",
         quality: "Mayor precisión con el modelo más grande — más VRAM.",
-        stable: "Reduce la carga de GPU para mantener FPS mientras jugás.",
+        stable: "Reduce la carga de GPU para mantener FPS mientras juegas.",
       },
       metricLatency: "Latencia",
       metricVram: "VRAM",
@@ -355,9 +355,9 @@ export const features: Record<Lang, FeaturesStrings> = {
       },
       tipLabel: "Recomendación",
       tipTurbo:
-        "La GPU es opcional y la CPU funciona. CUDA también requiere bibliotecas compatibles; la detección no garantiza que esté preparado. turbo es el modelo más grande.",
+        "La aceleración por GPU es nativa mediante DirectML (DirectX 12) o CUDA opcional (worker CTranslate2); el fallback a CPU funciona automáticamente. turbo es el modelo más preciso.",
       tipSmall:
-        "small / base es el punto justo para streamers: transcripción rápida, huella moderada. GPU opcional — la CPU anda bien.",
+        "small / base es el punto ideal para streamers: transcripción rápida, huella moderada. Funciona acelerado en GPUs DirectX 12 o CPU.",
     },
     blacklist: {
       title: "Blacklist de alucinaciones",
@@ -367,7 +367,7 @@ export const features: Record<Lang, FeaturesStrings> = {
       termsLabel: "Términos de la blacklist (separados por coma)",
       rawLabel: "Salida cruda de Whisper",
       outputLabel: "Salida de subtítulos en OBS",
-      empty: "Cargá el demo y ejecutá el filtro para ver cómo se quitan las frases de la blacklist.",
+      empty: "Carga el demo y ejecuta el filtro para ver cómo se quitan las frases de la blacklist.",
       loading: "filtrando…",
       filteredToken: "[filtrado]",
       loadDemo: "Cargar demo",

@@ -1,8 +1,8 @@
 /**
- * Docs content model — LiveAudio v1.5.1 · 5 sections, bilingual.
+ * Docs content model — LiveAudio v1.6.0 · 5 sections, bilingual.
  *
  * This is the CONTENT source for /docs/[section]/ (EN) + /es/docs/[section]/ (ES).
- * v1.5.1 combines Rust and Tauri with a managed Python inference worker.
+ * v1.6.0 is 100% native Rust + Tauri 2 with ONNX Runtime DirectML/CPU.
  * The legacy Python line (v1.0.0–v1.2.7) is covered only as a
  * migration source and as the Linux fallback tarball.
  *
@@ -74,7 +74,7 @@ export interface CodeBlock {
 
 /**
  * An amber operator note (warn / verify / timing semantic per the design system).
- * Use ONLY for caveats: SmartScreen, libportaudio2, first-run internet, the
+ * Use ONLY for caveats: SmartScreen, manual Linux updates, first-run internet, the
  * Windows-only loopback flag, CUDA out-of-memory recovery, simulated labels.
  */
 export interface CalloutBlock {
@@ -205,11 +205,11 @@ const WS_HTML_CLIENT = `<!-- open this file in a browser, or load it as an OBS B
 </script>`;
 
 /** Installer and provisioning overview; actual recovery requires verification. */
-const NATIVE_INSTALL_FLOW = `LiveAudio_1.5.1_x64-setup.exe
+const NATIVE_INSTALL_FLOW = `LiveAudio-Setup-1.6.0.exe
   │
-  ├─ Back up settings and sessions before upgrading
+  ├─ Back up custom settings and sessions before upgrading
   ├─ Consult the release notes and run the installer
-  └─ Runtime setup and newly selected models may require downloads`;
+  └─ 100% native Rust, zero Python setup; models download on first selection`;
 
 /** config.json example — §8 values, blacklist trimmed to verbatim words. */
 const CONFIG_EXAMPLE_EN = `{
@@ -272,11 +272,11 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
     navLabel: "overview",
     metaTitle: "LiveAudio docs — Overview",
     metaDescription:
-      "What LiveAudio is and what it needs: a free, open-source (MIT) app that generates real-time Whisper captions 100% locally and streams them to OBS over a local WebSocket. Windows x64 native Rust + Tauri 2 build; GPU optional.",
+      "What LiveAudio is and what it needs: a free, open-source (MIT) app that generates real-time Whisper captions 100% locally and streams them to OBS over a local WebSocket. Windows x64 native 100% Rust + Tauri 2 build; GPU optional.",
     eyebrow: "// docs / overview",
     h1: "LiveAudio documentation",
     lede:
-      "LiveAudio is a free, open-source (MIT) desktop app that generates real-time Whisper speech captions 100% locally and streams them to OBS over a local WebSocket. v1.5.1 runs on Windows x64 as a native Rust + Tauri 2 build — no cloud, no API key, no per-minute cost.",
+      "LiveAudio is a free, open-source (MIT) desktop app that generates real-time Whisper speech captions 100% locally and streams them to OBS over a local WebSocket. v1.6.0 runs on Windows x64 as a native Rust + Tauri 2 build with ONNX Runtime DirectML/CPU — no cloud, no API key, no per-minute cost.",
     blocks: [
       {
         type: "heading",
@@ -285,13 +285,13 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "<strong>Plynte LiveAudio</strong> transcribes speech locally with Whisper and sends captions to OBS or other local WebSocket clients. Its Rust core and Tauri desktop use a Python inference worker.",
+        html: "<strong>Plynte LiveAudio</strong> transcribes speech locally with Whisper and sends captions to OBS or other local WebSocket clients. Its architecture is 100% native Rust and Tauri 2 with an ONNX Runtime inference worker.",
       },
       {
         type: "list",
         items: [
-          "<strong>Local transcription.</strong> Audio is transcribed on your machine without a cloud transcription service.",
-          "<strong>Hybrid pipeline.</strong> Rust handles capture and voice activity detection; a supervised Python worker performs inference.",
+          "<strong>Local transcription.</strong> Audio is transcribed on your machine without a cloud transcription service or API key.",
+          "<strong>100% Native Rust pipeline.</strong> Rust handles audio capture, voice activity detection, and native Whisper inference over ONNX Runtime DirectML/CPU.",
           "<strong>Hot-swap.</strong> Change the audio device or model size without restarting the app.",
         ],
       },
@@ -306,31 +306,31 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
         rows: [
           [
             "Operating system",
-            "Windows 10/11 x64. <strong>No macOS.</strong> Linux: legacy Python v1.2.7 tarball.",
+            "Windows 10/11 x64 (installer), Linux x86_64 (AppImage / .deb). <strong>No macOS.</strong>",
           ],
           [
             "GPU",
-            "<strong>Optional</strong> — CPU works. CUDA needs compatible GPU drivers and runtime libraries; detection alone is not enough.",
+            "<strong>Optional</strong> — DirectX 12 (DirectML) hardware acceleration for NVIDIA, AMD, and Intel GPUs, or CPU fallback. Optional CTranslate2 CUDA worker for NVIDIA.",
           ],
-          ["RAM", "8 GB minimum, 16 GB recommended."],
+          ["RAM", "4 GB minimum, 8 GB+ recommended."],
           [
             "Disk",
-            "Installer download ~26.2 MB, plus runtime dependencies and model storage.",
+            "250 MB for the app plus about 500 MB per model cache; models are stored locally in <code>%LOCALAPPDATA%\\LiveAudio\\models\\onnx</code>.",
           ],
           [
             "Runtime",
-            "Python inference worker and dependencies, managed by LiveAudio.",
+            "100% native Rust and ONNX Runtime — zero Python runtime dependencies.",
           ],
           [
             "Internet",
-            "May be needed for runtime setup and downloads of selected models.",
+            "Only needed to download selected transcription models. Transcription runs 100% offline once models are stored locally.",
           ],
         ],
       },
       {
         type: "callout",
-        flag: "setup and models: internet may be needed",
-        html: "Setup may need internet for the Python worker and dependencies. A newly selected model may also need downloading. Transcription can run offline when required components are available.",
+        flag: "models: internet needed to download models",
+        html: "No Python setup or virtual environment downloads are required. A newly selected model is downloaded on first selection; transcription runs completely offline once models are on disk.",
       },
       {
         type: "heading",
@@ -344,7 +344,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       {
         type: "callout",
         flag: "windows-only",
-        html: "<strong>System-audio loopback (WASAPI) is Windows-only.</strong> v1.5.1 focuses on Windows x64; on the legacy Linux v1.2.7 build, capture from the microphone and install <code>libportaudio2</code> first (<code>sudo apt install libportaudio2</code>).",
+        html: "<strong>System-audio loopback (WASAPI) is Windows-only.</strong> On Linux (AppImage / .deb) capture from a microphone or a virtual audio source.",
       },
       {
         type: "heading",
@@ -353,7 +353,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Use the official Windows installer (<code>LiveAudio_1.5.1_x64-setup.exe</code>, ~26.2 MB). The Python worker, dependencies and models require additional storage and may need downloads.",
+        html: "Use the official Windows installer (<code>LiveAudio-Setup-1.6.0.exe</code>). The VC++ runtime is bundled, so it works on a clean Windows, and the app starts instantly with zero Python provisioning wait.",
       },
       {
         type: "code",
@@ -371,7 +371,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "LiveAudio uses managed Python for inference. The following locations describe application data:",
+        html: "LiveAudio stores configuration and session data locally. The following locations describe application data:",
       },
       {
         type: "table",
@@ -382,8 +382,8 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
             "Settings (<code>config.json</code>) and <code>sessions/</code> — back these up before upgrading.",
           ],
           [
-            "Legacy Python installs (v1.0.0–v1.2.7)",
-            "Detected via the Windows registry and removed silently by the v1.5.1 installer.",
+            "<code>%LOCALAPPDATA%\\LiveAudio</code>",
+            "Downloaded models (<code>models\\onnx</code>) and the optional CUDA runtime. The uninstaller's &ldquo;delete app data&rdquo; option removes both folders (never during an update).",
           ],
         ],
       },
@@ -421,11 +421,11 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
     navLabel: "getting-started",
     metaTitle: "LiveAudio docs — Getting started",
     metaDescription:
-      "Install and run LiveAudio v1.5.1 on Windows x64, prepare the runtime and models, and choose an audio device and profile.",
+      "Install and run LiveAudio v1.6.0 on Windows x64, start instantly with 100% native Rust, and choose an audio device and profile.",
     eyebrow: "// docs / getting-started",
     h1: "Getting started",
     lede:
-      "Use the official Windows installer. The Rust and Tauri desktop uses a Python inference worker; setup and models may require downloads.",
+      "Use the official Windows installer. The 100% native Rust and Tauri desktop starts instantly with zero Python setup; only newly selected models require a download.",
     blocks: [
       {
         type: "heading",
@@ -439,19 +439,19 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       {
         type: "list",
         items: [
-          "<strong>Windows x64:</strong> <code>LiveAudio_1.5.1_x64-setup.exe</code> (graphical installer, ~26.2 MB).",
-          "<strong>Desktop executable:</strong> <code>liveaudio-desktop.exe</code> lacks the CLI and resources; use the installer.",
-          "<strong>Linux:</strong> legacy <code>LiveAudio-1.2.7-linux-x64.tar.gz</code> — extract, then run <code>./liveaudio-launcher</code>.",
+          "<strong>Windows x64:</strong> <code>LiveAudio-Setup-1.6.0.exe</code> (graphical installer).",
+          "<strong>Linux x86_64:</strong> the <code>.AppImage</code> or <code>.deb</code> from the v1.6.0 release page (updates are manual).",
+          "<strong>CLI only:</strong> <code>liveaudio-cli-1.6.0-windows-x64.zip</code> and <code>liveaudio-cli-1.6.0-linux-x64.tar.gz</code> contain the CLI and ASR worker, not the desktop app.",
         ],
       },
       {
         type: "prose",
-        html: "Setup can require internet for the Python worker and its dependencies; a newly selected transcription model may also need a download.",
+        html: "Zero Python dependencies are downloaded or installed. Whisper models download locally upon first selection.",
       },
       {
         type: "callout",
-        flag: "legacy linux",
-        html: "On the legacy Linux build, install the PortAudio runtime before launching: <code>sudo apt install libportaudio2</code>.",
+        flag: "updates",
+        html: "On v1.5.1 or older, install v1.6.0 manually once: those versions have no in-app updater. From v1.6.0 the Windows app updates itself (signed with Minisign, never while you are transcribing or OBS is connected); on Linux, download new releases manually.",
       },
       {
         type: "heading",
@@ -860,11 +860,11 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
     navLabel: "troubleshooting",
     metaTitle: "LiveAudio docs — Troubleshooting",
     metaDescription:
-      "Fixes for common LiveAudio issues: no captions, CUDA out-of-memory, OBS not connecting on port 8765, upgrading from the Python version, audio cutting out — plus local-first diagnostics export.",
+      "Fixes for common LiveAudio issues: no captions, GPU fallback, OBS not connecting on port 8765, loopback allowlist, upgrading from the Python version, audio cutting out — plus local-first diagnostics export.",
     eyebrow: "// docs / troubleshooting",
     h1: "Troubleshooting",
     lede:
-      "Root-cause fixes for the most common setup issues — capture, CUDA, the WebSocket connection, and Python-version upgrades — followed by the local-first diagnostics export.",
+      "Root-cause fixes for the most common setup issues — capture, DirectML/CUDA, the WebSocket connection, and Python-version upgrades — followed by the local-first diagnostics export.",
     blocks: [
       {
         type: "heading",
@@ -892,7 +892,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       {
         type: "heading",
         id: "upgrading-from-python",
-        text: "Upgrading from the Python version (v1.0.0–v1.2.7)",
+        text: "Upgrading from the legacy Python version (v1.0.0–v1.2.7)",
       },
       {
         type: "prose",
@@ -905,7 +905,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Make sure the engine is running — port <code>8765</code> must be listening. If your firewall or antivirus blocks local traffic, add a rule to allow localhost connections on the WebSocket port.",
+        html: "Make sure the engine is running — port <code>8765</code> must be listening. If your firewall blocks local traffic or your client port is not yet allowed, check Settings > Advanced for the loopback origin allowlist.",
       },
       {
         type: "heading",
@@ -933,7 +933,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       {
         type: "callout",
         flag: "not code-signed",
-        html: `The installer is not code-signed yet, so SmartScreen may warn. Choose <strong>More info &rarr; Run anyway</strong>. The exact files and hashes are published on the <a href="${REPO}/releases/tag/v1.5.1" target="_blank" rel="noopener noreferrer">v1.5.1 release page</a>.`,
+        html: `The installer is not code-signed yet, so SmartScreen may warn. Choose <strong>More info &rarr; Run anyway</strong>. The exact files and hashes are published on the <a href="${REPO}/releases/tag/v1.6.0" target="_blank" rel="noopener noreferrer">v1.6.0 release page</a>.`,
       },
       {
         type: "heading",
@@ -1022,8 +1022,9 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
         type: "table",
         head: ["Build", "Path"],
         rows: [
-          ["Windows x64 (v1.5.1, Rust)", "<code>%APPDATA%\\LiveAudio</code>"],
-          ["Linux (legacy Python v1.2.7)", "<code>~/.local/share/liveaudio/data</code>"],
+          ["Windows x64 (v1.6.0, Rust)", "<code>%APPDATA%\\LiveAudio</code>"],
+          ["Any build (override)", "<code>LIVEAUDIO_HOME</code> environment variable"],
+          ["Models (Windows)", "<code>%LOCALAPPDATA%\\LiveAudio\\models\\onnx</code>"],
         ],
       },
       {
@@ -1033,7 +1034,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Use the official Windows installer; the separate desktop executable lacks the CLI and resources.",
+        html: "Use the official Windows installer; the CLI archives contain only the CLI and ASR worker, not the desktop app.",
       },
       {
         type: "heading",
@@ -1172,11 +1173,11 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
     navLabel: "introducción",
     metaTitle: "Docs de LiveAudio — Introducción",
     metaDescription:
-      "Qué es LiveAudio y qué necesita: una app gratuita y de código abierto (MIT) que genera subtítulos Whisper en tiempo real 100% en tu equipo y los envía a OBS por un WebSocket local. Build nativa Rust + Tauri 2 para Windows x64; GPU opcional.",
+      "Qué es LiveAudio y qué necesita: una app gratuita y de código abierto (MIT) que genera subtítulos Whisper en tiempo real 100% en tu equipo y los envía a OBS por un WebSocket local. Build 100% nativa Rust + Tauri 2 para Windows x64; GPU opcional.",
     eyebrow: "// docs / introducción",
     h1: "Documentación de LiveAudio",
     lede:
-      "LiveAudio es una app de escritorio gratuita y de código abierto (MIT) que genera subtítulos de voz Whisper en tiempo real 100% en tu equipo y los envía a OBS por un WebSocket local. La v1.5.1 corre en Windows x64 como build nativa Rust + Tauri 2: sin nube, sin API key, sin costo por minuto.",
+      "LiveAudio es una app de escritorio gratuita y de código abierto (MIT) que genera subtítulos de voz Whisper en tiempo real 100% en tu equipo y los envía a OBS por un WebSocket local. La v1.6.0 corre en Windows x64 como build 100% nativa Rust + Tauri 2 con ONNX Runtime DirectML/CPU: sin nube, sin API key, sin costo por minuto.",
     blocks: [
       {
         type: "heading",
@@ -1185,13 +1186,13 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "<strong>Plynte LiveAudio</strong> transcribe voz localmente con Whisper y envía subtítulos a OBS u otros clientes WebSocket locales. Su núcleo Rust y escritorio Tauri usan un worker de inferencia Python.",
+        html: "<strong>Plynte LiveAudio</strong> transcribe voz localmente con Whisper y envía subtítulos a OBS u otros clientes WebSocket locales. Su arquitectura es 100% Rust nativo y Tauri 2 con un worker de inferencia sobre ONNX Runtime.",
       },
       {
         type: "list",
         items: [
-          "<strong>Transcripción local.</strong> El audio se transcribe en tu equipo sin un servicio de transcripción en la nube.",
-          "<strong>Pipeline híbrido.</strong> Rust gestiona la captura y la detección de voz; un worker Python supervisado realiza la inferencia.",
+          "<strong>Transcripción local.</strong> El audio se transcribe en tu equipo sin un servicio de transcripción en la nube ni claves API.",
+          "<strong>Pipeline 100% Rust nativo.</strong> Rust gestiona la captura, la detección de voz y la inferencia Whisper nativa con ONNX Runtime DirectML/CPU.",
           "<strong>Hot-swap.</strong> Cambia el dispositivo de audio o el tamaño del modelo sin reiniciar la app.",
         ],
       },
@@ -1206,31 +1207,31 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
         rows: [
           [
             "Sistema operativo",
-            "Windows 10/11 x64. <strong>Sin macOS.</strong> Linux: tarball heredado Python v1.2.7.",
+            "Windows 10/11 x64 (instalador), Linux x86_64 (AppImage / .deb). <strong>Sin macOS.</strong>",
           ],
           [
             "GPU",
-            "<strong>Opcional</strong> — la CPU funciona. CUDA necesita drivers y bibliotecas compatibles; la detección por sí sola no es suficiente.",
+            "<strong>Opcional</strong> — aceleración por hardware DirectX 12 (DirectML) para GPUs NVIDIA, AMD e Intel, o fallback a CPU. Worker opcional CTranslate2 CUDA para NVIDIA.",
           ],
-          ["RAM", "8 GB mínimo, 16 GB recomendados."],
+          ["RAM", "4 GB mínimo, 8 GB+ recomendados."],
           [
             "Disco",
-            "Descarga del instalador ~26.2 MB, más dependencias del runtime y almacenamiento de modelos.",
+            "250 MB para la app más unos 500 MB por caché de modelo; los modelos se guardan en local en <code>%LOCALAPPDATA%\\LiveAudio\\models\\onnx</code>.",
           ],
           [
             "Runtime",
-            "Worker de inferencia Python y dependencias gestionadas por LiveAudio.",
+            "100% Rust nativo y ONNX Runtime — cero dependencias del runtime de Python.",
           ],
           [
             "Internet",
-            "Puede necesitarse para preparar el runtime y descargar los modelos seleccionados.",
+            "Solo necesaria para descargar los modelos de transcripción seleccionados. La transcripción funciona 100% sin conexión una vez guardados los modelos en local.",
           ],
         ],
       },
       {
         type: "callout",
-        flag: "configuración y modelos: puede necesitar internet",
-        html: "La configuración puede necesitar internet para el worker Python y sus dependencias. Un modelo recién seleccionado también puede requerir descarga. La transcripción puede funcionar sin conexión cuando estén disponibles los componentes necesarios.",
+        flag: "modelos: internet solo necesaria para descarga",
+        html: "No se requieren descargas de configuración de Python ni de entornos virtuales. Un modelo recién seleccionado se descarga en su primera selección; la transcripción funciona 100% sin conexión una vez que los modelos están en disco.",
       },
       {
         type: "heading",
@@ -1244,7 +1245,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       {
         type: "callout",
         flag: "solo Windows",
-        html: "<strong>El loopback de audio del sistema (WASAPI) es solo de Windows.</strong> La v1.5.1 se enfoca en Windows x64; en la versión heredada Linux v1.2.7, captura desde el micrófono e instala <code>libportaudio2</code> primero (<code>sudo apt install libportaudio2</code>).",
+        html: "<strong>El loopback de audio del sistema (WASAPI) es solo de Windows.</strong> En Linux (AppImage / .deb) captura desde un micrófono o una fuente de audio virtual.",
       },
       {
         type: "heading",
@@ -1253,7 +1254,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Usa el instalador oficial de Windows (<code>LiveAudio_1.5.1_x64-setup.exe</code>, ~26.2 MB). El worker Python, sus dependencias y los modelos requieren almacenamiento adicional y pueden necesitar descargas.",
+        html: "Usa el instalador oficial de Windows (<code>LiveAudio-Setup-1.6.0.exe</code>). Incluye el runtime VC++, así que funciona en un Windows limpio, y la app arranca instantáneamente sin fases de aprovisionamiento de Python.",
       },
       {
         type: "code",
@@ -1271,7 +1272,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "LiveAudio usa Python gestionado para la inferencia. Estas ubicaciones describen los datos de la aplicación:",
+        html: "LiveAudio almacena la configuración y los datos de sesión localmente. Estas ubicaciones describen los datos de la aplicación:",
       },
       {
         type: "table",
@@ -1282,8 +1283,8 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
             "Tu configuración (<code>config.json</code>) y <code>sessions/</code> — haz una copia de seguridad antes de actualizar.",
           ],
           [
-            "Instalaciones Python heredadas (v1.0.0–v1.2.7)",
-            "Detectadas vía el registro de Windows y eliminadas en silencio por el instalador v1.5.1.",
+            "<code>%LOCALAPPDATA%\\LiveAudio</code>",
+            "Modelos descargados (<code>models\\onnx</code>) y el runtime CUDA opcional. La opción &ldquo;borrar datos de la app&rdquo; del desinstalador elimina ambas carpetas (nunca durante una actualización).",
           ],
         ],
       },
@@ -1321,11 +1322,11 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
     navLabel: "primeros-pasos",
     metaTitle: "Docs de LiveAudio — Primeros pasos",
     metaDescription:
-      "Instala LiveAudio v1.5.1 en Windows x64, prepara el runtime y los modelos, y elige un dispositivo de audio y un perfil.",
+      "Instala LiveAudio v1.6.0 en Windows x64, arranca de forma instantánea con 100% Rust nativo y elige un dispositivo de audio y un perfil.",
     eyebrow: "// docs / primeros-pasos",
     h1: "Primeros pasos",
     lede:
-      "Usa el instalador oficial de Windows. El escritorio Rust y Tauri utiliza un worker de inferencia Python; la configuración y los modelos pueden requerir descargas.",
+      "Usa el instalador oficial de Windows. El escritorio 100% Rust nativo y Tauri arranca instantáneamente sin setup de Python; solo los modelos seleccionados requieren descarga.",
     blocks: [
       {
         type: "heading",
@@ -1339,19 +1340,19 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       {
         type: "list",
         items: [
-          "<strong>Windows x64:</strong> <code>LiveAudio_1.5.1_x64-setup.exe</code> (instalador gráfico, ~26.2 MB).",
-          "<strong>Ejecutable de escritorio:</strong> <code>liveaudio-desktop.exe</code> no incluye la CLI ni los recursos; usa el instalador.",
-          "<strong>Linux:</strong> <code>LiveAudio-1.2.7-linux-x64.tar.gz</code> heredado — extrae y ejecuta <code>./liveaudio-launcher</code>.",
+          "<strong>Windows x64:</strong> <code>LiveAudio-Setup-1.6.0.exe</code> (instalador gráfico).",
+          "<strong>Linux x86_64:</strong> el <code>.AppImage</code> o el <code>.deb</code> de la página del release v1.6.0 (las actualizaciones son manuales).",
+          "<strong>Solo CLI:</strong> <code>liveaudio-cli-1.6.0-windows-x64.zip</code> y <code>liveaudio-cli-1.6.0-linux-x64.tar.gz</code> contienen la CLI y el worker ASR, no la app de escritorio.",
         ],
       },
       {
         type: "prose",
-        html: "La configuración puede necesitar internet para el worker Python y sus dependencias; un modelo recién seleccionado también puede requerir una descarga.",
+        html: "Cero dependencias de Python se descargan o instalan. Los modelos Whisper se descargan localmente en su primera selección.",
       },
       {
         type: "callout",
-        flag: "linux heredado",
-        html: "En la versión heredada de Linux, instala el runtime de PortAudio antes de iniciar: <code>sudo apt install libportaudio2</code>.",
+        flag: "actualizaciones",
+        html: "Si estás en la v1.5.1 o anterior, instala la v1.6.0 manualmente una vez: esas versiones no tienen actualizador integrado. Desde la v1.6.0 la app de Windows se actualiza sola (firmada con Minisign, nunca mientras transcribes o OBS está conectado); en Linux, descarga las nuevas versiones manualmente.",
       },
       {
         type: "heading",
@@ -1760,11 +1761,11 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
     navLabel: "solución-de-problemas",
     metaTitle: "Docs de LiveAudio — Solución de problemas",
     metaDescription:
-      "Soluciones a los problemas más comunes de LiveAudio: sin subtítulos, CUDA sin memoria, OBS que no conecta en el puerto 8765, actualización desde la versión Python, audio que se corta — más la exportación de diagnóstico local-first.",
+      "Soluciones a los problemas más comunes de LiveAudio: sin subtítulos, fallback de GPU, OBS que no conecta en el puerto 8765, allowlist loopback, actualización desde la versión Python, audio que se corta — más la exportación de diagnóstico local-first.",
     eyebrow: "// docs / solución-de-problemas",
     h1: "Solución de problemas",
     lede:
-      "Soluciones de raíz para los problemas de configuración más comunes — captura, CUDA, la conexión WebSocket y actualizaciones desde Python — seguidas de la exportación de diagnóstico local-first.",
+      "Soluciones de raíz para los problemas de configuración más comunes — captura, DirectML/CUDA, la conexión WebSocket y actualizaciones desde versiones heredadas — seguidas de la exportación de diagnóstico local-first.",
     blocks: [
       {
         type: "heading",
@@ -1792,7 +1793,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       {
         type: "heading",
         id: "actualizar-desde-python",
-        text: "Actualizar desde la versión Python (v1.0.0–v1.2.7)",
+        text: "Actualizar desde la versión Python heredada (v1.0.0–v1.2.7)",
       },
       {
         type: "prose",
@@ -1805,7 +1806,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Asegúrate de que el motor esté iniciado — el puerto <code>8765</code> debe estar a la escucha. Si tu cortafuegos o antivirus bloquea el tráfico local, agrega una regla para permitir conexiones de localhost en el puerto del WebSocket.",
+        html: "Asegúrate de que el motor esté iniciado — el puerto <code>8765</code> debe estar a la escucha. Si tu cortafuegos bloquea el tráfico local o tu cliente local no está aún autorizado, revisa Ajustes > Avanzado para la allowlist de orígenes loopback.",
       },
       {
         type: "heading",
@@ -1833,7 +1834,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       {
         type: "callout",
         flag: "sin firma de código",
-        html: `El instalador aún no está firmado, así que SmartScreen puede avisar. Elige <strong>Más información &rarr; Ejecutar de todas formas</strong>. Los archivos exactos y sus hashes están publicados en la <a href="${REPO}/releases/tag/v1.5.1" target="_blank" rel="noopener noreferrer">página del release v1.5.1</a>.`,
+        html: `El instalador aún no está firmado, así que SmartScreen puede avisar. Elige <strong>Más información &rarr; Ejecutar de todas formas</strong>. Los archivos exactos y sus hashes están publicados en la <a href="${REPO}/releases/tag/v1.6.0" target="_blank" rel="noopener noreferrer">página del release v1.6.0</a>.`,
       },
       {
         type: "heading",
@@ -1922,8 +1923,9 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
         type: "table",
         head: ["Build", "Ruta"],
         rows: [
-          ["Windows x64 (v1.5.1, Rust)", "<code>%APPDATA%\\LiveAudio</code>"],
-          ["Linux (heredado Python v1.2.7)", "<code>~/.local/share/liveaudio/data</code>"],
+          ["Windows x64 (v1.6.0, Rust)", "<code>%APPDATA%\\LiveAudio</code>"],
+          ["Cualquier build (override)", "variable de entorno <code>LIVEAUDIO_HOME</code>"],
+          ["Modelos (Windows)", "<code>%LOCALAPPDATA%\\LiveAudio\\models\\onnx</code>"],
         ],
       },
       {
