@@ -101,7 +101,7 @@ Developers: clone https://github.com/plynte-labs/LiveAudio.git and follow the re
 ## OBS setup
 
 1. In OBS: Sources → + → Browser.
-2. In LiveAudio select a profile, device and model; apply changes, start the system, then copy the overlay URL. In OBS leave Local File unchecked, paste the URL, and set size 1920×200.
+2. In LiveAudio select a profile, device and model; apply changes, start the system, then copy the overlay URL. In OBS leave Local File unchecked, paste the URL, and set size 1920×1080.
 3. Disable "Shut down source when not visible" (and "Refresh browser when scene becomes active").
 4. While the system is running, the copied URL contains the active port; the server starts at 8765 and can use an alternative through 8774. Settings > Advanced includes the loopback port allowlist.
 5. Speak and check the OBS captions.
