@@ -69,6 +69,7 @@
   --space-5: 20px; --space-6: 24px; --space-7: 32px; --space-8: 40px;
   --space-9: 48px; --space-10: 64px; --space-11: 80px; --space-12: 96px;
   --space-13: 128px;
+  --section-pad: clamp(6rem, 13vh, 10rem);   /* shared vertical rhythm between page sections */
 
   /* ---- Layout ---- */
   --container-max: 1200px;
@@ -186,9 +187,34 @@
 
   /* Section rhythm — single source; do NOT override padding on element selectors */
   .section {
-    padding-block: clamp(5rem, 10vh, 8rem);
+    padding-block: var(--section-pad);
     position: relative;
   }
+  /* Clear separation: hairline between adjacent sections + optional tinted band.
+     Alternate .section-alt with plain sections to give the page a visible rhythm. */
+  .section + .section { border-top: 1px solid var(--color-border-soft); }
+  .section-alt { background-color: var(--color-surface); }
+  /* Call-to-action bands are lighter than full sections. */
+  .cta-section { padding-block: calc(var(--section-pad) / 2); }
+
+  /* Collapsed "Technical details" disclosure (jargon lives here) */
+  .tech-details {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface-2);
+  }
+  .tech-details > summary {
+    cursor: pointer; list-style: none; min-height: 44px;
+    display: flex; align-items: center; gap: var(--space-3);
+    padding: var(--space-3) var(--space-5);
+    font-family: var(--font-mono); font-size: var(--text-xs);
+    text-transform: uppercase; letter-spacing: 0.12em; color: var(--color-text);
+  }
+  .tech-details > summary::-webkit-details-marker { display: none; }
+  .tech-details > summary::before { content: "+"; color: var(--color-green); font-size: var(--text-base); }
+  .tech-details[open] > summary::before { content: "−"; }
+  .tech-details > summary:hover { color: var(--color-green); }
+  .tech-body { padding: var(--space-5) var(--space-5) var(--space-7); min-width: 0; }
   .container {
     width: 100%;
     max-width: var(--container-max);

@@ -1,0 +1,45 @@
+---
+/** CtaBand — short call-to-action between sections (heading + sentence + buttons). */
+import Icon from "./Icon.astro";
+import Button from "../Button.astro";
+import { visualCopy } from "../../i18n/visual";
+import type { Locale } from "../../i18n/routes";
+
+interface Props { lang: Locale; kind: "download" | "obs" | "help"; alt?: boolean; id?: string }
+const { lang, kind, alt = false, id = `cta-${kind}-h2` } = Astro.props;
+const band = visualCopy(lang).band[kind];
+---
+
+<section class:list={["section", "cta-section", { "section-alt": alt }]} aria-labelledby={id}>
+  <div class="container">
+    <div class="cta-band">
+      <span class="cta-icon"><Icon name={band.icon} size={28} /></span>
+      <div class="cta-text">
+        <h2 id={id}>{band.heading}</h2>
+        <p>{band.body}</p>
+      </div>
+      <div class="cta-actions">
+        {band.actions.map((a) => <Button variant={a.variant} href={a.href} label={a.label} />)}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta-band {
+    display: grid; gap: var(--space-5); align-items: center;
+    background: var(--color-surface); border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg); padding: var(--space-7);
+  }
+  .cta-icon {
+    width: 56px; height: 56px; display: inline-flex; align-items: center; justify-content: center;
+    border-radius: var(--radius); border: 1px solid var(--color-green);
+    color: var(--color-green); background: var(--color-green-faint);
+  }
+  .cta-text h2 { margin: 0 0 var(--space-2); font-size: var(--text-xl); }
+  .cta-text p { margin: 0; color: var(--color-text); }
+  .cta-actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+  @media (min-width: 900px) {
+    .cta-band { grid-template-columns: auto 1fr auto; gap: var(--space-7); padding: var(--space-8); }
+  }
+</style>

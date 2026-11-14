@@ -1,0 +1,14 @@
+---
+/** TechDetails — collapsed "Technical details" disclosure for jargon-heavy content. */
+import { visualCopy } from "../../i18n/visual";
+import type { Locale } from "../../i18n/routes";
+
+interface Props { lang: Locale; summary?: string }
+const { lang, summary } = Astro.props;
+const label = summary ?? visualCopy(lang).techDetails;
+---
+
+<details class="tech-details">
+  <summary>{label}</summary>
+  <div class="tech-body"><slot /></div>
+</details>
