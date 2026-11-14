@@ -21,6 +21,8 @@
  */
 import Layout from "../layouts/Layout.astro";
 import DocsSidebar from "./DocsSidebar.astro";
+import StepFlow from "./visual/StepFlow.astro";
+import CtaBand from "./visual/CtaBand.astro";
 import { localizedPath, type Locale } from "../i18n/routes";
 import {
   getDocSection,
@@ -166,11 +168,21 @@ const navSummary = docsNavLabel(lang);
       </div>
     </div>
   </section>
+
+  {
+    section === "overview" && (
+      <>
+        <StepFlow lang={lang} alt={true} />
+        <CtaBand lang={lang} kind="obs" />
+        <CtaBand lang={lang} kind="help" alt={true} />
+      </>
+    )
+  }
 </Layout>
 
 <style>
   .docs-section {
-    padding-block: clamp(3rem, 7vh, 5rem);
+    padding-block: clamp(4rem, 9vh, 6.5rem);
   }
 
   /* Center prose ---------------------------------------------------- */

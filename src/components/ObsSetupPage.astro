@@ -2,34 +2,26 @@
 /**
  * ObsSetupPage — /obs-setup/ body (EN at /obs-setup/, ES mirror at /es/obs-setup/).
  *
- * The highest-intent, CITABLE HowTo page (the product spec; the design system
- * "/obs-setup/"). The page answers one question with the real, verbatim OBS
- * Browser-source flow, so it is built to be quoted by both humans and LLMs:
- *   1. OBS → Sources → + → Browser
- *   2. Local file → subtitulos_obs.html (in liveaudio/assets/), size 1920×1080
- *   3. Disable "Shut down source when not visible"
- *   4. Match the WebSocket port — ws_port in config.json + ?port=XXXX (default 8765)
- *   5. Apply changes → START SYSTEM
+ * The highest-intent, CITABLE HowTo page. It answers one question with the real,
+ * verbatim OBS Browser-source flow (see src/i18n/pages/obs-setup.ts).
  *
- * Page shape (cross-page contract): mono eyebrow → answer-first single H1 → numbered
- * step spine (each step shows its real artifact: a token pill + optional amber
- * caveat) → WS signal-path diagram (WsDiagram, simple stacked flow) → WebSocket
- * payload field reference (mono table, amber timing values) → closing Download
- * module. Every section opens with an answer-first H2 for GEO. Transport bar ON.
+ * Page shape: H1 + plain lead → download band → visual walkthrough (prominent
+ * overlay-URL block + step cards: what to click, what you should see; the original
+ * detail and pills are collapsed per card) → collapsed Technical details (signal
+ * path diagram + WebSocket payload table) → Download module → help band.
  *
- * JSON-LD: HowTo (built 1:1 from the SAME steps array the spine renders, so the
+ * JSON-LD: HowTo (built 1:1 from the SAME steps array the cards render, so the
  * structured data can never drift from the visible copy) + SoftwareApplication +
- * WebSite for entity grounding.
- *
- * All copy from src/i18n/pages/obs-setup.ts (traceable to the product spec).
- * Colors are tokens only; amber appears ONLY in the warn/verify/timing semantic
- * (the "shut down" caveat, the custom-port caveat, and the timing payload values).
+ * WebSite. Colors are tokens only; amber appears ONLY in the warn/verify/timing
+ * semantic.
  *
  * Props: lang.
  */
 import Layout from "../layouts/Layout.astro";
 import Button from "./Button.astro";
 import WsDiagram from "./WsDiagram.astro";
+import CtaBand from "./visual/CtaBand.astro";
+import TechDetails from "./visual/TechDetails.astro";
 import { localizedPath, type Locale } from "../i18n/routes";
 import { obsSetupCopy } from "../i18n/pages/obs-setup";
 import { howTo, softwareApplication, organizationWebSite } from "../i18n/jsonld";
@@ -44,14 +36,13 @@ const downloadHref = localizedPath(lang, "download");
 
 const copy = obsSetupCopy(lang);
 
-/** Zero-padded mono step numeral ("01".."05") for the spine. */
+/** Zero-padded mono step numeral ("01".."05"). */
 function stepNum(i: number): string {
   return String(i + 1).padStart(2, "0");
 }
 
-// JSON-LD: HowTo built from the SAME steps that render the spine (name + text),
-// plus SoftwareApplication + WebSite. howTo() returns null on empty input, so
-// filter before handing the array to Layout.
+// JSON-LD: HowTo built from the SAME steps that render the cards (name + text),
+// plus SoftwareApplication + WebSite. howTo() returns null on empty input.
 const jsonLd = [
   howTo({
     name: copy.howToName,
@@ -70,42 +61,68 @@ const jsonLd = [
   jsonLd={jsonLd}
   transport={true}
 >
-  <!-- Intro: mono eyebrow + the page's single answer-first H1 -->
+  <!-- 1 · What it is: single H1 + plain-language lead -->
   <section class="section section-glow" aria-labelledby="obs-h1">
     <div class="container obs-head">
       <p class="eyebrow">{copy.eyebrow}</p>
       <h1 id="obs-h1" class="obs-title">{copy.h1}</h1>
-      <p class="obs-intro">{copy.intro}</p>
+      <p class="obs-intro">{copy.introPlain}</p>
     </div>
   </section>
 
-  <!-- The numbered Browser-source flow — vertical emerald spine -->
-  <section class="obs-steps-section" aria-labelledby="obs-steps-h2">
+  <!-- 2 · Need the app first? -->
+  <CtaBand lang={lang} kind="download" />
+
+  <!-- 3 · Visual walkthrough: number, what to click, what you should see -->
+  <section class="section section-alt" aria-labelledby="obs-steps-h2">
     <div class="container">
       <p class="eyebrow">{copy.stepsEyebrow}</p>
       <h2 id="obs-steps-h2" class="obs-section-heading">{copy.stepsHeading}</h2>
 
+      <div class="obs-url">
+        <p class="obs-url-label">{copy.url.label}</p>
+        <div class="code-block">
+          <div class="obs-url-row">
+            <code class="obs-url-value" id="obs-url-value">{copy.url.value}</code>
+            <button
+              type="button"
+              class="btn btn-secondary obs-url-copy"
+              data-copy-target="obs-url-value"
+              data-copy-label={copy.url.copy}
+              data-copied-label={copy.url.copied}
+            >{copy.url.copy}</button>
+          </div>
+        </div>
+        <p class="obs-url-hint">{copy.url.hint}</p>
+      </div>
+
       <ol class="obs-steps">
         {
           copy.steps.map((step, i) => (
-            <li class="obs-step">
+            <li class="obs-step card">
               <div class="obs-step-num mono" aria-hidden="true">
                 {stepNum(i)}
               </div>
               <div class="obs-step-body">
-                <p class="tile-kicker">{step.kicker}</p>
                 <h3 class="obs-step-name">{step.name}</h3>
-                <p class="obs-step-text">{step.text}</p>
-                {(step.token || step.amber) && (
-                  <p class="obs-step-meta">
-                    {step.token && (
-                      <span class="pill">{step.token}</span>
-                    )}
-                    {step.amber && (
-                      <span class="pill pill-amber">{step.amber}</span>
-                    )}
-                  </p>
-                )}
+                <p class="obs-step-short">{step.short}</p>
+                <p class="obs-step-see">
+                  <svg class="obs-eye" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                  <span><strong>{copy.seeLabel}:</strong> {step.see}</span>
+                </p>
+                <TechDetails lang={lang} summary={copy.moreDetail}>
+                  <p class="tile-kicker">{step.kicker}</p>
+                  <p class="obs-step-text">{step.text}</p>
+                  {(step.token || step.amber) && (
+                    <p class="obs-step-meta">
+                      {step.token && <span class="pill">{step.token}</span>}
+                      {step.amber && <span class="pill pill-amber">{step.amber}</span>}
+                    </p>
+                  )}
+                </TechDetails>
               </div>
             </li>
           ))
@@ -114,75 +131,70 @@ const jsonLd = [
     </div>
   </section>
 
-  <!-- The signal path — WsDiagram (simple stacked flow) -->
-  <section class="section section-glow" aria-labelledby="obs-diagram-h2">
+  <!-- 4 · Technical details (collapsed): how it works + signal path + payload -->
+  <section class="section" aria-labelledby="obs-tech-h2">
     <div class="container obs-diagram-wrap">
-      <p class="eyebrow">{copy.diagramEyebrow}</p>
-      <h2 id="obs-diagram-h2" class="obs-section-heading">
-        {copy.diagramHeading}
-      </h2>
-      <p class="obs-diagram-body">{copy.diagramBody}</p>
+      <p class="eyebrow">{copy.techEyebrow}</p>
+      <h2 id="obs-tech-h2" class="obs-section-heading">{copy.techHeading}</h2>
 
-      <WsDiagram
-        liveaudio={copy.diagram.liveaudio}
-        obs={copy.diagram.obs}
-        client={copy.diagram.client}
-        signal={copy.diagram.signal}
-        caption={copy.diagram.caption}
-        ariaLabel={copy.diagramHeading}
-        class="obs-diagram"
-      />
+      <TechDetails lang={lang}>
+        <p class="obs-diagram-body">{copy.intro}</p>
+
+        <h3 class="obs-sub-heading">{copy.diagramHeading}</h3>
+        <p class="obs-diagram-body">{copy.diagramBody}</p>
+        <WsDiagram
+          liveaudio={copy.diagram.liveaudio}
+          obs={copy.diagram.obs}
+          client={copy.diagram.client}
+          signal={copy.diagram.signal}
+          caption={copy.diagram.caption}
+          ariaLabel={copy.diagramHeading}
+          class="obs-diagram"
+        />
+
+        <h3 class="obs-sub-heading obs-sub-gap">{copy.payloadHeading}</h3>
+        <p class="obs-payload-intro">{copy.payloadIntro}</p>
+
+        <div class="obs-payload-scroll">
+          <table class="vs-table obs-payload-table">
+            <caption class="obs-sr-only">{copy.payloadIntro}</caption>
+            <thead>
+              <tr>
+                <th scope="col">{copy.payloadColField}</th>
+                <th scope="col">{copy.payloadColDesc}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                copy.payloadFields.map((row) => (
+                  <tr>
+                    <th scope="row" class="obs-payload-field">
+                      {row.field}
+                    </th>
+                    <td
+                      class:list={[
+                        "obs-payload-desc",
+                        { "obs-payload-timing": row.timing },
+                      ]}
+                    >
+                      {row.desc}
+                    </td>
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <p class="obs-payload-note">
+          <span class="sim-label">{copy.payloadNote}</span>
+        </p>
+      </TechDetails>
     </div>
   </section>
 
-  <!-- WebSocket payload field reference (mono table; timing values in amber) -->
-  <section class="obs-payload-section" aria-labelledby="obs-payload-h2">
-    <div class="container obs-payload-wrap">
-      <p class="eyebrow">{copy.payloadEyebrow}</p>
-      <h2 id="obs-payload-h2" class="obs-section-heading">
-        {copy.payloadHeading}
-      </h2>
-      <p class="obs-payload-intro">{copy.payloadIntro}</p>
-
-      <div class="obs-payload-scroll">
-        <table class="vs-table obs-payload-table">
-          <caption class="obs-sr-only">{copy.payloadIntro}</caption>
-          <thead>
-            <tr>
-              <th scope="col">{copy.payloadColField}</th>
-              <th scope="col">{copy.payloadColDesc}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {
-              copy.payloadFields.map((row) => (
-                <tr>
-                  <th scope="row" class="obs-payload-field">
-                    {row.field}
-                  </th>
-                  <td
-                    class:list={[
-                      "obs-payload-desc",
-                      { "obs-payload-timing": row.timing },
-                    ]}
-                  >
-                    {row.desc}
-                  </td>
-                </tr>
-              ))
-            }
-          </tbody>
-        </table>
-      </div>
-
-      <p class="obs-payload-note">
-        <span class="sim-label">{copy.payloadNote}</span>
-      </p>
-    </div>
-  </section>
-
-  <!-- Closing Download module — the Download CTA is the hero of every page -->
-  <section class="section section-glow" aria-labelledby="obs-closing-h2">
+  <!-- 5 · Download -->
+  <section class="section section-alt section-glow" aria-labelledby="obs-closing-h2">
     <div class="container obs-closing">
       <p class="eyebrow">{copy.closingEyebrow}</p>
       <h2 id="obs-closing-h2" class="obs-closing-heading">
@@ -192,7 +204,33 @@ const jsonLd = [
       <Button variant="primary" href={downloadHref} label={copy.download} />
     </div>
   </section>
+
+  <!-- 6 · Help -->
+  <CtaBand lang={lang} kind="help" />
 </Layout>
+
+<script>
+  // Copy the overlay URL. The text is also user-select: all, so it works without JS.
+  document.querySelectorAll<HTMLButtonElement>("[data-copy-target]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const el = document.getElementById(btn.dataset.copyTarget ?? "");
+      if (!el?.textContent) return;
+      try {
+        await navigator.clipboard.writeText(el.textContent.trim());
+        btn.textContent = btn.dataset.copiedLabel ?? "";
+        setTimeout(() => {
+          btn.textContent = btn.dataset.copyLabel ?? "";
+        }, 2000);
+      } catch {
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        const sel = window.getSelection();
+        sel?.removeAllRanges();
+        sel?.addRange(range);
+      }
+    });
+  });
+</script>
 
 <style>
   /* Screen-reader-only utility (visually hidden, still announced). */
@@ -208,73 +246,38 @@ const jsonLd = [
     border: 0;
   }
 
-  /* Intro */
-  .obs-head {
-    max-width: var(--measure);
-  }
-  .obs-title {
-    font-size: var(--text-3xl);
-    margin: var(--space-3) 0 var(--space-4);
-  }
-  .obs-intro {
-    color: var(--color-text);
+  .obs-head { max-width: var(--measure); }
+  .obs-title { font-size: var(--text-3xl); margin: var(--space-3) 0 var(--space-4); }
+  .obs-intro { color: var(--color-text); font-size: var(--text-lg); margin: 0; overflow-wrap: anywhere; }
+
+  .obs-section-heading { font-size: var(--text-2xl); margin: var(--space-3) 0 var(--space-6); max-width: var(--measure); }
+  .obs-sub-heading { font-size: var(--text-xl); margin: var(--space-6) 0 var(--space-3); }
+  .obs-sub-gap { margin-top: var(--space-9); }
+
+  /* Prominent, copy-friendly overlay URL */
+  .obs-url { margin-bottom: var(--space-9); }
+  .obs-url-label { margin: 0 0 var(--space-3); font-weight: 600; color: var(--color-text-strong); }
+  .obs-url-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4); padding: var(--space-5); }
+  .obs-url-value {
+    flex: 1 1 16rem;
+    min-width: 0;
+    color: var(--color-green);
     font-size: var(--text-lg);
-    margin: 0;
-    /* Embeds ws://127.0.0.1:8765 inline — allow the token to wrap. */
     overflow-wrap: anywhere;
+    user-select: all;
   }
+  .obs-url-hint { margin: var(--space-3) 0 0; color: var(--color-text-muted); font-size: var(--text-sm); }
 
-  /* Shared section heading rhythm (matches sibling pages) */
-  .obs-section-heading {
-    font-size: var(--text-2xl);
-    margin: var(--space-3) 0 var(--space-5);
-    max-width: var(--measure);
-  }
-
-  /* Steps section — keep the glow off the spine so it stays quiet editorial */
-  .obs-steps-section {
-    padding-block: clamp(2rem, 5vh, 4rem) clamp(5rem, 10vh, 8rem);
-    position: relative;
-  }
-
-  /* Numbered step spine — vertical emerald rail down the left of the numerals */
-  .obs-steps {
-    list-style: none;
-    margin: var(--space-7) 0 0;
-    padding: 0;
-    position: relative;
-  }
-  /* The spine: a single emerald hairline running through the numeral column */
-  .obs-steps::before {
-    content: "";
-    position: absolute;
-    left: calc(1.5rem - 0.5px);
-    top: var(--space-4);
-    bottom: var(--space-8);
-    width: 1px;
-    background: linear-gradient(
-      to bottom,
-      var(--color-green),
-      var(--color-border)
-    );
-    opacity: 0.6;
-  }
-
+  /* Step cards */
+  .obs-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-6); }
   .obs-step {
     display: grid;
-    grid-template-columns: 3rem 1fr;
+    grid-template-columns: 3rem minmax(0, 1fr);
     gap: var(--space-5);
-    padding-block: var(--space-6);
     align-items: start;
+    padding: var(--space-7);
   }
-  .obs-step:not(:last-child) {
-    border-bottom: 1px solid var(--color-border-soft);
-  }
-
-  /* The printed numeral sits ON the spine, on the page plane (covers the line) */
   .obs-step-num {
-    position: relative;
-    z-index: 1;
     width: 3rem;
     height: 3rem;
     display: inline-flex;
@@ -282,123 +285,51 @@ const jsonLd = [
     justify-content: center;
     font-size: var(--text-lg);
     color: var(--color-green);
-    background: var(--color-surface);
+    background: var(--color-green-faint);
     border: 1px solid var(--color-green);
     border-radius: var(--radius-sm);
   }
-
-  .obs-step-body {
-    min-width: 0;
-  }
-  .obs-step-name {
-    font-size: var(--text-lg);
-    line-height: 1.3;
-    margin: var(--space-1) 0 var(--space-2);
-    color: var(--color-text-strong);
-  }
-  .obs-step-text {
-    color: var(--color-text);
-    margin: 0;
-    max-width: var(--measure);
-    /* Step prose embeds long unbreakable literals (%LOCALAPPDATA%\LiveAudio\data,
-       ~/.local/share/liveaudio/data, ws://127.0.0.1:8765). Break them mid-token
-       so they wrap instead of forcing a horizontal scroll on narrow screens. */
-    overflow-wrap: anywhere;
-  }
-  .obs-step-meta {
+  .obs-step-body { min-width: 0; display: grid; gap: var(--space-3); }
+  .obs-step-name { font-size: var(--text-lg); line-height: 1.3; margin: 0; }
+  .obs-step-short { margin: 0; overflow-wrap: anywhere; }
+  .obs-step-see {
     display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-2);
-    margin: var(--space-4) 0 0;
-    max-width: none;
+    gap: var(--space-3);
+    align-items: flex-start;
+    margin: 0;
+    padding: var(--space-3) var(--space-4);
+    border-radius: var(--radius-sm);
+    background: var(--color-green-faint);
+    font-size: var(--text-sm);
   }
-  /* Tokens are code-like — keep their literal casing (port, filename, size) */
-  .obs-step-meta .pill {
-    text-transform: none;
-  }
+  .obs-eye { color: var(--color-green); flex-shrink: 0; margin-top: 2px; }
+  .obs-step-text { margin: var(--space-2) 0 0; max-width: var(--measure); overflow-wrap: anywhere; }
+  .obs-step-meta { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: var(--space-4) 0 0; max-width: none; }
+  .obs-step-meta .pill { text-transform: none; }
 
   @media (max-width: 640px) {
-    .obs-step {
-      grid-template-columns: 2.5rem 1fr;
-      gap: var(--space-4);
-    }
-    .obs-step-num {
-      width: 2.5rem;
-      height: 2.5rem;
-    }
-    .obs-steps::before {
-      left: calc(1.25rem - 0.5px);
-    }
+    .obs-step { grid-template-columns: minmax(0, 1fr); padding: var(--space-5); gap: var(--space-3); }
+    .obs-step-num { width: 2.5rem; height: 2.5rem; }
   }
 
-  /* Diagram section */
-  .obs-diagram-wrap {
-    max-width: 920px;
-  }
-  .obs-diagram-body {
-    color: var(--color-text);
-    margin: 0 0 var(--space-7);
-    max-width: var(--measure);
-  }
-
-  /* Payload reference section */
-  .obs-payload-section {
-    padding-block: clamp(2rem, 5vh, 4rem) clamp(5rem, 10vh, 8rem);
-    position: relative;
-  }
-  .obs-payload-wrap {
-    max-width: 920px;
-  }
-  .obs-payload-intro {
-    color: var(--color-text);
-    margin: 0 0 var(--space-6);
-    max-width: var(--measure);
-  }
-
-  /* The TABLE scrolls on narrow viewports, never the page */
+  /* Technical details content */
+  .obs-diagram-wrap { max-width: 920px; }
+  .obs-diagram-body { color: var(--color-text); margin: 0 0 var(--space-6); max-width: var(--measure); overflow-wrap: anywhere; }
+  .obs-payload-intro { color: var(--color-text); margin: 0 0 var(--space-6); max-width: var(--measure); }
   .obs-payload-scroll {
     overflow-x: auto;
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
     -webkit-overflow-scrolling: touch;
   }
-  .obs-payload-table {
-    min-width: 32rem;
-  }
-  /* Field column reads like code — lowercase, literal */
-  .obs-payload-field {
-    color: var(--color-green);
-    font-weight: 500;
-    text-transform: none;
-    white-space: nowrap;
-  }
-  .obs-payload-desc {
-    color: var(--color-text);
-    text-transform: none;
-    white-space: normal;
-  }
-  /* Timing fields carry the amber warn/verify/timing semantic */
-  .obs-payload-timing {
-    color: var(--color-amber);
-  }
+  .obs-payload-table { min-width: 32rem; }
+  .obs-payload-field { color: var(--color-green); font-weight: 500; text-transform: none; white-space: nowrap; }
+  .obs-payload-desc { color: var(--color-text); text-transform: none; white-space: normal; }
+  .obs-payload-timing { color: var(--color-amber); }
+  .obs-payload-note { margin: var(--space-5) 0 0; max-width: var(--measure); }
+  .obs-payload-note .sim-label { line-height: 1.6; }
 
-  .obs-payload-note {
-    margin: var(--space-5) 0 0;
-    max-width: var(--measure);
-  }
-  .obs-payload-note .sim-label {
-    line-height: 1.6;
-  }
-
-  /* Closing module (mirrors sibling pages) */
-  .obs-closing-heading {
-    font-size: var(--text-2xl);
-    margin: var(--space-3) 0 var(--space-4);
-    max-width: var(--measure);
-  }
-  .obs-closing-body {
-    color: var(--color-text);
-    margin: 0 0 var(--space-6);
-    max-width: var(--measure);
-  }
+  /* Closing module */
+  .obs-closing-heading { font-size: var(--text-2xl); margin: var(--space-3) 0 var(--space-4); max-width: var(--measure); }
+  .obs-closing-body { color: var(--color-text); margin: 0 0 var(--space-6); max-width: var(--measure); }
 </style>

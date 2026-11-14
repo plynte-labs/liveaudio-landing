@@ -31,6 +31,10 @@ export interface ObsStep {
   token?: string;
   /** Optional amber operator caveat shown as a `.pill-amber`. */
   amber?: string;
+  /** One plain-language sentence shown on the walkthrough card. */
+  short: string;
+  /** What the viewer should see once the step is done. */
+  see: string;
 }
 
 /** One row of the WebSocket payload field reference table. */
@@ -51,6 +55,15 @@ export interface ObsSetupCopy {
   /** Single <h1> for the page. */
   h1: string;
   intro: string;
+  /** Plain-language lead shown under the H1 (the technical `intro` moves into Technical details). */
+  introPlain: string;
+  /** Prominent overlay-URL block. */
+  url: { label: string; value: string; hint: string; copy: string; copied: string };
+  /** Labels used by the walkthrough cards. */
+  seeLabel: string;
+  moreDetail: string;
+  techEyebrow: string;
+  techHeading: string;
 
   // Steps section
   stepsEyebrow: string;
@@ -101,6 +114,20 @@ const en: ObsSetupCopy = {
   intro:
     "Start the system in LiveAudio, then copy its overlay URL into an OBS Browser source. The overlay talks to LiveAudio over a local WebSocket protected by a loopback-only listener and an Origin allowlist. Windows x64 (v1.6.0).",
 
+  introPlain:
+    "Start LiveAudio, copy its overlay link, and paste it into OBS. Five short steps, about what to click and what you should see.",
+  url: {
+    label: "Your overlay link",
+    value: "http://127.0.0.1:8765/overlay",
+    hint: "Paste this into the Browser source URL box. Always use Copy URL in LiveAudio so the port matches: it can change if 8765 is busy.",
+    copy: "Copy link",
+    copied: "Copied",
+  },
+  seeLabel: "You should see",
+  moreDetail: "Full details",
+  techEyebrow: "// for the curious",
+  techHeading: "How the captions reach OBS.",
+
   stepsEyebrow: "// the five steps",
   stepsHeading: "The exact Browser-source flow.",
   steps: [
@@ -109,18 +136,24 @@ const en: ObsSetupCopy = {
       name: "Add a Browser source in OBS",
       text: "In OBS, go to Sources → + → Browser. This creates the surface that LiveAudio draws captions onto inside your scene.",
       token: "Sources → + → Browser",
+      short: "Open OBS, then click Sources → + → Browser.",
+      see: "A new Browser source in your Sources list.",
     },
     {
       kicker: "// local overlay",
       name: "Paste the overlay URL and size it 1920×1080",
       text: "In LiveAudio, select your audio device, profile and model and click Save. Start the system, then copy the overlay URL with Copy URL (Browser Source URL, in the OBS Studio Integration card). In OBS, leave Local File unchecked and paste it into URL. Set Width to 1920 and Height to 1080: the full canvas, because the overlay positions the captions itself.",
       token: "1920×1080",
+      short: "Start the system in LiveAudio, press Copy URL, and paste it into the URL box. Leave Local File unchecked and set the size to 1920×1080.",
+      see: "A full-canvas source. The overlay places the captions for you.",
     },
     {
       kicker: "// keep alive",
       name: 'Disable "Shut down source when not visible"',
       text: 'In the Browser source properties, turn off "Shut down source when not visible" (and "Refresh browser when scene becomes active") to keep the connection active when switching scenes.',
       amber: 'turn OFF "shut down when not visible"',
+      short: "Turn off \"Shut down source when not visible\" so captions keep working when you switch scenes.",
+      see: "Both options unchecked in the Browser source properties.",
     },
     {
       kicker: "// port match",
@@ -128,12 +161,16 @@ const en: ObsSetupCopy = {
       text: "The Browser source URL is http://127.0.0.1:8765/overlay; Copy URL adds ?port=<port> with the active port. LiveAudio starts at ws_port (default 8765) and, if that port is busy, tries up to ws_port + 9 (8765–8774 by default); copy the URL again if the port changes. ws://127.0.0.1:8765 is the WebSocket endpoint the overlay connects to, not what you paste into OBS.",
       token: "http://127.0.0.1:8765/overlay",
       amber: "use the copied URL for the active port",
+      short: "Use the link exactly as copied. If LiveAudio moves to another port, copy it again.",
+      see: "A URL ending in /overlay with the active port (8765 by default).",
     },
     {
       kicker: "// go live",
       name: "Check captions in OBS",
       text: "Speak and check for captions in the OBS Browser source. Style tab changes reach OBS instantly. If you open OBS before LiveAudio, the overlay retries with a 1–8 s backoff and rescans the ports, so it connects once LiveAudio starts. If captions show in a regular browser but not in OBS, open the Browser source properties and press Refresh cache of current page.",
       token: "Check captions",
+      short: "Speak, and watch the Browser source in OBS.",
+      see: "Your words appearing as captions in OBS.",
     },
   ],
 
@@ -191,6 +228,20 @@ const es: ObsSetupCopy = {
   intro:
     "Inicia el sistema en LiveAudio y después copia la URL del overlay en una fuente de navegador de OBS. El overlay se comunica con LiveAudio por un WebSocket local protegido con un listener solo loopback y una lista de orígenes permitidos. Windows x64 (v1.6.0).",
 
+  introPlain:
+    "Inicia LiveAudio, copia su enlace del overlay y pégalo en OBS. Cinco pasos cortos: qué pulsar y qué deberías ver.",
+  url: {
+    label: "Tu enlace del overlay",
+    value: "http://127.0.0.1:8765/overlay",
+    hint: "Pégalo en el cuadro URL de la fuente de navegador. Usa siempre Copiar URL en LiveAudio para que el puerto coincida: puede cambiar si el 8765 está ocupado.",
+    copy: "Copiar enlace",
+    copied: "Copiado",
+  },
+  seeLabel: "Deberías ver",
+  moreDetail: "Detalles completos",
+  techEyebrow: "// para los curiosos",
+  techHeading: "Cómo llegan los subtítulos a OBS.",
+
   stepsEyebrow: "// los cinco pasos",
   stepsHeading: "El flujo exacto de la fuente de navegador.",
   steps: [
@@ -199,18 +250,24 @@ const es: ObsSetupCopy = {
       name: "Agrega una fuente de navegador en OBS",
       text: "En OBS, ve a Fuentes → + → Navegador. Esto crea la superficie sobre la que LiveAudio dibuja los subtítulos dentro de tu escena.",
       token: "Fuentes → + → Navegador",
+      short: "Abre OBS y pulsa Fuentes → + → Navegador.",
+      see: "Una nueva fuente de navegador en tu lista de Fuentes.",
     },
     {
       kicker: "// overlay local",
       name: "Pega la URL del overlay y configura 1920×1080",
       text: "En LiveAudio, selecciona el dispositivo de audio, el perfil y el modelo y pulsa Guardar. Inicia el sistema y después copia la URL del overlay con Copiar URL (URL de Fuente de Navegador, en la tarjeta de integración con OBS Studio). En OBS, deja Archivo local desmarcado y pégala en URL. Configura Ancho 1920 y Alto 1080: el lienzo completo, porque el overlay posiciona los subtítulos por sí mismo.",
       token: "1920×1080",
+      short: "Inicia el sistema en LiveAudio, pulsa Copiar URL y pégala en el cuadro URL. Deja Archivo local desmarcado y configura el tamaño 1920×1080.",
+      see: "Una fuente de lienzo completo. El overlay coloca los subtítulos por ti.",
     },
     {
       kicker: "// mantener activo",
       name: 'Desactiva "Apagar la fuente cuando no está visible"',
       text: 'En las propiedades de la fuente de navegador, desactiva "Apagar la fuente cuando no está visible" (y "Actualizar el navegador cuando la escena se activa") para mantener activa la conexión al cambiar de escena.',
       amber: 'desactiva "apagar cuando no está visible"',
+      short: "Desactiva \"Apagar la fuente cuando no está visible\" para que los subtítulos sigan funcionando al cambiar de escena.",
+      see: "Ambas opciones desmarcadas en las propiedades de la fuente de navegador.",
     },
     {
       kicker: "// igualar puerto",
@@ -218,12 +275,16 @@ const es: ObsSetupCopy = {
       text: "La URL de la fuente de navegador es http://127.0.0.1:8765/overlay; Copiar URL agrega ?port=<puerto> con el puerto activo. LiveAudio comienza en ws_port (predeterminado 8765) y, si está ocupado, prueba hasta ws_port + 9 (8765–8774 por defecto); copia de nuevo la URL si el puerto cambia. ws://127.0.0.1:8765 es el endpoint WebSocket al que se conecta el overlay, no lo que se pega en OBS.",
       token: "http://127.0.0.1:8765/overlay",
       amber: "usa la URL copiada para el puerto activo",
+      short: "Usa el enlace tal como lo copiaste. Si LiveAudio cambia de puerto, cópialo de nuevo.",
+      see: "Una URL que termina en /overlay con el puerto activo (8765 por defecto).",
     },
     {
       kicker: "// salir en vivo",
       name: "Comprueba los subtítulos en OBS",
       text: "Habla y comprueba los subtítulos en la fuente de navegador de OBS. Los cambios de la pestaña Estilo llegan a OBS al instante. Si abres OBS antes que LiveAudio, el overlay reintenta con espera creciente de 1 a 8 s y vuelve a buscar el puerto, así que se conecta cuando LiveAudio inicia. Si los subtítulos se ven en un navegador normal pero no en OBS, abre las propiedades de la fuente de navegador y pulsa Actualizar la caché de la página actual.",
       token: "Comprueba los subtítulos",
+      short: "Habla y mira la fuente de navegador en OBS.",
+      see: "Tus palabras apareciendo como subtítulos en OBS.",
     },
   ],
 

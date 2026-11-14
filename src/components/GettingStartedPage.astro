@@ -31,6 +31,8 @@
  */
 import Layout from "../layouts/Layout.astro";
 import Button from "./Button.astro";
+import StepFlow from "./visual/StepFlow.astro";
+import CtaBand from "./visual/CtaBand.astro";
 import { localizedPath, type Locale } from "../i18n/routes";
 import { t } from "../i18n/ui";
 import {
@@ -98,8 +100,11 @@ const rungToneClass: Record<"go" | "warn" | "info", string> = {
     </div>
   </section>
 
+  <!-- At a glance: how it works in 3 steps -->
+  <StepFlow lang={lang} alt={true} />
+
   <!-- Numbered signal timeline on a single vertical emerald spine. -->
-  <section class="section gs-timeline-section" aria-labelledby="gs-h1">
+  <section class="section gs-timeline-section" aria-label={copy.timelineLabel}>
     <div class="container">
       <p class="eyebrow gs-spine-label">{copy.spineLabel}</p>
 
@@ -248,6 +253,9 @@ const rungToneClass: Record<"go" | "warn" | "info", string> = {
     </div>
   </section>
 
+  <!-- Next: set up OBS -->
+  <CtaBand lang={lang} kind="obs" alt={true} />
+
   <!-- Closing Download module — the Download CTA is the hero of every page. -->
   <section class="section" aria-labelledby="gs-closing-h2">
     <div class="container gs-closing">
@@ -259,6 +267,9 @@ const rungToneClass: Record<"go" | "warn" | "info", string> = {
       <Button variant="primary" href={downloadHref} label={copy.download} />
     </div>
   </section>
+
+  <!-- Help -->
+  <CtaBand lang={lang} kind="help" alt={true} />
 </Layout>
 
 <style>
@@ -278,7 +289,7 @@ const rungToneClass: Record<"go" | "warn" | "info", string> = {
 
   /* ---- Timeline section ---- */
   .gs-timeline-section {
-    padding-block-start: 0;
+    padding-block-start: var(--space-9);
   }
   .gs-spine-label {
     margin: 0 0 var(--space-7);

@@ -12,6 +12,8 @@
  * Props: copy = HomeCopy["pipeline"], docsHref.
  */
 import type { PipelineStage } from "../../i18n/pages/home";
+import TechDetails from "../visual/TechDetails.astro";
+import type { Locale } from "../../i18n/routes";
 
 interface Props {
   copy: {
@@ -22,9 +24,10 @@ interface Props {
     docsLabel: string;
   };
   docsHref: string;
+  lang: Locale;
 }
 
-const { copy, docsHref } = Astro.props;
+const { copy, docsHref, lang } = Astro.props;
 
 // Inline lucide path data (stroke 1.75, 24px, currentColor) keyed by concept.
 const ICON_PATHS: Record<PipelineStage["icon"], string> = {
@@ -37,7 +40,7 @@ const ICON_PATHS: Record<PipelineStage["icon"], string> = {
 };
 ---
 
-<section class="section section-glow pipe" aria-labelledby="pipe-h2">
+<section class="section section-alt section-glow pipe" aria-labelledby="pipe-h2">
   <div class="container">
     <header class="pipe-header">
       <p class="eyebrow">{copy.eyebrow}</p>
@@ -48,6 +51,7 @@ const ICON_PATHS: Record<PipelineStage["icon"], string> = {
       </div>
     </header>
 
+    <TechDetails lang={lang}>
     <ol class="pipe-list" role="list">
       {
         copy.stages.map((stage) => (
@@ -78,6 +82,7 @@ const ICON_PATHS: Record<PipelineStage["icon"], string> = {
         ))
       }
     </ol>
+    </TechDetails>
   </div>
 </section>
 

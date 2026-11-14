@@ -1,0 +1,62 @@
+---
+/**
+ * StepFlow — "how it works" visual flow: numbered cards, icon + short title +
+ * one sentence, with a link to the page that covers each step.
+ * Renders a section with its own H2 (callers never nest it in another section).
+ */
+import Icon from "./Icon.astro";
+import { visualCopy } from "../../i18n/visual";
+import { localizedPath, type Locale } from "../../i18n/routes";
+
+interface Props { lang: Locale; alt?: boolean; id?: string }
+const { lang, alt = false, id = "flow-h2" } = Astro.props;
+const { flow } = visualCopy(lang);
+---
+
+<section class:list={["section", { "section-alt": alt }]} aria-labelledby={id}>
+  <div class="container">
+    <header class="flow-head">
+      <p class="eyebrow">{flow.eyebrow}</p>
+      <h2 id={id}>{flow.heading}</h2>
+      <p>{flow.intro}</p>
+    </header>
+    <ol class="flow-list" role="list">
+      {flow.steps.map((s, i) => (
+        <li class="flow-card">
+          <span class="flow-top">
+            <span class="flow-icon"><Icon name={s.icon} /></span>
+            <span class="flow-num mono" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+          </span>
+          <h3>{s.title}</h3>
+          <p>{s.body}</p>
+          <a class="btn-tertiary" href={localizedPath(lang, s.route)}>{s.linkLabel} <span aria-hidden="true">→</span></a>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .flow-head { display: grid; gap: var(--space-3); margin-bottom: var(--space-9); max-width: var(--measure); }
+  .flow-head h2 { margin: 0; font-size: var(--text-2xl); }
+  .flow-head p:last-child { margin: 0; color: var(--color-text-muted); }
+  .flow-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-6); grid-template-columns: minmax(0, 1fr); }
+  .flow-card {
+    background: var(--color-surface); border: 1px solid var(--color-border-soft);
+    border-radius: var(--radius); padding: var(--space-7);
+    display: flex; flex-direction: column; gap: var(--space-3); min-width: 0;
+  }
+  .flow-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-2); }
+  .flow-icon {
+    width: 48px; height: 48px; display: inline-flex; align-items: center; justify-content: center;
+    border-radius: var(--radius-sm); border: 1px solid var(--color-green);
+    color: var(--color-green); background: var(--color-green-faint);
+  }
+  .flow-num { color: var(--color-neon); font-size: var(--text-xl); font-weight: 700; }
+  .flow-card h3 { margin: 0; font-size: var(--text-xl); }
+  .flow-card p { margin: 0; color: var(--color-text); font-size: var(--text-sm); }
+  .flow-card .btn-tertiary { margin-top: auto; padding-top: var(--space-3); font-size: var(--text-sm); }
+  @media (min-width: 768px) {
+    .flow-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+</style>
