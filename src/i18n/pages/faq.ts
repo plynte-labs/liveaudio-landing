@@ -8,7 +8,7 @@
  * Every answer is answer-first and capped at TWO sentences so it stays
  * LLM-citable, and every claim is traceable to the product spec:
  *   - 100% local + first-run internet only
- *   - Linux mic capture + libportaudio2; loopback Win
+ *   - Linux AppImage / .deb (manual updates); loopback Win
  *   - Free & open-source (MIT), no key/subscription
  *   - GPU optional; CPU works; CUDA driver >=525
  *   - Internet only on first run; no API key
@@ -50,17 +50,17 @@ const en: FaqPageCopy = {
     "Answers about LiveAudio: is it 100% local, does it run on Linux, is it free and open-source (MIT), do you need a GPU or an API key, what is the latency, and how it differs from cloud APIs and OBS caption plugins.",
   eyebrow: "// faq",
   heading: "Answers about local, free, real-time captions.",
-  lede: "Short, source-backed answers to the questions people ask before downloading LiveAudio v1.5.1.",
+  lede: "Short, source-backed answers to the questions people ask before downloading LiveAudio v1.6.0.",
   items: [
     {
       question: "Is it really 100% local?",
       answer:
-        "Audio processing and transcription run on your computer. The Rust core and Tauri desktop use a Python inference worker; initial setup and model downloads may require internet.",
+        "Audio capture and transcription run 100% on your machine. LiveAudio v1.6.0 is 100% native Rust using ONNX Runtime (DirectML / CPU) with zero Python runtimes to provision and 0 telemetry.",
     },
     {
       question: "Does it work on Linux?",
       answer:
-        "v1.5.1 focuses on Windows 10/11 x64; Linux users stay on the legacy Python v1.2.7 tarball with microphone capture, which needs the libportaudio2 package (sudo apt install libportaudio2). System-audio loopback (WASAPI) is Windows-only.",
+        "Yes. v1.6.0 ships a Windows 10/11 x64 installer plus a Linux x86_64 AppImage and .deb on the GitHub release page. On Linux, updates are manual (the in-app updater is Windows-only). System-audio loopback (WASAPI) is Windows-only.",
     },
     {
       question: "Is it free and open-source?",
@@ -70,12 +70,12 @@ const en: FaqPageCopy = {
     {
       question: "Do I need a GPU?",
       answer:
-        "No. CPU transcription is available. NVIDIA CUDA is optional; detecting a GPU does not guarantee that the required CUDA runtime libraries are available.",
+        "No. LiveAudio uses DirectML (DirectX 12) for native GPU acceleration across NVIDIA, AMD, and Intel GPUs, with automatic CPU fallback. An optional CTranslate2 CUDA worker is available for dedicated NVIDIA GPUs.",
     },
     {
       question: "Do I need internet or an API key?",
       answer:
-        "No API key or account is needed for local transcription. Internet may be needed to provision components or download a newly selected model. Transcription can run offline once the required components and model are available.",
+        "No API key or account is needed, and there are zero Python runtimes to download. Internet is only required if you choose to download additional Whisper models; once downloaded, transcription runs entirely offline with zero network traffic.",
     },
     {
       question: "What's the latency?",
@@ -86,14 +86,14 @@ const en: FaqPageCopy = {
       question:
         "How is it different from cloud APIs or OBS caption plugins?",
       answer:
-        "Cloud ASR APIs send your audio off your machine and bill per minute, while browser caption tools depend on a remote service; LiveAudio does everything locally with no cloud and no per-minute cost. It broadcasts clean subtitle JSON over a local WebSocket (ws://127.0.0.1:8765) that OBS — or any localhost client — can consume.",
+        "Cloud ASR APIs send your audio off your machine and bill per minute, while browser caption tools depend on a remote service; LiveAudio does everything locally with no cloud and no per-minute cost. It broadcasts clean subtitle JSON over a local WebSocket (ws://127.0.0.1:8765) with strict CSWSH origin filtering and configurable loopback allowlist.",
     },
   ],
   closingEyebrow: "// download",
   closingHeading: "Ready when your answers are.",
   closingBody:
     "Free & open-source (MIT). No subscription, no API key. You only pay your own electricity — hardware not included.",
-  download: "Download LiveAudio v1.5.1 (free)",
+  download: "Download LiveAudio v1.6.0 (free)",
 };
 
 const es: FaqPageCopy = {
@@ -102,17 +102,17 @@ const es: FaqPageCopy = {
     "Respuestas sobre LiveAudio: si es 100% local, si funciona en Linux, si es gratis y de código abierto (MIT), si necesitas GPU o API key, cuál es la latencia y en qué se diferencia de las APIs en la nube y los plugins de subtítulos de OBS.",
   eyebrow: "// faq",
   heading: "Respuestas sobre subtítulos locales, gratuitos y en tiempo real.",
-  lede: "Respuestas breves y verificables a las preguntas habituales antes de descargar LiveAudio v1.5.1.",
+  lede: "Respuestas breves y verificables a las preguntas habituales antes de descargar LiveAudio v1.6.0.",
   items: [
     {
       question: "¿De verdad es 100% local?",
       answer:
-        "El procesamiento de audio y la transcripción ocurren en tu equipo. El núcleo Rust y el escritorio Tauri usan un worker de inferencia Python; la configuración inicial y las descargas de modelos pueden necesitar internet.",
+        "La captura de audio y la transcripción ocurren 100% en tu equipo. LiveAudio v1.6.0 es 100% Rust nativo con ONNX Runtime (DirectML / CPU) sin runtimes de Python que instalar y 0 telemetría.",
     },
     {
       question: "¿Funciona en Linux?",
       answer:
-        "La v1.5.1 se enfoca en Windows 10/11 x64; en Linux sigue el tarball heredado Python v1.2.7 con captura por micrófono, que requiere el paquete libportaudio2 (sudo apt install libportaudio2). El loopback de audio del sistema (WASAPI) es solo de Windows.",
+        "Sí. La v1.6.0 incluye un instalador para Windows 10/11 x64 y un AppImage y un .deb para Linux x86_64 en la página del release de GitHub. En Linux las actualizaciones son manuales (el actualizador integrado es solo de Windows). El loopback de audio del sistema (WASAPI) es solo de Windows.",
     },
     {
       question: "¿Es gratis y de código abierto?",
@@ -122,12 +122,12 @@ const es: FaqPageCopy = {
     {
       question: "¿Necesito una GPU?",
       answer:
-        "No. La transcripción puede usar la CPU. NVIDIA CUDA es opcional; detectar una GPU no garantiza que las bibliotecas necesarias para CUDA estén disponibles.",
+        "No. LiveAudio utiliza DirectML (DirectX 12) para aceleración nativa en GPUs NVIDIA, AMD e Intel, con fallback automático a CPU. Dispone de un worker opcional CTranslate2 para GPUs NVIDIA dedicadas con CUDA.",
     },
     {
       question: "¿Necesito internet o una API key?",
       answer:
-        "La transcripción local no necesita una clave API ni una cuenta. Puede necesitarse internet para preparar los componentes o descargar un modelo recién seleccionado. La transcripción puede funcionar sin conexión cuando los componentes y el modelo necesarios están disponibles.",
+        "No necesitas clave API ni cuenta, y no hay ningún runtime de Python que descargar. Internet solo se requiere si descargas modelos Whisper adicionales; una vez descargados, la transcripción funciona completamente offline con cero tráfico de red.",
     },
     {
       question: "¿Cuál es la latencia?",
@@ -138,14 +138,14 @@ const es: FaqPageCopy = {
       question:
         "¿En qué se diferencia de las APIs en la nube o los plugins de subtítulos de OBS?",
       answer:
-        "Las APIs de ASR en la nube envían tu audio fuera del equipo y cobran por minuto, y las herramientas de subtítulos del navegador dependen de un servicio remoto; LiveAudio hace todo localmente, sin nube y sin costo por minuto. Emite subtítulos en JSON limpio por un WebSocket local (ws://127.0.0.1:8765) que OBS — o cualquier cliente en localhost — puede consumir.",
+        "Las APIs de ASR en la nube envían tu audio fuera del equipo y cobran por minuto, y las herramientas de subtítulos del navegador dependen de un servicio remoto; LiveAudio hace todo localmente, sin nube y sin costo por minuto. Emite subtítulos en JSON limpio por un WebSocket local (ws://127.0.0.1:8765) con filtrado estricto anti-CSWSH y lista blanca de orígenes loopback configurable.",
     },
   ],
   closingEyebrow: "// descargar",
   closingHeading: "Listo cuando tengas tus respuestas.",
   closingBody:
     "Gratis y de código abierto (MIT). Sin suscripción, sin API key. Solo pagas tu propia electricidad — el hardware no está incluido.",
-  download: "Descargar LiveAudio v1.5.1 (gratis)",
+  download: "Descargar LiveAudio v1.6.0 (gratis)",
 };
 
 const TABLE: Record<Locale, FaqPageCopy> = { en, es };

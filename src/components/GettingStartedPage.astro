@@ -5,16 +5,16 @@
  *
  * THE SIGNAL DESK numbered "signal timeline" (per the design system's
  * Pipeline and /getting-started/ layout): the EARNED, real activation sequence for
- * LiveAudio v1.5.1, on a single vertical emerald spine. Numbering is honest —
+ * LiveAudio v1.6.0, on a single vertical emerald spine. Numbering is honest —
  * each step is a real ordered action the user performs:
  *
- *   01  get LiveAudio   installer (.exe / portable) vs source (Rust + Tauri 2)
+ *   01  get LiveAudio   installer (.exe) / Linux AppImage + .deb vs source (Rust + Tauri 2)
   *   02  first run       fetches transcription models; first-run internet only (amber)
  *   03  GPU auto-detect  CPU works; CUDA driver >= 525 / VRAM >= 4 GiB ladder
  *   04  pick + START SYSTEM  Fast/Balanced/Quality/Stable Streaming -> START SYSTEM
  *
  * Every claim is traceable to the product spec (GPU optional; first-run
- * footprint, SmartScreen, libportaudio2). Copy lives in
+ * footprint, SmartScreen, manual Linux updates). Copy lives in
  * src/i18n/pages/getting-started.ts — this file is structure + tokens only.
  *
  * JSON-LD: HowTo (steps mirror the timeline 1:1) + SoftwareApplication + WebSite
@@ -25,7 +25,7 @@
  *
  * Colors are tokens only (emerald spine/numerals, amber caveats/timing, muted
  * captions, off-white body). No hardcoded hex. The two amber semantics on this
- * page are warn/verify (SmartScreen, libportaudio2) and first-run internet.
+ * page are warn/verify (SmartScreen, manual Linux updates) and first-run internet.
  *
  * Props: lang.
  */
@@ -408,7 +408,7 @@ const rungToneClass: Record<"go" | "warn" | "info", string> = {
     font-size: var(--text-sm);
     margin: 0;
     max-width: none;
-    /* Names like LiveAudio-1.2.7-linux-x64.tar.gz appear inline; allow breaks. */
+    /* Names like LiveAudio-Setup-1.6.0.exe appear inline; allow breaks. */
     overflow-wrap: anywhere;
   }
   .gs-track-flag {
@@ -599,7 +599,7 @@ const rungToneClass: Record<"go" | "warn" | "info", string> = {
     font-size: var(--text-xs);
     margin: var(--space-5) 0 0;
     max-width: var(--measure);
-    /* Inline literals (legacy tarball name, sudo apt install libportaudio2). */
+    /* Inline literals (installer filename, release asset names). */
     overflow-wrap: anywhere;
   }
 

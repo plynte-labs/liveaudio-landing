@@ -214,26 +214,27 @@ const en: HomeCopy = {
   },
 
   hero: {
-    eyebrow: "PLYNTE LIVEAUDIO v1.5.1 · RUST + TAURI 2 · WINDOWS X64",
+    eyebrow: "PLYNTE LIVEAUDIO v1.6.0 · 100% RUST + TAURI 2 · WINDOWS X64",
     titleA: "Real-time ",
     accent: "local",
     titleATail: " captions for your OBS.",
     titleB: "No cloud transcription, subscription, or API key.",
     subtitle:
-      "LiveAudio is a free, open-source (MIT) app that transcribes speech locally and sends captions to OBS or other local clients. Its Rust core and Tauri desktop work with a Python inference worker; no cloud transcription service or API key is needed.",
-    download: "Download LiveAudio v1.5.1 (free)",
+      "LiveAudio is a free, open-source (MIT) app that transcribes speech locally and sends captions to OBS or other local clients. 100% native Rust Whisper engine over ONNX Runtime (DirectML / CPU) with instant startup — zero Python, no cloud transcription service, and no API key needed.",
+    download: "Download LiveAudio v1.6.0 (free)",
     how: "How it works",
-    microTrust: ["Rust + Tauri 2", "100% local", "MIT open-source"],
+    microTrust: ["100% Native Rust", "Zero Python", "100% local", "MIT open-source"],
     proofAlt: "LiveAudio product mark with the LiveAudio name and Plynte attribution.",
   },
 
   trust: {
     label: "What LiveAudio guarantees",
     items: [
-      "Rust + Tauri 2",
+      "100% Native Rust",
+      "Zero Python",
       "100% local",
       "MIT open-source",
-      "No cloud transcription",
+      "DirectML / CPU",
       "No API key",
     ],
   },
@@ -262,20 +263,20 @@ const en: HomeCopy = {
       {
         kicker: "// 100% local",
         title: "Is it really 100% local?",
-        body: "Transcription runs on your machine. Initial setup can require internet for the Python worker and its dependencies; models may also need downloading when first selected. Once the required components and models are available, transcription can run offline.",
-        spec: "local transcription · Python worker · setup may need internet",
+        body: "Transcription runs 100% on your machine. LiveAudio v1.6.0 eliminated Python entirely — there are no virtual environments or python runtimes to download. Only the selected Whisper model is downloaded locally on first selection. 0 telemetry, 0 transmission to servers.",
+        spec: "100% local · 100% native Rust · zero Python",
       },
       {
         kicker: "// linux",
         title: "Does it work on Linux?",
-        body: "v1.5.1 focuses on Windows 10/11 x64. Linux users stay on the legacy Python v1.2.7 tarball (microphone capture, needs libportaudio2) until a native Linux build ships. System-audio loopback (WASAPI) is Windows-only.",
-        spec: "v1.5.1 windows x64 · linux legacy v1.2.7",
+        body: "Yes. v1.6.0 ships a Windows 10/11 x64 installer plus a Linux x86_64 AppImage and .deb (updates are manual on Linux). System-audio loopback (WASAPI) is Windows-only.",
+        spec: "v1.6.0 windows x64 · linux appimage + deb",
       },
       {
         kicker: "// gpu",
         title: "Do I need a GPU?",
-        body: "No. CPU transcription is available. NVIDIA CUDA is optional; detection alone does not ensure that the required CUDA runtime libraries are installed.",
-        spec: "cpu works · cuda driver ≥ 525 · vram ≥ 4 GiB",
+        body: "No. DirectML hardware acceleration brings GPU inference to DirectX 12 GPUs (NVIDIA, AMD, Intel) natively via ONNX Runtime, with automatic CPU fallback. An optional CTranslate2 CUDA worker is available for dedicated NVIDIA GPUs.",
+        spec: "directml directx 12 (nvidia/amd/intel) · cpu fallback · optional ct2 cuda",
       },
     ],
     loopbackFlag: "loopback Windows-only",
@@ -306,15 +307,15 @@ const en: HomeCopy = {
         n: "03",
         icon: "cpu",
         title: "Decode",
-        body: "Whisper turns speech into text on CPU or optional CUDA.",
-        artifact: "whisper · tiny / base / small / turbo",
+        body: "Native Rust Whisper worker decodes speech using ONNX Runtime (DirectML DirectX 12 or CPU).",
+        artifact: "onnx runtime · directml / cpu · tiny / base / small / turbo",
       },
       {
         n: "04",
         icon: "share-2",
         title: "Broadcast",
-        body: "Local subtitle JSON reaches OBS or another localhost client.",
-        artifact: "ws://127.0.0.1:8765",
+        body: "Local subtitle JSON reaches OBS with CSWSH origin allowlist and instant partial updates.",
+        artifact: "ws://127.0.0.1:8765 · loopback allowlist",
       },
     ],
   },
@@ -344,7 +345,7 @@ const en: HomeCopy = {
   ws: {
     eyebrow: "// integration",
     title: "Works with OBS — or any WebSocket client.",
-    body: "LiveAudio broadcasts clean subtitle JSON over a local WebSocket (ws://127.0.0.1:8765). OBS is the built-in target via the included subtitulos_obs.html overlay, but any HTML or WebSocket client on localhost can connect and receive the same broadcast — so you can build your own consumer or wire it into other local tools. Connections are accepted only from localhost; no auth needed.",
+    body: "LiveAudio broadcasts clean subtitle JSON over a local WebSocket (ws://127.0.0.1:8765). OBS is the built-in target via the included subtitulos_obs.html overlay. v1.6.0 introduces strict Cross-Site WebSocket Hijacking (CSWSH) protection with a configurable loopback origin allowlist in Settings > Advanced, letting you authorize local ports safely with real-time rejected connection monitoring.",
     codeTab: "ws://127.0.0.1:8765",
     codeLines: [
       "{",
@@ -367,7 +368,7 @@ const en: HomeCopy = {
   bento: {
     eyebrow: "// in the box",
     heading:
-      "Built-in tools include an adaptive overlay, device and model selection, profiles, session files and local diagnostics.",
+      "Built-in tools include an adaptive overlay, style engine, device and model selection, profiles, session files and local diagnostics.",
     tiles: [
       {
         kicker: "// obs overlay",
@@ -412,7 +413,7 @@ const en: HomeCopy = {
       {
         kicker: "// updates",
         title: "Release information",
-        body: "Find new versions on GitHub Releases. Back up settings and sessions before upgrading.",
+        body: "Windows has a signed in-app updater (checks every 24 h, can be turned off; never while transcribing or OBS is connected). On v1.5.1 or older, install v1.6.0 manually once. On Linux, download new releases from GitHub Releases.",
         icon: "refresh-cw",
       },
     ],
@@ -459,12 +460,12 @@ const en: HomeCopy = {
       {
         question: "Is it really 100% local?",
         answer:
-          "Transcription runs locally. Initial setup may need internet for the Python worker and its dependencies, and a model may need downloading when first selected.",
+          "Transcription runs 100% locally on your machine. LiveAudio v1.6.0 is 100% native Rust with zero Python runtimes to provision. Only selected Whisper models are stored locally, with zero telemetry.",
       },
       {
         question: "Does it work on Linux?",
         answer:
-          "v1.5.1 focuses on Windows 10/11 x64; Linux users stay on the legacy Python v1.2.7 tarball with microphone capture (needs libportaudio2). System-audio loopback is Windows-only.",
+          "Yes. v1.6.0 ships a Windows 10/11 x64 installer plus a Linux x86_64 AppImage and .deb (updates are manual on Linux). System-audio loopback is Windows-only.",
       },
       {
         question: "Is it free and open-source?",
@@ -484,7 +485,7 @@ const en: HomeCopy = {
     eyebrow: "// download",
     heading: "Local captions in your OBS in minutes.",
     body: "Free & open-source (MIT). No subscription, no API key. You only pay your own electricity — hardware not included.",
-    download: "Download LiveAudio v1.5.1 (free)",
+    download: "Download LiveAudio v1.6.0 (free)",
     secondary: "How it works",
   },
 };
@@ -497,26 +498,27 @@ const es: HomeCopy = {
   },
 
   hero: {
-    eyebrow: "PLYNTE LIVEAUDIO v1.5.1 · RUST + TAURI 2 · WINDOWS X64",
+    eyebrow: "PLYNTE LIVEAUDIO v1.6.0 · 100% RUST + TAURI 2 · WINDOWS X64",
     titleA: "Subtítulos ",
     accent: "locales",
     titleATail: " en tiempo real para tu OBS.",
     titleB: "Sin transcripción en la nube, suscripción ni clave API.",
     subtitle:
-      "LiveAudio es una app gratuita y de código abierto (MIT) que transcribe voz localmente y envía subtítulos a OBS u otros clientes locales. Su núcleo Rust y escritorio Tauri trabajan con un worker de inferencia Python, sin servicio de transcripción en la nube ni clave API.",
-    download: "Descargar LiveAudio v1.5.1 (gratis)",
+      "LiveAudio es una app gratuita y de código abierto (MIT) que transcribe voz localmente y envía subtítulos a OBS u otros clientes locales. Motor Whisper 100% Rust nativo sobre ONNX Runtime (DirectML / CPU) con inicio instantáneo — cero Python, sin servicios en la nube ni claves API.",
+    download: "Descargar LiveAudio v1.6.0 (gratis)",
     how: "Cómo funciona",
-    microTrust: ["Rust + Tauri 2", "100% local", "Código abierto MIT"],
+    microTrust: ["100% Rust nativo", "Zero Python", "100% local", "Código abierto MIT"],
     proofAlt: "Marca del producto LiveAudio con el nombre LiveAudio y la atribución a Plynte.",
   },
 
   trust: {
     label: "Lo que garantiza LiveAudio",
     items: [
-      "Rust + Tauri 2",
+      "100% Rust nativo",
+      "Zero Python",
       "100% local",
       "Código abierto MIT",
-      "Sin transcripción en la nube",
+      "DirectML / CPU",
       "Sin API key",
     ],
   },
@@ -545,20 +547,20 @@ const es: HomeCopy = {
       {
         kicker: "// 100% local",
         title: "¿De verdad es 100% local?",
-        body: "La transcripción ocurre en tu equipo. La configuración inicial puede necesitar internet para el worker Python y sus dependencias; también puede ser necesario descargar cada modelo al seleccionarlo por primera vez. Una vez disponibles los componentes y modelos necesarios, la transcripción puede funcionar sin conexión.",
-        spec: "transcripción local · worker Python · conexión para configurar",
+        body: "La transcripción ocurre 100% en tu equipo. LiveAudio v1.6.0 eliminó Python por completo — ya no hay entornos virtuales ni runtimes de Python que descargar. Solo se descarga en local el modelo Whisper seleccionado en su primer uso. 0 telemetría, 0 transmisión a servidores.",
+        spec: "100% local · 100% Rust nativo · cero Python",
       },
       {
         kicker: "// linux",
         title: "¿Funciona en Linux?",
-        body: "La v1.5.1 se enfoca en Windows 10/11 x64. En Linux sigue el tarball heredado Python v1.2.7 (captura por micrófono, necesita libportaudio2) hasta que salga una build nativa. El loopback de audio del sistema (WASAPI) es solo de Windows.",
-        spec: "v1.5.1 windows x64 · linux heredado v1.2.7",
+        body: "Sí. La v1.6.0 incluye un instalador para Windows 10/11 x64 y un AppImage y un .deb para Linux x86_64 (en Linux las actualizaciones son manuales). El loopback de audio del sistema (WASAPI) es solo de Windows.",
+        spec: "v1.6.0 windows x64 · linux appimage + deb",
       },
       {
         kicker: "// gpu",
         title: "¿Necesito una GPU?",
-        body: "No. La transcripción puede usar la CPU. NVIDIA CUDA es opcional; la detección por sí sola no garantiza que estén instaladas las bibliotecas necesarias para CUDA.",
-        spec: "la cpu funciona · cuda driver ≥ 525 · vram ≥ 4 GiB",
+        body: "No. La aceleración DirectML aprovecha GPUs DirectX 12 (NVIDIA, AMD, Intel) de forma nativa con ONNX Runtime, con fallback automático a CPU. Hay un worker opcional CTranslate2 para configuraciones dedicadas NVIDIA CUDA.",
+        spec: "directml directx 12 (nvidia/amd/intel) · fallback cpu · opcional ct2 cuda",
       },
     ],
     loopbackFlag: "loopback solo Windows",
@@ -589,15 +591,15 @@ const es: HomeCopy = {
         n: "03",
         icon: "cpu",
         title: "Decodifica",
-        body: "Whisper convierte el habla en texto en CPU o CUDA opcional.",
-        artifact: "whisper · tiny / base / small / turbo",
+        body: "Worker Whisper en Rust nativo decodifica voz usando ONNX Runtime (DirectML DirectX 12 o CPU).",
+        artifact: "onnx runtime · directml / cpu · tiny / base / small / turbo",
       },
       {
         n: "04",
         icon: "share-2",
         title: "Emite",
-        body: "El JSON de subtítulos local llega a OBS u otro cliente en localhost.",
-        artifact: "ws://127.0.0.1:8765",
+        body: "El JSON de subtítulos local llega a OBS con allowlist loopback anti-CSWSH y emisión parcial inmediata.",
+        artifact: "ws://127.0.0.1:8765 · allowlist loopback",
       },
     ],
   },
@@ -627,7 +629,7 @@ const es: HomeCopy = {
   ws: {
     eyebrow: "// integración",
     title: "Funciona con OBS — o cualquier cliente WebSocket.",
-    body: "LiveAudio emite subtítulos en JSON limpio por un WebSocket local (ws://127.0.0.1:8765). OBS es el destino integrado mediante el overlay subtitulos_obs.html, pero cualquier cliente HTML o WebSocket en localhost puede conectarse y recibir la misma transmisión — así puedes construir tu propio consumidor o integrarlo con otras herramientas locales. Solo se aceptan conexiones desde localhost; no requiere autenticación.",
+    body: "LiveAudio emite subtítulos en JSON limpio por un WebSocket local (ws://127.0.0.1:8765). OBS es el destino integrado mediante el overlay subtitulos_obs.html. La v1.6.0 introduce protección estricta contra secuestro de WebSocket (CSWSH) con una lista blanca configurable en Ajustes > Avanzado, permitiendo autorizar puertos loopback locales de forma segura con monitor de conexiones en tiempo real.",
     codeTab: "ws://127.0.0.1:8765",
     codeLines: [
       "{",
@@ -650,7 +652,7 @@ const es: HomeCopy = {
   bento: {
     eyebrow: "// incluido",
     heading:
-      "Las herramientas incluyen un overlay adaptable, selección de dispositivo y modelo, perfiles, archivos de sesión y diagnóstico local.",
+      "Las herramientas incluyen un overlay adaptable, motor de estilos, selección de dispositivo y modelo, perfiles, archivos de sesión y diagnóstico local.",
     tiles: [
       {
         kicker: "// overlay obs",
@@ -695,7 +697,7 @@ const es: HomeCopy = {
       {
         kicker: "// actualizaciones",
         title: "Información de versiones",
-        body: "Consulta las versiones nuevas en GitHub Releases. Respalda la configuración y las sesiones antes de actualizar.",
+        body: "Windows tiene un actualizador integrado y firmado (comprueba cada 24 h, se puede desactivar; nunca mientras transcribes o OBS está conectado). Si estás en la v1.5.1 o anterior, instala la v1.6.0 manualmente una vez. En Linux, descarga las nuevas versiones desde GitHub Releases.",
         icon: "refresh-cw",
       },
     ],
@@ -742,12 +744,12 @@ const es: HomeCopy = {
       {
         question: "¿De verdad es 100% local?",
         answer:
-          "La transcripción ocurre localmente. La configuración inicial puede necesitar internet para el worker Python y sus dependencias, y un modelo puede requerir una descarga al seleccionarlo por primera vez.",
+          "La transcripción ocurre 100% en tu equipo localmente. LiveAudio v1.6.0 es 100% Rust nativo sin runtimes de Python que preparar. Solo los modelos Whisper seleccionados se guardan en local, con cero telemetría.",
       },
       {
         question: "¿Funciona en Linux?",
         answer:
-          "La v1.5.1 se enfoca en Windows 10/11 x64; en Linux sigue el tarball heredado Python v1.2.7 con captura por micrófono (necesita libportaudio2). El loopback de audio del sistema es solo de Windows.",
+          "Sí. La v1.6.0 incluye un instalador para Windows 10/11 x64 y un AppImage y un .deb para Linux x86_64 (en Linux las actualizaciones son manuales). El loopback de audio del sistema es solo de Windows.",
       },
       {
         question: "¿Es gratis y de código abierto?",
@@ -767,7 +769,7 @@ const es: HomeCopy = {
     eyebrow: "// descargar",
     heading: "Subtítulos locales en tu OBS en minutos.",
     body: "Gratis y de código abierto (MIT). Sin suscripción, sin API key. Solo pagas tu propia electricidad — el hardware no está incluido.",
-    download: "Descargar LiveAudio v1.5.1 (gratis)",
+    download: "Descargar LiveAudio v1.6.0 (gratis)",
     secondary: "Cómo funciona",
   },
 };

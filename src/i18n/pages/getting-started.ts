@@ -2,19 +2,19 @@
  * Getting-started page copy — bilingual (EN default + ES mirror).
  *
  * The /getting-started/ page is a numbered "signal timeline": the EARNED,
- * real activation sequence for LiveAudio v1.5.1. Numbering is honest — each
+ * real activation sequence for LiveAudio v1.6.0. Numbering is honest — each
  * step is a real ordered action a user actually performs.
  *
- *   01  get LiveAudio        installer (.exe) / portable exe vs source (Rust + Tauri)
- *   02  first run            fetches transcription models; first-run internet only
- *   03  GPU auto-detect      CPU works; CUDA driver >= 525 / VRAM >= 4 GiB
+ *   01  get LiveAudio        installer (.exe) / Linux AppImage + .deb vs source (Rust + Tauri)
+ *   02  first run            instant startup, zero Python; downloads models on first selection
+ *   03  GPU auto-detect      DirectML (DirectX 12) / CPU fallback / optional CUDA
  *   04  pick profile + go    Fast/Balanced/Quality/Stable Streaming -> START SYSTEM
  *
- * Every claim is traceable to the v1.5.1 release:
- *   - installation and initial Python worker provisioning
- *   - GPU optional; CUDA driver >= 525, VRAM >= 4 GiB; CPU works
- *   - installer ~26.2 MB / portable ~16.2 MB; SmartScreen (not code-signed yet);
- *     legacy Python v1.0.0–v1.2.7 auto-migration preserving %APPDATA%\LiveAudio
+ * Every claim is traceable to the v1.6.0 release:
+ *   - installation; no Python worker provisioning
+ *   - GPU optional; DirectML / CPU; optional NVIDIA CUDA engine (explicit download)
+ *   - installer LiveAudio-Setup-1.6.0.exe; SmartScreen (not code-signed yet);
+ *     config in %APPDATA%\LiveAudio, models in %LOCALAPPDATA%\LiveAudio\models\onnx
  *   - START SYSTEM + Apply changes
  *   - profiles Fast / Balanced (recommended) / Quality / Stable Streaming
  *
@@ -43,7 +43,7 @@ export interface InstallTrack {
   title: string;
   body: string;
   code?: CodeBlock;
-  /** amber caveat pill (SmartScreen / libportaudio2), optional. */
+  /** amber caveat pill (SmartScreen / manual Linux updates), optional. */
   flag?: string;
 }
 
@@ -116,13 +116,13 @@ export interface GettingStartedCopy {
 }
 
 const EN: GettingStartedCopy = {
-  title: "Getting started — activate LiveAudio v1.5.1 (Windows x64)",
+  title: "Getting started — activate LiveAudio v1.6.0 (Windows x64)",
   description:
-    "Get started with the LiveAudio v1.5.1 Windows installer, select a model and audio device, and start local transcription.",
+    "Get started with the LiveAudio v1.6.0 Windows installer, select a model and audio device, and start local transcription.",
   eyebrow: "// getting-started",
   h1: "Activate LiveAudio in four real steps.",
   intro:
-    "Install the app, select a model and audio device, then start the system. Initial setup can require internet for the Python worker and dependencies; selecting a new model may require a download.",
+    "Install the app, select a model and audio device, then start the system. 100% native Rust Whisper engine over ONNX Runtime (DirectML / CPU) with instant startup and zero Python setup.",
   spineLabel: "ACTIVATION SEQUENCE",
   steps: [
     {
@@ -134,14 +134,14 @@ const EN: GettingStartedCopy = {
         {
           kicker: "// installer",
           title: "Installer (recommended)",
-          body: "Windows x64: download LiveAudio_1.5.1_x64-setup.exe from the official release. The separate desktop executable lacks the CLI and resources and is not a complete portable package. Linux has a legacy v1.2.7 tarball.",
+          body: "Windows x64: download LiveAudio-Setup-1.6.0.exe from the official release (the VC++ runtime is bundled, so it works on a clean Windows). Linux: AppImage or .deb from the same release page.",
           code: {
             tab: "windows x64",
             lines: [
               { kind: "comment", text: "# Official Windows installer:" },
               {
                 kind: "command",
-                text: "LiveAudio_1.5.1_x64-setup.exe",
+                text: "LiveAudio-Setup-1.6.0.exe",
               },
             ],
           },
@@ -163,74 +163,74 @@ const EN: GettingStartedCopy = {
           },
         },
       ],
-      note: "Legacy Linux tarball (v1.2.7) needs libportaudio2 (sudo apt install libportaudio2).",
-      flag: "Linux: legacy v1.2.7 build",
+      note: "Coming from v1.5.1 or older? Install v1.6.0 manually once; from then on the Windows app updates itself in-app (Linux updates are manual).",
+      flag: "Linux: manual updates",
     },
     {
       num: "02",
       kicker: "// first-run",
-      title: "Prepare the runtime and models.",
-      lede: "Setup may require internet to provision the Python inference worker and dependencies. A newly selected model may also need downloading; transcription can run offline once all required components are available.",
-      flag: "Setup and model downloads may need internet",
-      note: "The ~26.2 MB installer download does not include the storage needed by every runtime dependency and model.",
+      title: "Instant startup — zero Python setup.",
+      lede: "LiveAudio v1.6.0 starts instantly. With the total elimination of Python, there is no virtual environment, uv, or runtime provisioning wait. Only newly selected transcription models are downloaded locally on first selection; transcription runs 100% offline once downloaded.",
+      flag: "Model download on first selection",
+      note: "Zero Python dependencies to install or manage. The engine is 100% native Rust.",
     },
     {
       num: "03",
       kicker: "// detect",
-      title: "LiveAudio auto-detects your GPU.",
-      lede: "A GPU is optional; CPU transcription is available. LiveAudio can detect an NVIDIA GPU, but CUDA inference also needs compatible runtime libraries.",
+      title: "DirectML GPU acceleration & CPU fallback.",
+      lede: "LiveAudio uses native ONNX Runtime with DirectML (DirectX 12) to accelerate Whisper inference on NVIDIA, AMD, and Intel GPUs out of the box, with automatic CPU fallback. An optional CTranslate2 worker is available for dedicated CUDA setups.",
       rungs: [
         {
-          label: "CUDA",
-          detail: "Requires a compatible NVIDIA GPU, driver and CUDA runtime libraries.",
+          label: "DirectML",
+          detail: "DirectX 12 hardware acceleration for NVIDIA, AMD, and Intel GPUs.",
           tone: "go",
         },
         {
           label: "CPU",
-          detail: "No usable GPU → CPU is used automatically. No setup needed.",
+          detail: "Automatic fallback — runs reliably on any CPU with zero extra setup.",
           tone: "info",
         },
         {
-          label: "override",
-          detail: "You can force CPU or CUDA yourself before starting.",
+          label: "CUDA (opt)",
+          detail: "Optional NVIDIA CUDA engine (CTranslate2), downloaded only after an explicit action from you.",
           tone: "warn",
         },
       ],
-      note: "GPU detection alone does not guarantee CUDA runtime readiness.",
+      note: "DirectML provides hardware acceleration across modern Windows GPUs without vendor lock-in.",
     },
     {
       num: "04",
       kicker: "// go",
       title: "Pick a profile, then START SYSTEM.",
-      lede: "Choose an FPS-aware profile, pick your audio device and CPU/CUDA + model, click Apply changes, then START SYSTEM. Speak — captions appear and stream to OBS over the local WebSocket.",
+      lede: "Choose an FPS-aware profile, pick your audio device and model, click Apply changes, then START SYSTEM. Speak — captions appear and stream to OBS over the local WebSocket with CSWSH protection.",
       profiles: [
         { name: "Fast", note: "low latency" },
         { name: "Balanced", note: "recommended", recommended: true },
         { name: "Quality", note: "higher accuracy, more VRAM" },
         { name: "Stable Streaming", note: "reduces GPU load while gaming" },
       ],
-      note: "For OBS, start the system, then copy the overlay URL. Copy it again if the active port changes.",
+      note: "For OBS, start the system, then copy the overlay URL. Settings > Advanced includes the loopback port allowlist and MCP AI switches.",
     },
   ],
   closingEyebrow: "// download",
   closingHeading: "Have the app yet?",
   closingBody:
     "Free & open-source (MIT). No subscription, no API key. You only pay your own electricity — hardware not included.",
-  download: "Download LiveAudio v1.5.1 (free)",
-  howToName: "Get started with LiveAudio v1.5.1",
+  download: "Download LiveAudio v1.6.0 (free)",
+  howToName: "Get started with LiveAudio v1.6.0",
   timelineLabel: "Activation steps",
   detectLabel: "GPU auto-detect ladder",
   profilesLabel: "Profiles",
 };
 
 const ES: GettingStartedCopy = {
-  title: "Primeros pasos — activa LiveAudio v1.5.1 (Windows x64)",
+  title: "Primeros pasos — activa LiveAudio v1.6.0 (Windows x64)",
   description:
-    "Empieza con el instalador de LiveAudio v1.5.1 para Windows, selecciona un modelo y un dispositivo de audio e inicia la transcripción local.",
+    "Empieza con el instalador de LiveAudio v1.6.0 para Windows, selecciona un modelo y un dispositivo de audio e inicia la transcripción local.",
   eyebrow: "// primeros-pasos",
   h1: "Activa LiveAudio en cuatro pasos reales.",
   intro:
-    "Instala la app, selecciona un modelo y un dispositivo de audio e inicia el sistema. La configuración inicial puede necesitar internet para el worker Python y sus dependencias; seleccionar un modelo nuevo puede requerir una descarga.",
+    "Instala la app, selecciona un modelo y un dispositivo de audio e inicia el sistema. Motor Whisper 100% Rust nativo sobre ONNX Runtime (DirectML / CPU) con inicio instantáneo y cero setup de Python.",
   spineLabel: "SECUENCIA DE ACTIVACIÓN",
   steps: [
     {
@@ -242,14 +242,14 @@ const ES: GettingStartedCopy = {
         {
           kicker: "// instalador",
           title: "Instalador (recomendado)",
-          body: "Windows x64: descarga LiveAudio_1.5.1_x64-setup.exe de la versión oficial. El ejecutable de escritorio separado no incluye la CLI ni los recursos y no es un paquete portable completo. Linux tiene un tarball heredado v1.2.7.",
+          body: "Windows x64: descarga LiveAudio-Setup-1.6.0.exe de la versión oficial (incluye el runtime VC++, así que funciona en un Windows limpio). Linux: AppImage o .deb desde la misma página del release.",
           code: {
             tab: "windows x64",
             lines: [
               { kind: "comment", text: "# Instalador oficial de Windows:" },
               {
                 kind: "command",
-                text: "LiveAudio_1.5.1_x64-setup.exe",
+                text: "LiveAudio-Setup-1.6.0.exe",
               },
             ],
           },
@@ -271,62 +271,62 @@ const ES: GettingStartedCopy = {
           },
         },
       ],
-      note: "El tarball heredado de Linux (v1.2.7) necesita libportaudio2 (sudo apt install libportaudio2).",
-      flag: "Linux: versión heredada v1.2.7",
+      note: "¿Vienes de la v1.5.1 o anterior? Instala la v1.6.0 manualmente una vez; desde entonces la app de Windows se actualiza sola desde dentro (en Linux las actualizaciones son manuales).",
+      flag: "Linux: actualizaciones manuales",
     },
     {
       num: "02",
       kicker: "// primera-ejecución",
-      title: "Prepara el runtime y los modelos.",
-      lede: "La configuración puede necesitar internet para preparar el worker de inferencia Python y sus dependencias. Un modelo recién seleccionado también puede requerir una descarga; la transcripción puede funcionar sin conexión cuando están disponibles los componentes necesarios.",
-      flag: "La configuración y las descargas pueden necesitar internet",
-      note: "La descarga del instalador (~26.2 MB) no incluye el almacenamiento necesario para todas las dependencias y modelos.",
+      title: "Inicio instantáneo — sin esperas de setup de Python.",
+      lede: "LiveAudio v1.6.0 arranca de forma instantánea. Con la eliminación total de Python, ya no existen entornos virtuales, uv ni esperas de aprovisionamiento de runtime. Solo los modelos de transcripción seleccionados se descargan en local en su primer uso; la transcripción funciona 100% offline una vez descargados.",
+      flag: "Descarga de modelo en la primera selección",
+      note: "Cero dependencias de Python para instalar o gestionar. El motor es 100% Rust nativo.",
     },
     {
       num: "03",
       kicker: "// detectar",
-      title: "LiveAudio detecta tu GPU sola.",
-      lede: "La GPU es opcional; la transcripción puede usar la CPU. LiveAudio puede detectar una GPU NVIDIA, pero la inferencia CUDA también necesita bibliotecas compatibles.",
+      title: "Aceleración DirectML para GPU y fallback a CPU.",
+      lede: "LiveAudio utiliza ONNX Runtime nativo con DirectML (DirectX 12) para acelerar Whisper en GPUs NVIDIA, AMD e Intel de inmediato, con fallback automático a CPU. Dispone de un worker opcional CTranslate2 para entornos dedicados con CUDA.",
       rungs: [
         {
-          label: "CUDA",
-          detail: "Requiere una GPU NVIDIA, un driver y bibliotecas CUDA compatibles.",
+          label: "DirectML",
+          detail: "Aceleración por hardware DirectX 12 para GPUs NVIDIA, AMD e Intel.",
           tone: "go",
         },
         {
           label: "CPU",
           detail:
-            "Sin GPU utilizable → se usa CPU automáticamente. Sin configuración.",
+            "Fallback automático — funciona de forma confiable en cualquier CPU sin configuración.",
           tone: "info",
         },
         {
-          label: "anular",
-          detail: "Puedes forzar CPU o CUDA tú mismo antes de empezar.",
+          label: "CUDA (opt)",
+          detail: "Motor NVIDIA CUDA opcional (CTranslate2), que se descarga solo tras una acción explícita tuya.",
           tone: "warn",
         },
       ],
-      note: "Detectar la GPU no garantiza que el runtime CUDA esté preparado.",
+      note: "DirectML ofrece aceleración por hardware en GPUs modernas en Windows sin depender de un solo fabricante.",
     },
     {
       num: "04",
       kicker: "// iniciar",
       title: "Elige un perfil e INICIAR SISTEMA.",
-      lede: "Elige un perfil con presets según FPS, elige tu dispositivo de audio y CPU/CUDA + modelo, haz clic en Aplicar cambios y después INICIAR SISTEMA. Habla — los subtítulos aparecen y se envían a OBS por el WebSocket local.",
+      lede: "Elige un perfil con presets según FPS, elige tu dispositivo de audio y modelo, haz clic en Aplicar cambios y después INICIAR SISTEMA. Habla — los subtítulos aparecen y se envían a OBS por el WebSocket local con protección anti-CSWSH.",
       profiles: [
         { name: "Fast", note: "baja latencia" },
         { name: "Balanced", note: "recomendado", recommended: true },
         { name: "Quality", note: "más precisión, más VRAM" },
         { name: "Stable Streaming", note: "reduce carga de GPU al jugar" },
       ],
-      note: "Para OBS, inicia el sistema y después copia la URL del overlay. Cópiala de nuevo si cambia el puerto activo.",
+      note: "Para OBS, inicia el sistema y copia la URL del overlay. En Ajustes > Avanzado configuras la allowlist de puertos loopback y los interruptores MCP.",
     },
   ],
   closingEyebrow: "// descargar",
   closingHeading: "¿Todavía no tienes la app?",
   closingBody:
     "Gratis y de código abierto (MIT). Sin suscripción, sin API key. Solo pagas tu propia electricidad — el hardware no está incluido.",
-  download: "Descargar LiveAudio v1.5.1 (gratis)",
-  howToName: "Empieza con LiveAudio v1.5.1",
+  download: "Descargar LiveAudio v1.6.0 (gratis)",
+  howToName: "Empieza con LiveAudio v1.6.0",
   timelineLabel: "Pasos de activación",
   detectLabel: "Escalera de detección de GPU",
   profilesLabel: "Perfiles",

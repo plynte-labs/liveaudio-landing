@@ -2,11 +2,11 @@
  * JSON-LD builders — return plain serializable objects (no <script> tags).
  * Callers embed them via `<script type="application/ld+json" set:html={...}>`.
  *
- * Product facts traceable to the v1.5.1 release:
- *   - operatingSystem: "Windows" (v1.5.1 is a Windows x64 Rust + Tauri 2 build;
- *     Linux stays on the legacy Python v1.2.7 tarball).
- *   - price 0 USD, softwareVersion 1.5.1, MIT license.
- *   - softwareRequirements: CPU works; CUDA needs driver >=525 + VRAM >=4 GiB.
+ * Product facts traceable to the v1.6.0 release:
+ *   - operatingSystem: "Windows" (primary Windows x64 Rust + Tauri 2 build;
+ *     Linux ships as AppImage / .deb from the same release).
+ *   - price 0 USD, softwareVersion 1.6.0, MIT license.
+ *   - softwareRequirements: DirectX 12 (DirectML) or CPU fallback. NVIDIA CUDA optional via CTranslate2 worker.
  *   - canonical org / repo: github.com/plynte-labs/LiveAudio.
  */
 
@@ -23,7 +23,7 @@ function inLanguage(lang: Locale): string {
 
 export interface SoftwareApplicationInput {
   lang: Locale;
-  /** Direct v1.5.1 asset URL (e.g. the Windows installer) when the page is the download endpoint. */
+  /** Direct v1.6.0 asset URL (e.g. the Windows installer) when the page is the download endpoint. */
   downloadUrl?: string;
 }
 
@@ -37,13 +37,13 @@ export function softwareApplication({ lang, downloadUrl }: SoftwareApplicationIn
     "@type": "SoftwareApplication",
     name: "LiveAudio",
     applicationCategory: "MultimediaApplication",
-    operatingSystem: "Windows",
-    softwareVersion: "1.5.1",
+    operatingSystem: "Windows, Linux",
+    softwareVersion: "1.6.0",
     inLanguage: inLanguage(lang),
     url: SITE_URL,
     license: MIT_LICENSE,
     softwareRequirements:
-      "CPU transcription is available. NVIDIA CUDA is optional and requires compatible GPU drivers and runtime libraries.",
+      "DirectX 12 (DirectML) GPU acceleration or CPU transcription. NVIDIA CUDA is an optional, user-initiated download (CTranslate2 engine).",
     offers: {
       "@type": "Offer",
       // The product spec hard gate specifies the string "0" (schema.org Offer.price
