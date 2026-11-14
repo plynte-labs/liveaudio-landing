@@ -119,7 +119,7 @@ const REPO = "https://github.com/plynte-labs/LiveAudio";
 
 /** WebSocket JSON payload example — verbatim shape from §7. */
 const WS_PAYLOAD_EN = `{
-  "id": "1760000000000-12",
+  "id": "utt_42",
   "text": "Hello everyone, welcome to the stream",
   "style": "default",
   "created_at": 1760000000.0,
@@ -132,7 +132,7 @@ const WS_PAYLOAD_EN = `{
 }`;
 
 const WS_PAYLOAD_ES = `{
-  "id": "1760000000000-12",
+  "id": "utt_42",
   "text": "Hola a todos, bienvenidos al stream",
   "style": "default",
   "created_at": 1760000000.0,
@@ -157,48 +157,53 @@ cd LiveAudio
 # Camino de desarrollador: consulta el README del repositorio para los
 # prerrequisitos de compilación Rust + Tauri 2, y luego compila desde el código.`;
 
-/** Session folder layout — §3 (transcript.jsonl + subtitles.vtt + session.json). */
+/** Session folder layout (transcript.jsonl + subtitles.vtt + subtitles.srt). */
 const SESSION_TREE = `sessions/
 └── session_2026-05-04_143022/
+    ├── subtitles.srt
     ├── subtitles.vtt
-    ├── transcript.jsonl
-    └── session.json`;
+    └── transcript.jsonl`;
 
 /**
  * Default blacklist — VERBATIM from config.json.example (§8). Do NOT invent words.
  * (The OLD site's flupco/cuanos/kibon/plechitin/pae are removed — §9 row 9.)
  */
 const BLACKLIST_VERBATIM = `amara.org, subtítulos por, suscríbete, dale like, gracias por ver,
-memos, gracias, activar la campanita, ¡Hasta la próxima!, por favor`;
+memos, gracias, activar la campanita`;
 
-const WS_PYTHON_CLIENT = `import asyncio, websockets
+const WS_PYTHON_CLIENT = `import asyncio, json, websockets
 
-async def test():
-    async with websockets.connect("ws://127.0.0.1:8765") as ws:
-        async for msg in ws:
-            print(msg)
+async def main():
+    # ping_interval=None: the server answers pings only after its replay burst
+    async with websockets.connect("ws://127.0.0.1:8765", ping_interval=None) as ws:
+        async for frame in ws:
+            msg = json.loads(frame)
+            if "type" in msg:  # hello, theme, subtitle_partial...: not a caption
+                continue
+            print(msg["text"])
 
-asyncio.run(test())`;
+asyncio.run(main())`;
 
 /**
- * Minimal browser WebSocket client — the smallest thing that reads the same
- * broadcast OBS reads. Mirrors what subtitulos_obs.html does internally
- * (WEBSOCKET_OBS.md §1/§10): connect, parse JSON, render text, reconnect on
- * close. Locale-neutral (HTML/JS identifiers stay as-is).
+ * Minimal browser WebSocket client — reads the same broadcast OBS reads.
+ * Follows docs/WEBSOCKET_OBS.md §8.1: caption frames carry `text`; frames with a
+ * `type` field (hello, theme, subtitle_partial) are skipped. Locale-neutral.
  */
-const WS_HTML_CLIENT = `<!-- open this file in a browser, or load it as an OBS Browser Source -->
+const WS_HTML_CLIENT = `<!-- serve from a local http server, e.g. python -m http.server 5500
+     (file:// sends Origin: null and gets 403), then allow port 5500 in
+     Settings > Advanced > Allowed local connections -->
 <div id="caption"></div>
 <script>
-  // ?port=XXXX overrides the default; matches ws_port in config.json
-  const port = new URLSearchParams(location.search).get("port") || "8765";
+  const PORT = 8765; // base port; the effective port is announced in the hello frame
   let ws;
   function connect() {
-    ws = new WebSocket("ws://127.0.0.1:" + port);
+    ws = new WebSocket("ws://127.0.0.1:" + PORT);
     ws.onmessage = (e) => {
-      const msg = JSON.parse(e.data);       // the subtitle payload
+      const msg = JSON.parse(e.data);
+      if ("type" in msg) return;  // hello, theme, subtitle_partial: not a caption
       document.getElementById("caption").textContent = msg.text;
     };
-    // the server only broadcasts — reconnect every 3 s if it drops
+    // retry after 3 s if the connection drops (this sample's own choice)
     ws.onclose = () => setTimeout(connect, 3000);
   }
   connect();
@@ -214,52 +219,58 @@ const NATIVE_INSTALL_FLOW = `LiveAudio-Setup-1.6.0.exe
 /** config.json example — §8 values, blacklist trimmed to verbatim words. */
 const CONFIG_EXAMPLE_EN = `{
     "output_dir": "C:\\\\streams\\\\sessions",
-    "device": "cuda",
+    "device": "cpu",
     "cpu_threads": 8,
-    "model_size": "small",
+    "model_size": "small (Balance CPU)",
     "blacklist": "amara.org, subtítulos por, gracias por ver",
     "continuous_session": true,
     "subtitle_style": "default",
     "subtitle_backlog_policy": "auto",
     "subtitle_max_live_delay_sec": 10.0,
     "subtitle_catchup_interval_sec": 1.5,
-    "silence_timeout": 0.8,
-    "max_chunk_duration": 5.0,
+    "silence_timeout": 0.5,
+    "max_chunk_duration": 3.0,
     "audio_device": null,
     "selected_profile_id": "balanced",
     "profile_mode": "preset",
     "ws_port": 8765,
+    "ws_allowed_loopback_ports": [1420],
     "obs_enabled": true,
     "whisper_context_prompt_en": "",
     "whisper_context_prompt_es": "",
     "asr_language": "en",
     "settings_navigation_mode": "tabs",
-    "diagnostics_enabled": false
+    "diagnostics_enabled": false,
+    "rnnoise_enabled": false,
+    "check_updates_enabled": true
 }`;
 
 const CONFIG_EXAMPLE_ES = `{
     "output_dir": "E:\\\\streams\\\\sessions",
-    "device": "cuda",
+    "device": "cpu",
     "cpu_threads": 8,
-    "model_size": "small",
+    "model_size": "small (Balance CPU)",
     "blacklist": "amara.org, subtítulos por, gracias por ver",
     "continuous_session": true,
     "subtitle_style": "default",
     "subtitle_backlog_policy": "auto",
     "subtitle_max_live_delay_sec": 10.0,
     "subtitle_catchup_interval_sec": 1.5,
-    "silence_timeout": 0.8,
-    "max_chunk_duration": 5.0,
+    "silence_timeout": 0.5,
+    "max_chunk_duration": 3.0,
     "audio_device": null,
     "selected_profile_id": "balanced",
     "profile_mode": "preset",
     "ws_port": 8765,
+    "ws_allowed_loopback_ports": [1420],
     "obs_enabled": true,
     "whisper_context_prompt_en": "",
     "whisper_context_prompt_es": "",
     "asr_language": "es",
     "settings_navigation_mode": "tabs",
-    "diagnostics_enabled": false
+    "diagnostics_enabled": false,
+    "rnnoise_enabled": false,
+    "check_updates_enabled": true
 }`;
 
 /* ================================================================== */
@@ -292,7 +303,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
         items: [
           "<strong>Local transcription.</strong> Audio is transcribed on your machine without a cloud transcription service or API key.",
           "<strong>100% Native Rust pipeline.</strong> Rust handles audio capture, voice activity detection, and native Whisper inference over ONNX Runtime DirectML/CPU.",
-          "<strong>Hot-swap.</strong> Change the audio device or model size without restarting the app.",
+          "<strong>Live settings.</strong> Change the audio device or model size from the app. Applying a change restarts transcription and reconnects OBS, and the app asks you to confirm first.",
         ],
       },
       {
@@ -394,14 +405,14 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "The app chooses between <code>cuda</code> and <code>cpu</code> with a first-match-wins ladder:",
+        html: "By default LiveAudio runs Whisper on ONNX Runtime with DirectML (DirectX 12 GPUs) or the CPU. An NVIDIA CUDA engine is optional:",
       },
       {
         type: "list",
         items: [
-          "Your explicit choice in the <strong>Advanced</strong> tab (compute-device selector) — picking CUDA dims the CPU-threads control because inference runs on the GPU.",
-          "Otherwise NVML + <code>nvidia-smi</code>: if the driver is <code>&ge; 525</code> and VRAM is <code>&ge; 4096 MiB</code> &rarr; <code>cuda</code>.",
-          "Anything else (no NVML, smi failure, or a GPU below requirements) &rarr; <code>cpu</code>, with a note when a GPU was found but did not qualify.",
+          "Your explicit choice in the <strong>Advanced</strong> tab (compute device and ASR engine) — picking CUDA dims the CPU-threads control because inference runs on the GPU.",
+          "The NVIDIA CUDA engine is used only after you explicitly install it (the NVIDIA card in the <strong>Setup</strong> tab). It needs an NVIDIA GPU and a driver that supports <strong>CUDA 12.8 or newer</strong>.",
+          "Without an NVIDIA GPU, a supported driver or the installed engine, LiveAudio stays on ONNX Runtime (DirectML or CPU).",
         ],
       },
       {
@@ -501,7 +512,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Profiles are FPS-aware presets. Editing a built-in profile turns it into <strong>Custom</strong>; changes only take effect after you click <strong>Apply changes</strong>.",
+        html: "Profiles are FPS-aware presets. Editing a built-in profile turns it into <strong>Custom</strong>; changes only take effect after you click <strong>Save</strong>.",
       },
       {
         type: "table",
@@ -532,7 +543,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Words and phrases are comma-separated and fully editable from the <strong>Subtitles</strong> tab — add the filler your stream tends to hallucinate, or clear entries you want to keep.",
+        html: "Words and phrases are comma-separated and fully editable from the <strong>Advanced</strong> tab (<strong>Vocabulary and filters</strong>) — add the filler your stream tends to hallucinate, or clear entries you want to keep.",
       },
       {
         type: "heading",
@@ -541,7 +552,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Pick a model in the <strong>Model &amp; Hardware</strong> tab. Larger models can need more memory and processing time. A newly selected model may require a download.",
+        html: "Pick a model in the <strong>Advanced</strong> tab (<strong>Engine and performance</strong>, Whisper Model Size). The audio device and profile are in the <strong>Setup</strong> tab. Larger models can need more memory and processing time. A newly selected model may require a download.",
       },
       {
         type: "table",
@@ -573,7 +584,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Every session is saved to disk as a transcript (<code>transcript.jsonl</code>) and WebVTT subtitles (<code>subtitles.vtt</code>), plus a <code>session.json</code> manifest:",
+        html: "Every session is saved to disk as a transcript (<code>transcript.jsonl</code>) WebVTT subtitles (<code>subtitles.vtt</code>) and SubRip subtitles (<code>subtitles.srt</code>):",
       },
       {
         type: "code",
@@ -588,7 +599,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
     navLabel: "websocket-obs",
     metaTitle: "LiveAudio docs — WebSocket & OBS",
     metaDescription:
-      "The LiveAudio WebSocket: ws://127.0.0.1:8765 (configurable ws_port, ?port=XXXX in OBS), the JSON payload schema, OBS backlog policy (auto / live_only / send_all), localhost-only security, and OBS Browser Source setup.",
+      "The LiveAudio WebSocket: ws://127.0.0.1:8765 (configurable ws_port, port fallback), the overlay URL, the JSON payload schema, OBS backlog policy (auto / live_only / send_all), loopback and Origin-allowlist security, and OBS Browser Source setup.",
     eyebrow: "// docs / websocket-obs",
     h1: "WebSocket & OBS",
     lede:
@@ -607,10 +618,18 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
           ["Host", "<code>127.0.0.1</code> (localhost only)"],
           [
             "Port",
-            "<code>8765</code> by default, configurable via <code>ws_port</code>",
+            "<code>8765</code> by default, configurable via <code>ws_port</code>. If it is busy, the server tries the next ports up to <code>ws_port + 9</code> (<code>8765</code>&ndash;<code>8774</code> by default).",
+          ],
+          [
+            "Effective port",
+            "Announced in the first frame of every connection (<code>hello</code>) and shown in the app as the <code>WS: &lt;port&gt;</code> pill.",
+          ],
+          [
+            "Overlay URL",
+            "<code>http://127.0.0.1:&lt;port&gt;/overlay</code> — the OBS Browser Source URL. <code>ws://127.0.0.1:&lt;port&gt;</code> is the WebSocket endpoint, not what you paste into OBS.",
           ],
           ["Format", "JSON"],
-          ["Auth", "None — bound to localhost only"],
+          ["Auth", "None — loopback-only listener plus an Origin allowlist (see Security)"],
         ],
       },
       {
@@ -630,7 +649,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
           [
             "<code>id</code>",
             "string",
-            "Stable identifier for the phrase within the session.",
+            "Opaque per-session phrase identifier, such as <code>utt_42</code>. It restarts on each run and is not monotonic.",
           ],
           [
             "<code>text</code>",
@@ -686,7 +705,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "The built-in OBS overlay only consumes <code>text</code> and <code>style</code>. The remaining fields are metadata for diagnostics and backlog control — useful if you build your own client, ignorable if you do not.",
+        html: "The built-in OBS overlay consumes <code>text</code>, <code>style</code>, <code>is_replay</code>, <code>catchup_interval_sec</code>, <code>theme</code> frames and optional <code>subtitle_partial</code> frames. The remaining fields are metadata for diagnostics — useful if you build your own client, ignorable if you do not. Frames that carry a <code>type</code> field (<code>hello</code>, <code>theme</code>, <code>subtitle_partial</code>) are not captions.",
       },
       {
         type: "heading",
@@ -695,7 +714,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "The <code>style</code> field selects one of seven built-in looks, switchable from the <strong>Subtitles</strong> tab:",
+        html: "The <code>style</code> field selects one of seven built-in looks, switchable from the <strong>Style</strong> tab, which also holds presets and a live preview (the <strong>Subtitles</strong> tab holds the display mode: adaptive, single or ribbon):",
       },
       {
         type: "table",
@@ -769,8 +788,11 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       {
         type: "list",
         items: [
-          "Localhost only — the server rejects any connection that is not from <code>127.0.0.1</code>, <code>::1</code> or <code>localhost</code>.",
-          "No authentication required, because it is bound to localhost.",
+          "Loopback only — the server binds <code>127.0.0.1</code> and drops peers that are not loopback.",
+          "Origin rules — no <code>Origin</code> header (native apps, scripts) is accepted; several <code>Origin</code> headers get HTTP <code>403</code>. <code>http://absolute</code> (OBS Browser Source), <code>tauri.localhost</code>, and loopback origins on the server's bound port (the <code>/overlay</code> page) or on an allowlisted port are accepted; anything else gets <code>403</code>.",
+          "Allowlist — add the port of any other local browser tool in <strong>Settings &gt; Advanced &gt; Allowed local connections</strong> (default <code>[1420]</code>). The card also lists recent blocked attempts.",
+          "Limits — at most 64 simultaneous connections, inbound messages up to 64 KiB, and a 5 s handshake timeout.",
+          "No authentication — any local process that sends no <code>Origin</code> can read subtitles.",
           "Broadcast — multiple clients receive the same messages simultaneously.",
         ],
       },
@@ -783,10 +805,10 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
         type: "list",
         items: [
           "In OBS, <strong>Sources &rarr; + &rarr; Browser</strong>.",
-          "Start the system, then copy the overlay URL from LiveAudio. Leave <strong>Local file</strong> unchecked in OBS and paste the URL. Set size <strong>1920&times;200</strong>.",
-          "Set <strong>FPS</strong> to <code>30</code> or <code>60</code>, and place the source <strong>bottom-center</strong> in your scene.",
+          "Start the system, then copy the overlay URL from LiveAudio (<strong>Copy URL</strong>; the base form is <code>http://127.0.0.1:8765/overlay</code>). Leave <strong>Local file</strong> unchecked in OBS and paste the URL. Set size <strong>1920&times;1080</strong>.",
+          "Set <strong>FPS</strong> to <code>30</code> or <code>60</code>. Keep the source at the full canvas: the overlay positions the captions itself.",
           'Disable <strong>"Shut down source when not visible"</strong> and "Refresh browser when scene becomes active" — both can drop the WebSocket connection.',
-          "While the system is running, the copied overlay URL includes the active WebSocket port. The server starts at <code>8765</code> and may use an alternative through <code>8774</code>; copy the URL again if the port changes.",
+          "While the system is running, the copied overlay URL includes the active WebSocket port. The server starts at <code>ws_port</code> (default <code>8765</code>) and may use an alternative up to <code>ws_port + 9</code>; copy the URL again if the port changes.",
         ],
       },
       {
@@ -797,9 +819,9 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       {
         type: "list",
         items: [
-          "<strong>Reconnect.</strong> A client that loses the connection retries about every <strong>3 seconds</strong> until the server is back — the bundled overlay does this for you.",
+          "<strong>Reconnect.</strong> The bundled overlay retries with exponential backoff from 1 s up to 8 s and cycles through the ports <code>ws_port</code> to <code>ws_port + 9</code>, so it also connects if OBS opens before LiveAudio. A client you write needs its own retry logic.",
           "<strong>Broadcast.</strong> Every connected client receives every message. Multiple clients (OBS plus a debug browser tab) all see the same stream, and a slow client does not block the others.",
-          "<strong>No backpressure.</strong> On <code>websockets &ge; 16</code> the server uses <code>broadcast()</code>, which fans out without waiting on any single client.",
+          "<strong>Slow clients.</strong> Each client has a 64-frame outgoing queue and a 10-frame retry queue. When the retry queue is full the oldest frame is dropped; the client is not disconnected.",
         ],
       },
       {
@@ -809,7 +831,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Any localhost WebSocket client can subscribe to the same broadcast OBS reads. A minimal browser client — open the file directly, or load it as an OBS Browser Source:",
+        html: "Any localhost WebSocket client can subscribe to the same broadcast OBS reads. A minimal browser client. Serve it from a local HTTP server and add that server's port to <strong>Allowed local connections</strong>: a page opened from <code>file://</code> sends <code>Origin: null</code> and is rejected with <code>403</code>. It skips frames that have a <code>type</code> field and renders only caption frames:",
       },
       {
         type: "code",
@@ -818,7 +840,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Or a minimal Python client, to print every payload as it arrives (requires the <code>websockets</code> package):",
+        html: "Or a minimal Python client, to print every caption as it arrives (requires the <code>websockets</code> package; non-browser clients send no <code>Origin</code>, so no allowlist entry is needed):",
       },
       {
         type: "code",
@@ -832,23 +854,27 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Open the overlay in a browser and press <strong>F12</strong> &rarr; Console. These messages tell you where a stalled overlay is stuck:",
+        html: "These signals tell you where a stalled overlay is stuck:",
       },
       {
         type: "table",
-        head: ["Console message", "Meaning"],
+        head: ["Signal", "Meaning"],
         rows: [
           [
-            "<code>Conectado al motor ASR</code>",
-            "Connected successfully — the WebSocket is live.",
+            "<code>WS: &lt;port&gt;</code> pill in the app",
+            "The WebSocket server is running on that port, with the number of connected clients. Use this port if you build your own client. <code>WS: off</code> means the service is stopped.",
           ],
           [
-            "<code>Desconectado. Reintentando…</code>",
-            "Cannot connect: LiveAudio is not started, the port is busy, or the <code>?port=</code> in the URL does not match <code>ws_port</code>.",
+            "Browser devtools (<strong>F12</strong>) on the overlay page",
+            "Network &rarr; WS shows the frames the overlay receives; the Console shows its errors.",
           ],
           [
-            "<code>Error parseando WebSocket</code>",
-            "A non-JSON / non-dict message reached the overlay — the payload was not a valid subtitle object.",
+            "<code>Error parseando WebSocket</code> (console)",
+            "A non-JSON message reached the overlay — the payload was not a valid frame.",
+          ],
+          [
+            "HTTP <code>403</code> on the handshake",
+            "The page's Origin is not allowed. Add its port in <strong>Allowed local connections</strong>; check <strong>Recent blocked attempts</strong>.",
           ],
         ],
       },
@@ -887,7 +913,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "LiveAudio monitors VRAM before each transcription. When free memory drops below about <strong>500 MB</strong> it frees the CUDA cache automatically and surfaces <strong>“GPU saturada - VRAM baja”</strong>. If it still fails: switch the inference device from <strong>cuda</strong> to <strong>cpu</strong>, or load a smaller model (<code>tiny</code> or <code>base</code>), and close other VRAM-heavy programs (OBS with NVENC, games). Updating your NVIDIA driver resolves most CUDA runtime failures.",
+        html: "If transcription fails with a GPU error or runs out of memory, switch the compute device from <strong>cuda</strong> to <strong>cpu</strong> or load a smaller model (<code>tiny</code> or <code>base</code>) in the <strong>Advanced</strong> tab, and close other GPU-heavy programs (OBS with NVENC, games). Updating your GPU driver resolves many runtime failures.",
       },
       {
         type: "heading",
@@ -905,7 +931,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Make sure the engine is running — port <code>8765</code> must be listening. If your firewall blocks local traffic or your client port is not yet allowed, check Settings > Advanced for the loopback origin allowlist.",
+        html: "Start the system first, then check the <code>WS: &lt;port&gt;</code> pill in the app: that is the effective port. If the base port was busy, LiveAudio used one of the next ports up to <code>ws_port + 9</code> (<code>8765</code>&ndash;<code>8774</code> by default); copy the overlay URL again. A <code>403</code> only affects browser origins other than OBS and the <code>/overlay</code> page: add the port of any other local browser tool in <strong>Settings &gt; Advanced &gt; Allowed local connections</strong> and check <strong>Recent blocked attempts</strong>.",
       },
       {
         type: "heading",
@@ -982,7 +1008,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       {
         type: "list",
         items: [
-          "<strong>How:</strong> reproduce the issue, click <strong>Export diagnostics</strong> in the app, then review the exported JSON (process states, queue sizes, audio/asr/ws states).",
+          "<strong>How:</strong> reproduce the issue, click <strong>Diagnostics</strong> (<strong>Export Diagnostic Report</strong>, in the <strong>Files</strong> tab) in the app, then review the exported JSON (process states, queue sizes, audio/asr/ws states).",
           "<strong>Privacy:</strong> the export never includes raw audio or full transcripts, and it sanitizes secrets, tokens and sensitive paths.",
         ],
       },
@@ -1046,16 +1072,16 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
         head: ["Key", "Type", "Description"],
         rows: [
           ["<code>output_dir</code>", "string", "Path to the sessions folder."],
-          ["<code>device</code>", "string", '"cuda" or "cpu".'],
+          ["<code>device</code>", "string", '"cpu" (default) or "cuda".'],
           [
             "<code>cpu_threads</code>",
             "number",
-            "Number of CPU threads for inference.",
+            "Number of CPU threads for inference (default: half the logical cores, minimum 1).",
           ],
           [
             "<code>model_size</code>",
             "string",
-            '"tiny", "base", "small" or "turbo".',
+            'Whisper model, stored as the label chosen in Advanced: it starts with tiny, base, small or turbo. Default: "small (Balance CPU)".',
           ],
           [
             "<code>blacklist</code>",
@@ -1090,12 +1116,12 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
           [
             "<code>silence_timeout</code>",
             "number",
-            "Seconds of silence before cutting a segment.",
+            "Seconds of silence before cutting a segment (default: 0.5).",
           ],
           [
             "<code>max_chunk_duration</code>",
             "number",
-            "Max seconds before forcing a cut.",
+            "Max seconds before forcing a cut (default: 3.0).",
           ],
           [
             "<code>audio_device</code>",
@@ -1105,7 +1131,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
           [
             "<code>selected_profile_id</code>",
             "string",
-            '"fast", "balanced", "quality" or "stable".',
+            '"fast", "balanced" (default), "quality" or "stable_streaming".',
           ],
           [
             "<code>profile_mode</code>",
@@ -1115,7 +1141,12 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
           [
             "<code>ws_port</code>",
             "number",
-            "WebSocket server port (default: 8765).",
+            "WebSocket server base port (default: 8765). The server may use up to <code>ws_port + 9</code> if it is busy.",
+          ],
+          [
+            "<code>ws_allowed_loopback_ports</code>",
+            "number[]",
+            "Extra local ports whose browser pages may connect (default: [1420]). Managed in Settings &gt; Advanced &gt; Allowed local connections.",
           ],
           [
             "<code>obs_enabled</code>",
@@ -1135,7 +1166,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
           [
             "<code>asr_language</code>",
             "string",
-            'Language code for Whisper (e.g. "en", "es").',
+            'Language code for Whisper (e.g. "en", "es"). Default: "es".',
           ],
           [
             "<code>settings_navigation_mode</code>",
@@ -1146,6 +1177,31 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
             "<code>diagnostics_enabled</code>",
             "boolean",
             "Enables local diagnostics instrumentation.",
+          ],
+          [
+            "<code>rnnoise_enabled</code>",
+            "boolean",
+            "Local RNNoise noise suppression before voice detection (default: false; applies after a service restart).",
+          ],
+          [
+            "<code>live_partial_subtitles_enabled</code>",
+            "boolean",
+            "Sends provisional <code>subtitle_partial</code> frames while a phrase is still being spoken (default: false; desktop app only; restart required).",
+          ],
+          [
+            "<code>subtitle_display_mode</code>",
+            "string",
+            '"adaptive" (default), "single" or "ribbon".',
+          ],
+          [
+            "<code>check_updates_enabled</code>",
+            "boolean",
+            "Checks GitHub Releases for updates automatically (default: true).",
+          ],
+          [
+            "<code>mcp_style_enabled</code>, <code>mcp_system_enabled</code>",
+            "boolean",
+            "Opt-in switches that let a local AI agent change subtitle styles, or system settings, through <code>liveaudio-cli mcp</code> (default: false).",
           ],
         ],
       },
@@ -1158,6 +1214,15 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
         type: "code",
         label: "config.json",
         code: CONFIG_EXAMPLE_EN,
+      },
+      {
+        type: "heading",
+        id: "cli",
+        text: "Command line",
+      },
+      {
+        type: "prose",
+        html: "<code>liveaudio-cli</code> (included in the installer and in the CLI archives) accepts these commands: <code>serve</code> / <code>--service</code> (headless daemon), <code>devices</code> (list audio inputs), <code>doctor</code> (environment and hardware diagnostics) and <code>mcp</code> (MCP server over stdio for AI agents). Options: <code>--port</code> / <code>-P</code> sets the WebSocket port and <code>--licenses</code> shows the bundled third-party notices. <code>mcp</code> only works after you enable the MCP switches in <strong>Settings &gt; Advanced</strong> (OBS and integrations).",
       },
     ],
   },
@@ -1193,7 +1258,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
         items: [
           "<strong>Transcripción local.</strong> El audio se transcribe en tu equipo sin un servicio de transcripción en la nube ni claves API.",
           "<strong>Pipeline 100% Rust nativo.</strong> Rust gestiona la captura, la detección de voz y la inferencia Whisper nativa con ONNX Runtime DirectML/CPU.",
-          "<strong>Hot-swap.</strong> Cambia el dispositivo de audio o el tamaño del modelo sin reiniciar la app.",
+          "<strong>Ajustes en vivo.</strong> Cambia el dispositivo de audio o el tamaño del modelo desde la app. Aplicar un cambio reinicia la transcripción y reconecta OBS, y la app te pide confirmar antes.",
         ],
       },
       {
@@ -1295,14 +1360,14 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "La app elige entre <code>cuda</code> y <code>cpu</code> con una escalera de “primera coincidencia gana”:",
+        html: "Por defecto LiveAudio ejecuta Whisper sobre ONNX Runtime con DirectML (GPUs DirectX 12) o la CPU. Un motor NVIDIA CUDA es opcional:",
       },
       {
         type: "list",
         items: [
-          "Tu elección explícita en la pestaña <strong>Avanzado</strong> (selector de dispositivo de cómputo) — elegir CUDA atenúa el control de hilos de CPU porque la inferencia corre en la GPU.",
-          "Si no, NVML + <code>nvidia-smi</code>: si el driver es <code>&ge; 525</code> y la VRAM es <code>&ge; 4096 MiB</code> &rarr; <code>cuda</code>.",
-          "Cualquier otro caso (sin NVML, fallo de smi o una GPU por debajo de los requisitos) &rarr; <code>cpu</code>, con un aviso cuando se encontró una GPU pero no calificó.",
+          "Tu elección explícita en la pestaña <strong>Avanzado</strong> (dispositivo de cómputo y motor ASR) — elegir CUDA atenúa el control de hilos de CPU porque la inferencia corre en la GPU.",
+          "El motor NVIDIA CUDA solo se usa después de instalarlo de forma explícita (la tarjeta NVIDIA en la pestaña <strong>Inicio</strong>). Requiere una GPU NVIDIA y un driver compatible con <strong>CUDA 12.8 o superior</strong>.",
+          "Sin GPU NVIDIA, sin un driver compatible o sin el motor instalado, LiveAudio se queda en ONNX Runtime (DirectML o CPU).",
         ],
       },
       {
@@ -1402,7 +1467,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Los perfiles son presets sensibles a los FPS. Editar un perfil integrado lo convierte en <strong>Personalizado</strong>; los cambios solo se activan al pulsar <strong>Aplicar cambios</strong>.",
+        html: "Los perfiles son presets sensibles a los FPS. Editar un perfil integrado lo convierte en <strong>Personalizado</strong>; los cambios solo se activan al pulsar <strong>Guardar</strong>.",
       },
       {
         type: "table",
@@ -1433,7 +1498,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Las palabras y frases se separan por comas y son totalmente editables desde la pestaña <strong>Subtítulos</strong> — agrega el relleno que tu stream tiende a alucinar, o borra entradas que quieras conservar.",
+        html: "Las palabras y frases se separan por comas y son totalmente editables desde la pestaña <strong>Avanzado</strong> (<strong>Vocabulario y filtros</strong>) — agrega el relleno que tu stream tiende a alucinar, o borra entradas que quieras conservar.",
       },
       {
         type: "heading",
@@ -1442,7 +1507,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Elige un modelo en la pestaña <strong>Modelo y Hardware</strong>. Los modelos más grandes pueden necesitar más memoria y tiempo de procesamiento. Un modelo recién seleccionado puede requerir una descarga.",
+        html: "Elige un modelo en la pestaña <strong>Avanzado</strong> (<strong>Motor y rendimiento</strong>, Tamaño de Modelo Whisper). El dispositivo de audio y el perfil están en la pestaña <strong>Inicio</strong>. Los modelos más grandes pueden necesitar más memoria y tiempo de procesamiento. Un modelo recién seleccionado puede requerir una descarga.",
       },
       {
         type: "table",
@@ -1474,7 +1539,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Cada sesión se guarda en disco como un transcript (<code>transcript.jsonl</code>) y subtítulos WebVTT (<code>subtitles.vtt</code>), más un manifiesto <code>session.json</code>:",
+        html: "Cada sesión se guarda en disco como un transcript (<code>transcript.jsonl</code>) subtítulos WebVTT (<code>subtitles.vtt</code>) y subtítulos SubRip (<code>subtitles.srt</code>):",
       },
       {
         type: "code",
@@ -1489,7 +1554,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
     navLabel: "websocket-obs",
     metaTitle: "Docs de LiveAudio — WebSocket y OBS",
     metaDescription:
-      "El WebSocket de LiveAudio: ws://127.0.0.1:8765 (ws_port configurable, ?port=XXXX en OBS), el esquema del payload JSON, la política de backlog (auto / live_only / send_all), la seguridad solo-localhost y la configuración del Browser Source en OBS.",
+      "El WebSocket de LiveAudio: ws://127.0.0.1:8765 (ws_port configurable, puertos alternativos), la URL del overlay, el esquema del payload JSON, la política de backlog (auto / live_only / send_all), la seguridad loopback con lista de orígenes permitidos y la configuración del Browser Source en OBS.",
     eyebrow: "// docs / websocket-obs",
     h1: "WebSocket y OBS",
     lede:
@@ -1508,10 +1573,18 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
           ["Host", "<code>127.0.0.1</code> (solo localhost)"],
           [
             "Puerto",
-            "<code>8765</code> por defecto, configurable con <code>ws_port</code>",
+            "<code>8765</code> por defecto, configurable con <code>ws_port</code>. Si está ocupado, el servidor prueba los siguientes puertos hasta <code>ws_port + 9</code> (<code>8765</code>&ndash;<code>8774</code> por defecto).",
+          ],
+          [
+            "Puerto efectivo",
+            "Se anuncia en el primer frame de cada conexión (<code>hello</code>) y se muestra en la app como el indicador <code>WS: &lt;puerto&gt;</code>.",
+          ],
+          [
+            "URL del overlay",
+            "<code>http://127.0.0.1:&lt;puerto&gt;/overlay</code> — la URL de la fuente de navegador de OBS. <code>ws://127.0.0.1:&lt;puerto&gt;</code> es el endpoint WebSocket, no lo que se pega en OBS.",
           ],
           ["Formato", "JSON"],
-          ["Autenticación", "Ninguna — limitado a localhost"],
+          ["Autenticación", "Ninguna — listener solo loopback más una lista de orígenes permitidos (ver Seguridad)"],
         ],
       },
       {
@@ -1531,7 +1604,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
           [
             "<code>id</code>",
             "string",
-            "Identificador estable de la frase dentro de la sesión.",
+            "Identificador opaco de la frase por sesión, como <code>utt_42</code>. Se reinicia en cada ejecución y no es monotónico.",
           ],
           [
             "<code>text</code>",
@@ -1576,7 +1649,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
           [
             "<code>catchup_interval_sec</code>",
             "number",
-            "Pacing recomendado entre ítems de backlog en modo auto.",
+            "Espaciado recomendado entre ítems de backlog en modo auto.",
           ],
         ],
       },
@@ -1587,7 +1660,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "El overlay de OBS integrado solo consume <code>text</code> y <code>style</code>. Los demás campos son metadata para diagnóstico y control de backlog — útiles si construyes tu propio cliente, ignorables si no.",
+        html: "El overlay de OBS integrado consume <code>text</code>, <code>style</code>, <code>is_replay</code>, <code>catchup_interval_sec</code>, los frames <code>theme</code> y los frames opcionales <code>subtitle_partial</code>. Los demás campos son metadata para diagnóstico — útiles si construyes tu propio cliente, ignorables si no. Los frames con un campo <code>type</code> (<code>hello</code>, <code>theme</code>, <code>subtitle_partial</code>) no son subtítulos.",
       },
       {
         type: "heading",
@@ -1596,7 +1669,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "El campo <code>style</code> selecciona uno de siete looks integrados, conmutables desde la pestaña <strong>Subtítulos</strong>:",
+        html: "El campo <code>style</code> selecciona uno de siete looks integrados, conmutables desde la pestaña <strong>Estilo</strong>, que también incluye presets y vista previa en vivo (la pestaña <strong>Subtítulos</strong> contiene el modo de visualización: adaptativo, línea única o cinta):",
       },
       {
         type: "table",
@@ -1648,7 +1721,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
           [
             "Auto",
             "<code>auto</code>",
-            "Envía subtítulos frescos más un backlog corto con pacing. Omite lo que supere el atraso máximo.",
+            "Envía subtítulos frescos más un backlog corto espaciado. Omite lo que supere el atraso máximo.",
           ],
           [
             "Solo en vivo",
@@ -1670,8 +1743,11 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       {
         type: "list",
         items: [
-          "Solo localhost — el servidor rechaza cualquier conexión que no sea de <code>127.0.0.1</code>, <code>::1</code> o <code>localhost</code>.",
-          "No requiere autenticación, porque está limitado a localhost.",
+          "Solo loopback — el servidor escucha en <code>127.0.0.1</code> y descarta los pares que no sean loopback.",
+          "Reglas de Origin — sin cabecera <code>Origin</code> (apps nativas, scripts) se acepta; varias cabeceras <code>Origin</code> reciben HTTP <code>403</code>. Se aceptan <code>http://absolute</code> (fuente de navegador de OBS), <code>tauri.localhost</code> y orígenes loopback en el puerto del servidor (la página <code>/overlay</code>) o en un puerto permitido; cualquier otro recibe <code>403</code>.",
+          "Lista permitida — agrega el puerto de cualquier otra herramienta de navegador local en <strong>Ajustes &gt; Avanzado &gt; Conexiones locales permitidas</strong> (por defecto <code>[1420]</code>). La tarjeta también muestra los intentos bloqueados recientes.",
+          "Límites — máximo 64 conexiones simultáneas, mensajes entrantes de hasta 64 KiB y 5 s de tiempo para el handshake.",
+          "Sin autenticación — cualquier proceso local que no envíe <code>Origin</code> puede leer los subtítulos.",
           "Broadcast — múltiples clientes reciben los mismos mensajes a la vez.",
         ],
       },
@@ -1684,10 +1760,10 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
         type: "list",
         items: [
           "En OBS, <strong>Fuentes &rarr; + &rarr; Navegador</strong>.",
-          "Inicia el sistema y después copia la URL del overlay desde LiveAudio. Deja <strong>Archivo local</strong> desmarcado en OBS y pega la URL. Tamaño <strong>1920&times;200</strong>.",
-          "Pon los <strong>FPS</strong> en <code>30</code> o <code>60</code> y ubica la fuente en la parte <strong>inferior central</strong> de la escena.",
+          "Inicia el sistema y después copia la URL del overlay desde LiveAudio (<strong>Copiar URL</strong>; la forma base es <code>http://127.0.0.1:8765/overlay</code>). Deja <strong>Archivo local</strong> desmarcado en OBS y pega la URL. Tamaño <strong>1920&times;1080</strong>.",
+          "Pon los <strong>FPS</strong> en <code>30</code> o <code>60</code>. Deja la fuente en el lienzo completo: el overlay posiciona los subtítulos por sí mismo.",
           'Desactiva <strong>"Apagar la fuente cuando no esté visible"</strong> y "Actualizar el navegador cuando la escena se active" — ambas pueden cortar la conexión WebSocket.',
-          "Mientras el sistema está iniciado, la URL copiada del overlay incluye el puerto WebSocket activo. El servidor comienza en <code>8765</code> y puede usar una alternativa hasta <code>8774</code>; copia de nuevo la URL si cambia el puerto.",
+          "Mientras el sistema está iniciado, la URL copiada del overlay incluye el puerto WebSocket activo. El servidor comienza en <code>ws_port</code> (por defecto <code>8765</code>) y puede usar una alternativa hasta <code>ws_port + 9</code>; copia de nuevo la URL si cambia el puerto.",
         ],
       },
       {
@@ -1698,9 +1774,9 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       {
         type: "list",
         items: [
-          "<strong>Reconexión.</strong> Un cliente que pierde la conexión reintenta cada <strong>3 segundos</strong> aproximadamente hasta que el servidor vuelve — el overlay incluido ya lo hace por ti.",
+          "<strong>Reconexión.</strong> El overlay incluido reintenta con espera exponencial de 1 s hasta 8 s y recorre los puertos <code>ws_port</code> a <code>ws_port + 9</code>, así que también conecta si OBS abre antes que LiveAudio. Un cliente propio necesita su propia lógica de reintento.",
           "<strong>Broadcast.</strong> Cada cliente conectado recibe cada mensaje. Varios clientes (OBS más una pestaña de depuración) ven el mismo flujo, y un cliente lento no bloquea a los demás.",
-          "<strong>Sin backpressure.</strong> Con <code>websockets &ge; 16</code> el servidor usa <code>broadcast()</code>, que reparte sin esperar a ningún cliente en particular.",
+          "<strong>Clientes lentos.</strong> Cada cliente tiene una cola de salida de 64 frames y una cola de reintento de 10 frames. Cuando la cola de reintento se llena se descarta el frame más antiguo; el cliente no se desconecta.",
         ],
       },
       {
@@ -1710,7 +1786,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Cualquier cliente WebSocket en localhost puede suscribirse a la misma transmisión que lee OBS. Un cliente mínimo en navegador — ábrelo directamente, o cárgalo como Browser Source en OBS:",
+        html: "Cualquier cliente WebSocket en localhost puede suscribirse a la misma transmisión que lee OBS. Un cliente mínimo en navegador. Sírvelo desde un servidor HTTP local y agrega el puerto de ese servidor en <strong>Conexiones locales permitidas</strong>: una página abierta desde <code>file://</code> envía <code>Origin: null</code> y se rechaza con <code>403</code>. Omite los frames con campo <code>type</code> y solo muestra frames de subtítulo:",
       },
       {
         type: "code",
@@ -1719,7 +1795,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "O un cliente mínimo en Python, para imprimir cada payload a medida que llega (requiere el paquete <code>websockets</code>):",
+        html: "O un cliente mínimo en Python, para imprimir cada subtítulo a medida que llega (requiere el paquete <code>websockets</code>; los clientes que no son de navegador no envían <code>Origin</code>, así que no necesitan entrada en la lista):",
       },
       {
         type: "code",
@@ -1733,23 +1809,27 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Abre el overlay en un navegador y presiona <strong>F12</strong> &rarr; Consola. Estos mensajes indican dónde se traba un overlay que no muestra nada:",
+        html: "Estas señales indican dónde se traba un overlay que no muestra nada:",
       },
       {
         type: "table",
-        head: ["Mensaje en consola", "Significado"],
+        head: ["Señal", "Significado"],
         rows: [
           [
-            "<code>Conectado al motor ASR</code>",
-            "Conexión exitosa — el WebSocket está activo.",
+            "Indicador <code>WS: &lt;puerto&gt;</code> en la app",
+            "El servidor WebSocket está activo en ese puerto, con el número de clientes conectados. Usa ese puerto si construyes tu propio cliente. <code>WS: apagado</code> significa que el servicio está detenido.",
           ],
           [
-            "<code>Desconectado. Reintentando…</code>",
-            "No conecta: LiveAudio no está iniciado, el puerto está ocupado, o el <code>?port=</code> de la URL no coincide con <code>ws_port</code>.",
+            "Herramientas de desarrollo del navegador (<strong>F12</strong>) en la página del overlay",
+            "Red &rarr; WS muestra los frames que recibe el overlay; la Consola muestra sus errores.",
           ],
           [
-            "<code>Error parseando WebSocket</code>",
-            "Llegó al overlay un mensaje que no es JSON / no es un dict — el payload no era un objeto de subtítulo válido.",
+            "<code>Error parseando WebSocket</code> (consola)",
+            "Llegó al overlay un mensaje que no es JSON — el payload no era un frame válido.",
+          ],
+          [
+            "HTTP <code>403</code> en el handshake",
+            "El Origin de la página no está permitido. Agrega su puerto en <strong>Conexiones locales permitidas</strong>; revisa <strong>Intentos bloqueados recientes</strong>.",
           ],
         ],
       },
@@ -1788,7 +1868,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "LiveAudio monitorea la VRAM antes de cada transcripción. Cuando la memoria libre baja de unos <strong>500 MB</strong>, libera la caché de CUDA automáticamente y muestra <strong>“GPU saturada - VRAM baja”</strong>. Si aún así falla: cambia el dispositivo de inferencia de <strong>cuda</strong> a <strong>cpu</strong>, o carga un modelo más chico (<code>tiny</code> o <code>base</code>), y cierra otros programas que consuman VRAM (OBS con NVENC, juegos). Actualizar el driver de NVIDIA resuelve la mayoría de los fallos de runtime de CUDA.",
+        html: "Si la transcripción falla con un error de GPU o se queda sin memoria, cambia el dispositivo de cómputo de <strong>cuda</strong> a <strong>cpu</strong> o carga un modelo más chico (<code>tiny</code> o <code>base</code>) en la pestaña <strong>Avanzado</strong>, y cierra otros programas que usen mucho la GPU (OBS con NVENC, juegos). Actualizar el driver de la GPU resuelve muchos fallos de runtime.",
       },
       {
         type: "heading",
@@ -1806,7 +1886,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Asegúrate de que el motor esté iniciado — el puerto <code>8765</code> debe estar a la escucha. Si tu cortafuegos bloquea el tráfico local o tu cliente local no está aún autorizado, revisa Ajustes > Avanzado para la allowlist de orígenes loopback.",
+        html: "Inicia primero el sistema y revisa el indicador <code>WS: &lt;puerto&gt;</code> de la app: ese es el puerto efectivo. Si el puerto base estaba ocupado, LiveAudio usó uno de los siguientes hasta <code>ws_port + 9</code> (<code>8765</code>&ndash;<code>8774</code> por defecto); copia de nuevo la URL del overlay. Un <code>403</code> solo afecta a orígenes de navegador distintos de OBS y de la página <code>/overlay</code>: agrega el puerto de cualquier otra herramienta de navegador local en <strong>Ajustes &gt; Avanzado &gt; Conexiones locales permitidas</strong> y revisa <strong>Intentos bloqueados recientes</strong>.",
       },
       {
         type: "heading",
@@ -1883,7 +1963,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       {
         type: "list",
         items: [
-          "<strong>Cómo:</strong> reproduce el problema, pulsa <strong>Export diagnostics</strong> en la app y revisa el JSON exportado (estados de procesos, tamaños de colas, estados audio/asr/ws).",
+          "<strong>Cómo:</strong> reproduce el problema, pulsa <strong>Diagnóstico</strong> (<strong>Exportar Reporte Diagnóstico</strong>, en la pestaña <strong>Archivos</strong>) en la app y revisa el JSON exportado (estados de procesos, tamaños de colas, estados audio/asr/ws).",
           "<strong>Privacidad:</strong> la exportación nunca incluye audio crudo ni transcripciones completas, y sanitiza secrets, tokens y rutas sensibles.",
         ],
       },
@@ -1947,16 +2027,16 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
         head: ["Clave", "Tipo", "Descripción"],
         rows: [
           ["<code>output_dir</code>", "string", "Ruta a la carpeta de sesiones."],
-          ["<code>device</code>", "string", '"cuda" o "cpu".'],
+          ["<code>device</code>", "string", '"cpu" (por defecto) o "cuda".'],
           [
             "<code>cpu_threads</code>",
             "number",
-            "Número de hilos de CPU para inferencia.",
+            "Número de hilos de CPU para inferencia (por defecto: la mitad de los núcleos lógicos, mínimo 1).",
           ],
           [
             "<code>model_size</code>",
             "string",
-            '"tiny", "base", "small" o "turbo".',
+            'Modelo Whisper, guardado como la etiqueta elegida en Avanzado: empieza con tiny, base, small o turbo. Por defecto: "small (Balance CPU)".',
           ],
           [
             "<code>blacklist</code>",
@@ -1986,17 +2066,17 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
           [
             "<code>subtitle_catchup_interval_sec</code>",
             "number",
-            "Pacing entre ítems de backlog.",
+            "Espaciado entre ítems de backlog.",
           ],
           [
             "<code>silence_timeout</code>",
             "number",
-            "Segundos de silencio antes de cortar un segmento.",
+            "Segundos de silencio antes de cortar un segmento (por defecto: 0.5).",
           ],
           [
             "<code>max_chunk_duration</code>",
             "number",
-            "Segundos máximos antes de forzar el corte.",
+            "Segundos máximos antes de forzar el corte (por defecto: 3.0).",
           ],
           [
             "<code>audio_device</code>",
@@ -2006,7 +2086,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
           [
             "<code>selected_profile_id</code>",
             "string",
-            '"fast", "balanced", "quality" o "stable".',
+            '"fast", "balanced" (por defecto), "quality" o "stable_streaming".',
           ],
           [
             "<code>profile_mode</code>",
@@ -2016,7 +2096,12 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
           [
             "<code>ws_port</code>",
             "number",
-            "Puerto del servidor WebSocket (default: 8765).",
+            "Puerto base del servidor WebSocket (por defecto: 8765). El servidor puede usar hasta <code>ws_port + 9</code> si está ocupado.",
+          ],
+          [
+            "<code>ws_allowed_loopback_ports</code>",
+            "number[]",
+            "Puertos locales adicionales cuyas páginas de navegador pueden conectarse (por defecto: [1420]). Se gestiona en Ajustes &gt; Avanzado &gt; Conexiones locales permitidas.",
           ],
           [
             "<code>obs_enabled</code>",
@@ -2036,7 +2121,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
           [
             "<code>asr_language</code>",
             "string",
-            'Código de idioma para Whisper (ej. "en", "es").',
+            'Código de idioma para Whisper (ej. "en", "es"). Por defecto: "es".',
           ],
           [
             "<code>settings_navigation_mode</code>",
@@ -2047,6 +2132,31 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
             "<code>diagnostics_enabled</code>",
             "boolean",
             "Activa la instrumentación de diagnóstico local.",
+          ],
+          [
+            "<code>rnnoise_enabled</code>",
+            "boolean",
+            "Supresión de ruido local RNNoise antes de la detección de voz (por defecto: false; se aplica al reiniciar el servicio).",
+          ],
+          [
+            "<code>live_partial_subtitles_enabled</code>",
+            "boolean",
+            "Envía frames provisionales <code>subtitle_partial</code> mientras una frase aún se está diciendo (por defecto: false; solo app de escritorio; requiere reinicio).",
+          ],
+          [
+            "<code>subtitle_display_mode</code>",
+            "string",
+            '"adaptive" (por defecto), "single" o "ribbon".',
+          ],
+          [
+            "<code>check_updates_enabled</code>",
+            "boolean",
+            "Busca actualizaciones en GitHub Releases automáticamente (por defecto: true).",
+          ],
+          [
+            "<code>mcp_style_enabled</code>, <code>mcp_system_enabled</code>",
+            "boolean",
+            "Interruptores opt-in que permiten a un agente de IA local cambiar los estilos de subtítulos, o los ajustes del sistema, mediante <code>liveaudio-cli mcp</code> (por defecto: false).",
           ],
         ],
       },
@@ -2059,6 +2169,15 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
         type: "code",
         label: "config.json",
         code: CONFIG_EXAMPLE_ES,
+      },
+      {
+        type: "heading",
+        id: "linea-de-comandos",
+        text: "Línea de comandos",
+      },
+      {
+        type: "prose",
+        html: "<code>liveaudio-cli</code> (incluido en el instalador y en los archivos CLI) acepta estos comandos: <code>serve</code> / <code>--service</code> (daemon sin interfaz), <code>devices</code> (lista las entradas de audio), <code>doctor</code> (diagnóstico de entorno y hardware) y <code>mcp</code> (servidor MCP por stdio para agentes de IA). Opciones: <code>--port</code> / <code>-P</code> fija el puerto WebSocket y <code>--licenses</code> muestra los avisos de terceros incluidos. <code>mcp</code> solo funciona después de activar los interruptores MCP en <strong>Ajustes &gt; Avanzado</strong> (OBS e integraciones).",
       },
     ],
   },
