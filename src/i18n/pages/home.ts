@@ -345,7 +345,7 @@ const en: HomeCopy = {
   ws: {
     eyebrow: "// integration",
     title: "Works with OBS — or any WebSocket client.",
-    body: "LiveAudio broadcasts clean subtitle JSON over a local WebSocket (ws://127.0.0.1:8765). OBS is the built-in target via the included subtitulos_obs.html overlay. v1.6.0 introduces strict Cross-Site WebSocket Hijacking (CSWSH) protection with a configurable loopback origin allowlist in Settings > Advanced, letting you authorize local ports safely with real-time rejected connection monitoring.",
+    body: "LiveAudio broadcasts clean subtitle JSON over a local WebSocket (ws://127.0.0.1:8765). OBS is the built-in target via the included subtitulos_obs.html overlay. v1.6.0 introduces strict Cross-Site WebSocket Hijacking (CSWSH) protection with a configurable loopback origin allowlist in Advanced, letting you authorize local ports safely with real-time rejected connection monitoring.",
     codeTab: "ws://127.0.0.1:8765",
     codeLines: [
       "{",
@@ -629,7 +629,7 @@ const es: HomeCopy = {
   ws: {
     eyebrow: "// integración",
     title: "Funciona con OBS — o cualquier cliente WebSocket.",
-    body: "LiveAudio emite subtítulos en JSON limpio por un WebSocket local (ws://127.0.0.1:8765). OBS es el destino integrado mediante el overlay subtitulos_obs.html. La v1.6.0 introduce protección estricta contra secuestro de WebSocket (CSWSH) con una lista blanca configurable en Ajustes > Avanzado, permitiendo autorizar puertos loopback locales de forma segura con monitor de conexiones en tiempo real.",
+    body: "LiveAudio emite subtítulos en JSON limpio por un WebSocket local (ws://127.0.0.1:8765). OBS es el destino integrado mediante el overlay subtitulos_obs.html. La v1.6.0 introduce protección estricta contra secuestro de WebSocket (CSWSH) con una lista blanca configurable en Avanzado, permitiendo autorizar puertos loopback locales de forma segura con monitor de conexiones en tiempo real.",
     codeTab: "ws://127.0.0.1:8765",
     codeLines: [
       "{",

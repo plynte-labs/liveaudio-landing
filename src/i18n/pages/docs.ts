@@ -191,7 +191,7 @@ asyncio.run(main())`;
  */
 const WS_HTML_CLIENT = `<!-- serve from a local http server, e.g. python -m http.server 5500
      (file:// sends Origin: null and gets 403), then allow port 5500 in
-     Settings > Advanced > Allowed local connections -->
+     Advanced > Allowed local connections -->
 <div id="caption"></div>
 <script>
   const PORT = 8765; // base port; the effective port is announced in the hello frame
@@ -790,7 +790,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
         items: [
           "Loopback only — the server binds <code>127.0.0.1</code> and drops peers that are not loopback.",
           "Origin rules — no <code>Origin</code> header (native apps, scripts) is accepted; several <code>Origin</code> headers get HTTP <code>403</code>. <code>http://absolute</code> (OBS Browser Source), <code>tauri.localhost</code>, and loopback origins on the server's bound port (the <code>/overlay</code> page) or on an allowlisted port are accepted; anything else gets <code>403</code>.",
-          "Allowlist — add the port of any other local browser tool in <strong>Settings &gt; Advanced &gt; Allowed local connections</strong> (default <code>[1420]</code>). The card also lists recent blocked attempts.",
+          "Allowlist — add the port of any other local browser tool in <strong>Advanced &gt; Allowed local connections</strong> (default <code>[1420]</code>). The card also lists recent blocked attempts.",
           "Limits — at most 64 simultaneous connections, inbound messages up to 64 KiB, and a 5 s handshake timeout.",
           "No authentication — any local process that sends no <code>Origin</code> can read subtitles.",
           "Broadcast — multiple clients receive the same messages simultaneously.",
@@ -931,7 +931,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Start the system first, then check the <code>WS: &lt;port&gt;</code> pill in the app: that is the effective port. If the base port was busy, LiveAudio used one of the next ports up to <code>ws_port + 9</code> (<code>8765</code>&ndash;<code>8774</code> by default); copy the overlay URL again. A <code>403</code> only affects browser origins other than OBS and the <code>/overlay</code> page: add the port of any other local browser tool in <strong>Settings &gt; Advanced &gt; Allowed local connections</strong> and check <strong>Recent blocked attempts</strong>.",
+        html: "Start the system first, then check the <code>WS: &lt;port&gt;</code> pill in the app: that is the effective port. If the base port was busy, LiveAudio used one of the next ports up to <code>ws_port + 9</code> (<code>8765</code>&ndash;<code>8774</code> by default); copy the overlay URL again. A <code>403</code> only affects browser origins other than OBS and the <code>/overlay</code> page: add the port of any other local browser tool in <strong>Advanced &gt; Allowed local connections</strong> and check <strong>Recent blocked attempts</strong>.",
       },
       {
         type: "heading",
@@ -1146,7 +1146,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
           [
             "<code>ws_allowed_loopback_ports</code>",
             "number[]",
-            "Extra local ports whose browser pages may connect (default: [1420]). Managed in Settings &gt; Advanced &gt; Allowed local connections.",
+            "Extra local ports whose browser pages may connect (default: [1420]). Managed in Advanced &gt; Allowed local connections.",
           ],
           [
             "<code>obs_enabled</code>",
@@ -1222,7 +1222,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "<code>liveaudio-cli</code> (included in the installer and in the CLI archives) accepts these commands: <code>serve</code> / <code>--service</code> (headless daemon), <code>devices</code> (list audio inputs), <code>doctor</code> (environment and hardware diagnostics) and <code>mcp</code> (MCP server over stdio for AI agents). Options: <code>--port</code> / <code>-P</code> sets the WebSocket port and <code>--licenses</code> shows the bundled third-party notices. <code>mcp</code> only works after you enable the MCP switches in <strong>Settings &gt; Advanced</strong> (OBS and integrations).",
+        html: "<code>liveaudio-cli</code> (included in the installer and in the CLI archives) accepts these commands: <code>serve</code> / <code>--service</code> (headless daemon), <code>devices</code> (list audio inputs), <code>doctor</code> (environment and hardware diagnostics) and <code>mcp</code> (MCP server over stdio for AI agents). Options: <code>--port</code> / <code>-P</code> sets the WebSocket port and <code>--licenses</code> shows the bundled third-party notices. <code>mcp</code> only works after you enable the MCP switches in <strong>Advanced</strong> (OBS and integrations).",
       },
     ],
   },
@@ -1745,7 +1745,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
         items: [
           "Solo loopback — el servidor escucha en <code>127.0.0.1</code> y descarta los pares que no sean loopback.",
           "Reglas de Origin — sin cabecera <code>Origin</code> (apps nativas, scripts) se acepta; varias cabeceras <code>Origin</code> reciben HTTP <code>403</code>. Se aceptan <code>http://absolute</code> (fuente de navegador de OBS), <code>tauri.localhost</code> y orígenes loopback en el puerto del servidor (la página <code>/overlay</code>) o en un puerto permitido; cualquier otro recibe <code>403</code>.",
-          "Lista permitida — agrega el puerto de cualquier otra herramienta de navegador local en <strong>Ajustes &gt; Avanzado &gt; Conexiones locales permitidas</strong> (por defecto <code>[1420]</code>). La tarjeta también muestra los intentos bloqueados recientes.",
+          "Lista permitida — agrega el puerto de cualquier otra herramienta de navegador local en <strong>Avanzado &gt; Conexiones locales permitidas</strong> (por defecto <code>[1420]</code>). La tarjeta también muestra los intentos bloqueados recientes.",
           "Límites — máximo 64 conexiones simultáneas, mensajes entrantes de hasta 64 KiB y 5 s de tiempo para el handshake.",
           "Sin autenticación — cualquier proceso local que no envíe <code>Origin</code> puede leer los subtítulos.",
           "Broadcast — múltiples clientes reciben los mismos mensajes a la vez.",
@@ -1886,7 +1886,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Inicia primero el sistema y revisa el indicador <code>WS: &lt;puerto&gt;</code> de la app: ese es el puerto efectivo. Si el puerto base estaba ocupado, LiveAudio usó uno de los siguientes hasta <code>ws_port + 9</code> (<code>8765</code>&ndash;<code>8774</code> por defecto); copia de nuevo la URL del overlay. Un <code>403</code> solo afecta a orígenes de navegador distintos de OBS y de la página <code>/overlay</code>: agrega el puerto de cualquier otra herramienta de navegador local en <strong>Ajustes &gt; Avanzado &gt; Conexiones locales permitidas</strong> y revisa <strong>Intentos bloqueados recientes</strong>.",
+        html: "Inicia primero el sistema y revisa el indicador <code>WS: &lt;puerto&gt;</code> de la app: ese es el puerto efectivo. Si el puerto base estaba ocupado, LiveAudio usó uno de los siguientes hasta <code>ws_port + 9</code> (<code>8765</code>&ndash;<code>8774</code> por defecto); copia de nuevo la URL del overlay. Un <code>403</code> solo afecta a orígenes de navegador distintos de OBS y de la página <code>/overlay</code>: agrega el puerto de cualquier otra herramienta de navegador local en <strong>Avanzado &gt; Conexiones locales permitidas</strong> y revisa <strong>Intentos bloqueados recientes</strong>.",
       },
       {
         type: "heading",
@@ -2101,7 +2101,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
           [
             "<code>ws_allowed_loopback_ports</code>",
             "number[]",
-            "Puertos locales adicionales cuyas páginas de navegador pueden conectarse (por defecto: [1420]). Se gestiona en Ajustes &gt; Avanzado &gt; Conexiones locales permitidas.",
+            "Puertos locales adicionales cuyas páginas de navegador pueden conectarse (por defecto: [1420]). Se gestiona en Avanzado &gt; Conexiones locales permitidas.",
           ],
           [
             "<code>obs_enabled</code>",
@@ -2177,7 +2177,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "<code>liveaudio-cli</code> (incluido en el instalador y en los archivos CLI) acepta estos comandos: <code>serve</code> / <code>--service</code> (daemon sin interfaz), <code>devices</code> (lista las entradas de audio), <code>doctor</code> (diagnóstico de entorno y hardware) y <code>mcp</code> (servidor MCP por stdio para agentes de IA). Opciones: <code>--port</code> / <code>-P</code> fija el puerto WebSocket y <code>--licenses</code> muestra los avisos de terceros incluidos. <code>mcp</code> solo funciona después de activar los interruptores MCP en <strong>Ajustes &gt; Avanzado</strong> (OBS e integraciones).",
+        html: "<code>liveaudio-cli</code> (incluido en el instalador y en los archivos CLI) acepta estos comandos: <code>serve</code> / <code>--service</code> (daemon sin interfaz), <code>devices</code> (lista las entradas de audio), <code>doctor</code> (diagnóstico de entorno y hardware) y <code>mcp</code> (servidor MCP por stdio para agentes de IA). Opciones: <code>--port</code> / <code>-P</code> fija el puerto WebSocket y <code>--licenses</code> muestra los avisos de terceros incluidos. <code>mcp</code> solo funciona después de activar los interruptores MCP en <strong>Avanzado</strong> (OBS e integraciones).",
       },
     ],
   },

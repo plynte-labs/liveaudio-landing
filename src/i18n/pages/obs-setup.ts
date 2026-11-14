@@ -140,7 +140,7 @@ const en: ObsSetupCopy = {
   diagramEyebrow: "// the signal path",
   diagramHeading: "How the caption signal reaches OBS.",
   diagramBody:
-    "LiveAudio transcribes locally and broadcasts subtitle JSON over a local WebSocket. OBS connects through the included overlay, but any HTML or WebSocket client on localhost can receive the same broadcast. The server listens on 127.0.0.1 only, drops non-loopback peers and has no authentication. Browser pages are filtered by Origin (HTTP 403 otherwise): the OBS Browser source and the /overlay page are already allowed. Other local browser tools on a different port must be added in Settings > Advanced > Allowed local connections (the card also lists Recent blocked attempts).",
+    "LiveAudio transcribes locally and broadcasts subtitle JSON over a local WebSocket. OBS connects through the included overlay, but any HTML or WebSocket client on localhost can receive the same broadcast. The server listens on 127.0.0.1 only, drops non-loopback peers and has no authentication. Browser pages are filtered by Origin (HTTP 403 otherwise): the OBS Browser source and the /overlay page are already allowed. Other local browser tools on a different port must be added in Advanced > Allowed local connections (the card also lists Recent blocked attempts).",
 
   payloadEyebrow: "// websocket payload",
   payloadHeading: "What each caption frame contains.",
@@ -230,7 +230,7 @@ const es: ObsSetupCopy = {
   diagramEyebrow: "// el camino de la señal",
   diagramHeading: "Cómo llega la señal de subtítulos a OBS.",
   diagramBody:
-    "LiveAudio transcribe localmente y emite subtítulos en JSON por un WebSocket local. OBS se conecta mediante el overlay incluido, pero cualquier cliente HTML o WebSocket en localhost puede recibir la misma transmisión. El servidor escucha solo en 127.0.0.1, descarta pares que no sean loopback y no tiene autenticación. Las páginas de navegador se filtran por Origin (HTTP 403 en caso contrario): la fuente de navegador de OBS y la página /overlay ya están permitidas. Otras herramientas de navegador locales en otro puerto deben agregarse en Ajustes > Avanzado > Conexiones locales permitidas (la tarjeta también muestra Intentos bloqueados recientes).",
+    "LiveAudio transcribe localmente y emite subtítulos en JSON por un WebSocket local. OBS se conecta mediante el overlay incluido, pero cualquier cliente HTML o WebSocket en localhost puede recibir la misma transmisión. El servidor escucha solo en 127.0.0.1, descarta pares que no sean loopback y no tiene autenticación. Las páginas de navegador se filtran por Origin (HTTP 403 en caso contrario): la fuente de navegador de OBS y la página /overlay ya están permitidas. Otras herramientas de navegador locales en otro puerto deben agregarse en Avanzado > Conexiones locales permitidas (la tarjeta también muestra Intentos bloqueados recientes).",
 
   payloadEyebrow: "// payload del websocket",
   payloadHeading: "Qué contiene cada frame de subtítulo.",

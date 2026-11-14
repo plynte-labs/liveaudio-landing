@@ -262,7 +262,7 @@ const EN: DownloadCopy = {
     {
       tag: "updates",
       title: "Integrated Updater & Security",
-      body: "The signed in-app updater (Windows only) checks GitHub Releases every 24 h (can be turned off in Settings > Advanced), verifies the Minisign signature before running any installer, and never downloads or installs while you are transcribing or OBS clients are connected. The WebSocket server only accepts allowed loopback ports.",
+      body: "The signed in-app updater (Windows only) checks GitHub Releases every 24 h (can be turned off in Advanced), verifies the Minisign signature before running any installer, and never downloads or installs while you are transcribing or OBS clients are connected. The WebSocket server only accepts allowed loopback ports.",
     },
   ],
 
@@ -431,7 +431,7 @@ const ES: DownloadCopy = {
     {
       tag: "actualizaciones",
       title: "Actualizador integrado y seguridad",
-      body: "El actualizador integrado y firmado (solo Windows) consulta GitHub Releases cada 24 h (se puede desactivar en Ajustes > Avanzado), verifica la firma Minisign antes de ejecutar cualquier instalador y nunca descarga ni instala mientras transcribes o hay clientes OBS conectados. El servidor WebSocket solo acepta puertos loopback permitidos.",
+      body: "El actualizador integrado y firmado (solo Windows) consulta GitHub Releases cada 24 h (se puede desactivar en Avanzado), verifica la firma Minisign antes de ejecutar cualquier instalador y nunca descarga ni instala mientras transcribes o hay clientes OBS conectados. El servidor WebSocket solo acepta puertos loopback permitidos.",
     },
   ],
 
