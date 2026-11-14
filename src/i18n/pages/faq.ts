@@ -1,9 +1,10 @@
 /**
  * /faq/ page copy — the GEO citation magnet (the product spec).
  *
- * The 7 questions are the product spec FAQ list, verbatim in intent and
+ * The first 7 questions are the product spec FAQ list, verbatim in intent and
  * order: 100% local · Linux · free/open-source · GPU · internet/API key ·
- * latency · how it differs from cloud APIs / OBS caption plugins.
+ * latency · how it differs from cloud APIs / OBS caption plugins. Then two
+ * support questions: captions missing in OBS · Whisper hallucinations.
  *
  * Every answer is answer-first and capped at TWO sentences so it stays
  * LLM-citable, and every claim is traceable to the product spec:
@@ -86,7 +87,17 @@ const en: FaqPageCopy = {
       question:
         "How is it different from cloud APIs or OBS caption plugins?",
       answer:
-        "Cloud ASR APIs send your audio off your machine and bill per minute, while browser caption tools depend on a remote service; LiveAudio does everything locally with no cloud and no per-minute cost. It broadcasts clean subtitle JSON over a local WebSocket (ws://127.0.0.1:8765) with strict CSWSH origin filtering and configurable loopback allowlist.",
+        "Cloud ASR APIs send your audio off your machine and bill per minute; LiveAudio does everything locally with no cloud and no per-minute cost. And unlike an OBS plugin, which runs inside OBS and can take OBS (and your recording) down if it crashes, LiveAudio is a separate app that OBS only shows as a Browser Source, so if it stops, OBS keeps streaming and recording.",
+    },
+    {
+      question: "Captions appear in LiveAudio's Events panel but not in OBS. What do I do?",
+      answer:
+        "In OBS, open your Browser Source's Properties and click \"Refresh cache of current page\" at the bottom. Also check that the source URL is the one from LiveAudio's Copy URL button (http://127.0.0.1:8765/overlay by default).",
+    },
+    {
+      question: "Whisper writes words I never said. Why?",
+      answer:
+        "Whisper-style speech models sometimes \"hallucinate\" phrases, especially during silence or background noise; it is a known limitation of this kind of ASR. Copy the phrase exactly as it appears into the Hallucination Filter (Blacklist) in the Advanced tab, and LiveAudio will drop it from your captions.",
     },
   ],
   closingEyebrow: "// download",
@@ -138,7 +149,17 @@ const es: FaqPageCopy = {
       question:
         "¿En qué se diferencia de las APIs en la nube o los plugins de subtítulos de OBS?",
       answer:
-        "Las APIs de ASR en la nube envían tu audio fuera del equipo y cobran por minuto, y las herramientas de subtítulos del navegador dependen de un servicio remoto; LiveAudio hace todo localmente, sin nube y sin costo por minuto. Emite subtítulos en JSON limpio por un WebSocket local (ws://127.0.0.1:8765) con filtrado estricto anti-CSWSH y lista blanca de orígenes loopback configurable.",
+        "Las APIs de ASR en la nube envían tu audio fuera del equipo y cobran por minuto; LiveAudio hace todo localmente, sin nube y sin costo por minuto. Y a diferencia de un plugin de OBS, que corre dentro de OBS y si falla puede cerrar OBS (y cortar tu grabación), LiveAudio es una app aparte que OBS solo muestra como Fuente de navegador: si se detiene, OBS sigue transmitiendo y grabando.",
+    },
+    {
+      question: "Los subtítulos aparecen en el panel de eventos de LiveAudio pero no en OBS. ¿Qué hago?",
+      answer:
+        "En OBS, abre las Propiedades de tu Fuente de navegador y pulsa \"Actualizar caché de la página actual\", al final de la ventana. Comprueba también que la URL de la fuente sea la del botón Copiar URL de LiveAudio (http://127.0.0.1:8765/overlay por defecto).",
+    },
+    {
+      question: "Whisper escribe palabras que nunca dije. ¿Por qué?",
+      answer:
+        "Los modelos de voz tipo Whisper a veces \"alucinan\" frases, sobre todo en silencios o con ruido de fondo; es una limitación conocida de este tipo de ASR. Copia la frase tal cual aparece en el Filtro de Frases Alucinadas (Blacklist) de la pestaña Avanzado, y LiveAudio la quitará de tus subtítulos.",
     },
   ],
   closingEyebrow: "// descargar",
