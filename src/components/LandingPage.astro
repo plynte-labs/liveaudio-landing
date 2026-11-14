@@ -2,14 +2,9 @@
 /**
  * LandingPage — the full Home funnel (EN at `/`, ES mirror at `/es/`).
  *
- * Composes the conversion funnel in the exact design system (`/`) order:
- *   Static product-proof hero (owns the page's single <h1>)
- *   → Trust strip
- *   → real demo
- *   → 3 objection-killer cards (100% local / Linux / GPU)
- *   → compact signal path + docs link
- *   → route chooser
- *   → closing full-width Download module.
+ * User journey: what it is (hero) → why (trust strip + objection cards) → how it
+ * works in 3 steps → demo → signal path (stage details collapsed) → Download →
+ * set up OBS → route chooser + help.
  *
  * Every claim is traceable to the product spec via src/i18n/pages/home.ts. The Home
  * carries SoftwareApplication + FAQPage JSON-LD (§10) through Layout's jsonLd.
@@ -27,6 +22,8 @@ import Pipeline from "./home/Pipeline.astro";
 import LiveDemo from "./home/LiveDemo.astro";
 import HomePathChooser from "./home/HomePathChooser.astro";
 import ClosingDownload from "./home/ClosingDownload.astro";
+import StepFlow from "./visual/StepFlow.astro";
+import CtaBand from "./visual/CtaBand.astro";
 
 import { localizedPath, type Locale } from "../i18n/routes";
 import { homeCopy } from "../i18n/pages/home";
@@ -75,19 +72,30 @@ const jsonLd = [
     gettingStartedHref={gettingStartedHref}
   />
 
-  <!-- 2 · Trust strip -->
+  <!-- 2 · Why: 100% local, free -->
   <TrustStrip items={copy.trust.items} label={copy.trust.label} />
-
-  <!-- 3 · Live demo -->
-  <LiveDemo lang={lang} />
-
-  <!-- 4 · Objection-killer cards (100% local / Linux / GPU) -->
   <ObjectionCards copy={copy.objections} />
 
-  <!-- 5 · Compact signal path -->
-  <Pipeline copy={copy.pipeline} docsHref={docsHref} />
+  <!-- 3 · How it works in 3 steps -->
+  <StepFlow lang={lang} alt={true} />
 
-  <!-- 6 · Route chooser -->
+  <!-- 4 · See it running -->
+  <LiveDemo lang={lang} />
+
+  <!-- 4b · Signal path (stage details collapsed inside) -->
+  <Pipeline copy={copy.pipeline} docsHref={docsHref} lang={lang} />
+
+  <!-- 5 · Download -->
+  <ClosingDownload
+    copy={copy.closing}
+    downloadHref={downloadHref}
+    secondaryHref={gettingStartedHref}
+  />
+
+  <!-- 6 · Set up OBS -->
+  <CtaBand lang={lang} kind="obs" alt={true} />
+
+  <!-- 7 · Help and more routes -->
   <HomePathChooser
     copy={copy.paths}
     productTourHref={productTourHref}
@@ -95,11 +103,5 @@ const jsonLd = [
     obsSetupHref={obsSetupHref}
     docsHref={docsHref}
   />
-
-  <!-- 7 · Closing full-width Download module -->
-  <ClosingDownload
-    copy={copy.closing}
-    downloadHref={downloadHref}
-    secondaryHref={gettingStartedHref}
-  />
+  <CtaBand lang={lang} kind="help" alt={true} />
 </Layout>
