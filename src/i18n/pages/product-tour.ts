@@ -26,8 +26,8 @@ export interface ProductTourCopy {
 
 const en: ProductTourCopy = {
   meta: {
-    title: "Product Tour — LiveAudio v1.5.1",
-    description: "A visual walkthrough of LiveAudio desktop states, including a historical v1.5.0 workspace capture.",
+    title: "Product Tour — LiveAudio v1.6.0",
+    description: "A visual walkthrough of LiveAudio desktop states, including the Advanced settings panel with WebSocket loopback allowlist and MCP controls.",
   },
   eyebrow: "// product tour",
   heading: "A local captioning workspace, shown state by state.",
@@ -44,8 +44,8 @@ const en: ProductTourCopy = {
       id: "rust",
       eyebrow: "// v1.5.0 · rust + tauri 2",
       title: "A local transcription workspace.",
-      body: "LiveAudio uses a Rust core, a Tauri 2 desktop and a Python inference worker. This v1.5.0 capture shows the Advanced tab, including model and voice-activity settings and the subtitle feed.",
-      alt: "LiveAudio v1.5.0 Advanced tab with Whisper turbo model, CUDA compute device, voice-activity sliders, RNNoise suppression and acoustic event toggles, live subtitle feed, OBS Studio integration and event log.",
+      body: "LiveAudio is 100% native Rust with a Tauri 2 desktop and ONNX Runtime DirectML/CPU worker (zero Python). This v1.5.0 capture shows the historical interface foundation.",
+      alt: "LiveAudio Advanced tab with Whisper model, DirectML/CUDA compute device, voice-activity sliders, RNNoise suppression, live subtitle feed, OBS Studio integration and event log.",
       layout: "wide",
     },
     {
@@ -91,9 +91,9 @@ const en: ProductTourCopy = {
     {
       id: "advanced",
       eyebrow: "// advanced control",
-      title: "Keep session behavior and filters inspectable.",
-      body: "Restart behavior and post-processing are exposed as desktop controls, not hidden behind cloud account defaults.",
-      alt: "LiveAudio advanced settings with restart-session behavior and a post-processing filter text field.",
+      title: "Keep session behavior, security and AI controls inspectable.",
+      body: "Settings > Advanced exposes crucial local controls: the loopback origin allowlist to prevent CSWSH attacks while authorizing local tools (with live rejected-connection monitoring), and dual explicit consent switches (Style & System) for the liveaudio-cli mcp server.",
+      alt: "LiveAudio advanced settings with WebSocket loopback origin allowlist, MCP consent switches, restart-session behavior and post-processing filters.",
       layout: "split",
     },
     {
@@ -109,8 +109,8 @@ const en: ProductTourCopy = {
 
 const es: ProductTourCopy = {
   meta: {
-    title: "Tour del producto — LiveAudio v1.5.1",
-    description: "Un recorrido visual por estados de LiveAudio, incluida una captura histórica del espacio de trabajo v1.5.0.",
+    title: "Tour del producto — LiveAudio v1.6.0",
+    description: "Un recorrido visual por estados de LiveAudio, incluido el panel de ajustes avanzados con lista blanca loopback y controles MCP.",
   },
   eyebrow: "// tour del producto",
   heading: "Un espacio local para subtítulos, mostrado estado por estado.",
@@ -127,8 +127,8 @@ const es: ProductTourCopy = {
       id: "rust",
       eyebrow: "// v1.5.0 · rust + tauri 2",
       title: "Un espacio de transcripción local.",
-      body: "LiveAudio usa un núcleo Rust, un escritorio Tauri 2 y un worker de inferencia Python. Esta captura de la v1.5.0 muestra la pestaña Avanzado, incluidos ajustes de modelo y actividad de voz y el feed de subtítulos.",
-      alt: "Pestaña Avanzado de LiveAudio v1.5.0 con modelo Whisper turbo, dispositivo de cómputo CUDA, deslizadores de actividad de voz, interruptores de supresión RNNoise y eventos acústicos, feed de subtítulos en vivo, integración con OBS Studio y registro de eventos.",
+      body: "LiveAudio es 100% Rust nativo con escritorio Tauri 2 y worker ONNX Runtime DirectML/CPU (cero Python). Esta captura de la v1.5.0 muestra la base histórica de la interfaz.",
+      alt: "Pestaña Avanzado de LiveAudio con modelo Whisper, dispositivo de cómputo DirectML/CUDA, actividad de voz, supresión RNNoise, feed de subtítulos en vivo, integración con OBS Studio y registro.",
       layout: "wide",
     },
     {
@@ -174,9 +174,9 @@ const es: ProductTourCopy = {
     {
       id: "advanced",
       eyebrow: "// control avanzado",
-      title: "Mantén el comportamiento de sesión y los filtros a la vista.",
-      body: "El reinicio de sesión y el postprocesamiento son controles de escritorio visibles, no valores ocultos detrás de una cuenta en la nube.",
-      alt: "Ajustes avanzados de LiveAudio con comportamiento de sesión al reiniciar y un campo de texto para filtro de postprocesamiento.",
+      title: "Mantén el comportamiento de sesión, seguridad y control de IA a la vista.",
+      body: "Ajustes > Avanzado expone controles esenciales: la lista blanca de orígenes loopback para prevenir ataques CSWSH autorizando herramientas locales (con monitor en tiempo real de conexiones rechazadas) y doble interruptor de consentimiento explícito (Estilo y Sistema) para el servidor MCP liveaudio-cli.",
+      alt: "Ajustes avanzados de LiveAudio con lista blanca de orígenes WebSocket loopback, interruptores de consentimiento MCP, reinicio de sesión y filtros de postprocesamiento.",
       layout: "split",
     },
     {

@@ -8,14 +8,15 @@ const content = pages.map((page) => read(`src/i18n/pages/${page}.ts`)).join("\n"
 const llms = ["src/pages/llms.txt.ts", "src/pages/llms-full.txt.ts"].map(read).join("\n");
 const excludes = (text, pattern) => assert.equal(pattern.test(text), false, `Unexpected claim: ${pattern}`);
 
-test("bilingual copy does not deny the Python inference runtime", () => {
-  excludes(content, /no Python runtime|sin (?:ningún )?runtime de Python|sin runtime de Python|no hay runtime de Python|no necesita ningún runtime de Python/i);
-  assert.match(content, /Python.*(?:worker|inferencia)|(?:worker|inferencia).*Python/i);
+test("bilingual copy describes the native Rust runtime (no Python inference worker)", () => {
+  excludes(content, /supervised Python (?:inference )?worker|worker de inferencia (?:en )?Python supervisado|libportaudio2|liveaudio-launcher|LiveAudio-1\.2\.7/i);
+  assert.match(content, /zero Python/i);
+  assert.match(content, /cero Python|sin Python|sin runtimes de Python/i);
 });
 
 test("download copy does not describe the incomplete executable as standalone", () => {
   excludes(content, /portable standalone|standalone, no install|portable de Windows x64 — standalone|standalone de Windows no necesita/i);
-  assert.match(read("src/i18n/pages/download.ts"), /LiveAudio_1\.5\.1_x64-setup\.exe/);
+  assert.match(read("src/i18n/pages/download.ts"), /LiveAudio-Setup-1\.6\.0\.exe/);
 });
 
 test("copy does not guarantee first-run-only internet or universal latency", () => {
@@ -29,10 +30,10 @@ test("OBS instructions use copied URL without local-file mode", () => {
   excludes(obs, /%LOCALAPPDATA%\\\\LiveAudio\\\\data/);
 });
 
-test("LLM endpoints reflect the hybrid runtime and official installer", () => {
-  excludes(llms, /no Python runtime|portable standalone|first run only|well under a second/i);
-  assert.match(llms, /Python.*worker/i);
-  assert.match(llms, /LiveAudio_1\.5\.1_x64-setup\.exe/);
+test("LLM endpoints reflect the native runtime and official installer", () => {
+  excludes(llms, /portable standalone|first run only|well under a second|libportaudio2|LiveAudio-1\.2\.7/i);
+  assert.match(llms, /zero Python/i);
+  assert.match(llms, /LiveAudio-Setup-1\.6\.0\.exe/);
 });
 
 test("comparison does not publish undated competitor pricing", () => {
