@@ -24,9 +24,9 @@ Key facts:
 - Use the official Windows installer (LiveAudio-Setup-1.6.0.exe; the VC++ runtime is bundled, so it works on a clean Windows). The installer is not code-signed; SmartScreen may warn. Linux: AppImage and .deb on the v1.6.0 release page.
 - Transcribes with Whisper (tiny, base, small, turbo); Silero VAD trims silence (configurable onset pre-roll + VAD threshold); optional local RNNoise suppression and acoustic speech-metadata events.
 - Capture: physical microphone or system audio (WASAPI loopback is Windows-only).
-- WebSocket Loopback Origin Allowlist: strict protection against Cross-Site WebSocket Hijacking (CSWSH) attacks. Configurable in Settings > Advanced with live rejected-connection monitoring and Allow/Revoke controls for local ports.
+- WebSocket Loopback Origin Allowlist: strict protection against Cross-Site WebSocket Hijacking (CSWSH) attacks. Configurable in Advanced with live rejected-connection monitoring and Allow/Revoke controls for local ports.
 - Model Context Protocol (MCP) granular stdio server: liveaudio-cli mcp integrates with AI assistants (Claude Desktop/Code) with dual explicit consent switches (Style switch for themes/CSS/presets; System switch for device/model/VAD). Port allowlist and filesystem paths strictly excluded from AI mutation.
-- Signed In-App Updater (Windows only): checks GitHub Releases every 24 h (can be disabled in Settings > Advanced), verifies Minisign signatures before running any installer, and never downloads or installs while transcribing or while OBS clients are connected. Users on v1.5.1 or older must install v1.6.0 manually once. Linux updates are manual.
+- Signed In-App Updater (Windows only): checks GitHub Releases every 24 h (can be disabled in Advanced), verifies Minisign signatures before running any installer, and never downloads or installs while transcribing or while OBS clients are connected. Users on v1.5.1 or older must install v1.6.0 manually once. Linux updates are manual.
 - 100% Private local usage metrics: anonymous local statistics stored strictly on your machine with 0 telemetry.
 - Style engine & partial broadcast: sanitized CSS tokens, WCAG AA contrast validation, immediate partial caption broadcast, and late-join client synchronization.
 - Free & open-source (MIT). No subscription, no API key. You only pay your own electricity — hardware not included.

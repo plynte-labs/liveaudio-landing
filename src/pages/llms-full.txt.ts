@@ -32,7 +32,7 @@ A real-time, local automatic-speech-recognition (ASR) engine for streamers and c
 - Optionally suppresses noise with local RNNoise and emits acoustic speech-metadata events.
 - Captures from a physical microphone or system audio. System-audio loopback uses WASAPI and is Windows-only.
 - Broadcasts subtitle JSON over a local WebSocket at ws://127.0.0.1:8765 (configurable via ws_port) to OBS or any HTML/WebSocket client on localhost.
-- Includes a WebSocket Loopback Origin Allowlist in Settings > Advanced against Cross-Site WebSocket Hijacking (CSWSH), with real-time rejected connection monitoring and Allow/Revoke controls for local ports.
+- Includes a WebSocket Loopback Origin Allowlist in Advanced against Cross-Site WebSocket Hijacking (CSWSH), with real-time rejected connection monitoring and Allow/Revoke controls for local ports.
 - Provides a Model Context Protocol (MCP) granular stdio server (liveaudio-cli mcp) for AI assistants (Claude Desktop/Code) with dual explicit consent switches: Style switch (themes, CSS tokens, presets) and System switch (device, model, VAD). Port allowlist and local paths are strictly excluded from AI mutation.
 - Features a signed In-App Updater (Windows only): checks GitHub Releases every 24 h (can be disabled), verifies Minisign signatures before executing any installer, and blocks downloads and installs while transcribing or while OBS clients are connected. Linux updates are manual.
 - Maintains 100% private local usage metrics (sessions, active minutes, subtitles broadcast) with 0 telemetry and 0 external server transmissions.
@@ -101,9 +101,9 @@ Developers: clone https://github.com/plynte-labs/LiveAudio.git and follow the re
 ## OBS setup
 
 1. In OBS: Sources → + → Browser.
-2. In LiveAudio select a profile, device and model; apply changes, start the system, then copy the overlay URL. In OBS leave Local File unchecked, paste the URL, and set size 1920×200.
+2. In LiveAudio select a profile, device and model; apply changes, start the system, then copy the overlay URL. In OBS leave Local File unchecked, paste the URL, and set size 1920×1080.
 3. Disable "Shut down source when not visible" (and "Refresh browser when scene becomes active").
-4. While the system is running, the copied URL contains the active port; the server starts at 8765 and can use an alternative through 8774. Settings > Advanced includes the loopback port allowlist.
+4. While the system is running, the copied URL contains the active port; the server starts at 8765 and can use an alternative through 8774. Advanced includes the loopback port allowlist.
 5. Speak and check the OBS captions.
 
 WebSocket payload fields include id, text, timing fields, is_replay, and style. Connections are accepted from localhost only, subject to the loopback origin filter.
