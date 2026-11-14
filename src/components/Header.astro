@@ -24,7 +24,8 @@ const { lang = "en", path = "/" } = Astro.props;
 const tt = t(lang);
 
 const REPO_URL = "https://github.com/plynte-labs/LiveAudio";
-const RELEASE_TAG_URL = `${REPO_URL}/releases/tag/v1.5.1`;
+const X_URL = "https://x.com/franguhh";
+const RELEASE_TAG_URL = `${REPO_URL}/releases/tag/v1.6.0`;
 
 // Logical segments -> localized href + label. Order per the design system.
 const navItems = [
@@ -127,6 +128,27 @@ const mobileLinks = navItems.map(({ href, label }) => ({ href, label }));
         </svg>
       </a>
       <a
+        class="btn btn-secondary nav-icon-link"
+        href={X_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={tt("cta.x")}
+        title={tt("cta.x")}
+        style="padding-inline:0;width:44px;justify-content:center;aspect-ratio:1;"
+      >
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path
+            d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"
+          ></path>
+        </svg>
+      </a>
+      <a
         class="lang-toggle pill"
         href={altHref}
         hreflang={lang === "en" ? "es" : "en"}
@@ -144,6 +166,9 @@ const mobileLinks = navItems.map(({ href, label }) => ({ href, label }));
         downloadLabel={tt("cta.download")}
         githubHref={REPO_URL}
         githubLabel={tt("cta.github")}
+        xHref={X_URL}
+        xLabel={tt("cta.x")}
+        xText={tt("cta.xShort")}
         altHref={altHref}
         altLabel={otherLangLabel}
         openLabel={tt("nav.openMenu")}
