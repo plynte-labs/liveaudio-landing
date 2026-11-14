@@ -7,19 +7,12 @@ interface Props { lang?: Locale; }
 
 const { lang = "en" } = Astro.props;
 const copy = productTourCopy(lang);
-const media = "/media/liveaudio-v1.2.5";
 const rustMedia = "/media/liveaudio-v1.5.0";
-// Drop the v1.5.0 screenshot at public/media/liveaudio-v1.5.0/v1-5-0-avanzado.webp
-// (1920×1080 WebP recorte de la pestaña Avanzado: feed en vivo + RNNoise).
+const tourMedia = "/media/liveaudio-v1.6.0";
 const imageById = {
+  setup: { src: `${tourMedia}/v1-6-0-setup-home.webp`, width: 1917, height: 1025 },
+  style: { src: `${tourMedia}/v1-6-0-style-editor.webp`, width: 977, height: 850 },
   rust: { src: `${rustMedia}/v1-5-0-avanzado.webp`, width: 1917, height: 1013 },
-  live: { src: `${media}/live-panel-caption-output.webp`, width: 1477, height: 368 },
-  "first-run": { src: `${media}/setup-initial-screen.webp`, width: 973, height: 602 },
-  workspace: { src: `${media}/workspace-live-panel-and-settings.webp`, width: 1916, height: 982 },
-  engine: { src: `${media}/settings-performance.webp`, width: 412, height: 976 },
-  captions: { src: `${media}/settings-subtitles-and-websocket.webp`, width: 407, height: 718 },
-  advanced: { src: `${media}/settings-advanced-controls.webp`, width: 372, height: 612 },
-  diagnostics: { src: `${media}/diagnostics-log.webp`, width: 1477, height: 343 },
 } as const;
 const chapters = copy.chapters.map((chapter) => ({ ...chapter, ...imageById[chapter.id] }));
 ---
@@ -204,9 +197,6 @@ const chapters = copy.chapters.map((chapter) => ({ ...chapter, ...imageById[chap
     .tour-chapter.is-split .tour-chapter-grid { grid-template-columns: minmax(0, 5fr) minmax(280px, 4fr); }
     .tour-chapter.is-split.is-reversed .tour-chapter-copy { order: 2; }
     .tour-chapter.is-split.is-reversed .tour-media { order: 1; }
-    .tour-chapter.is-engine .tour-media,
-    .tour-chapter.is-captions .tour-media,
-    .tour-chapter.is-advanced .tour-media { width: min(100%, 280px); justify-self: center; }
     .tour-chapter.is-wide .tour-chapter-grid { grid-template-columns: 4fr 8fr; }
     .tour-chapter.is-wide .tour-chapter-copy { grid-column: 1; }
     .tour-chapter.is-wide .tour-media { grid-column: 1 / -1; }
