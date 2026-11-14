@@ -75,3 +75,66 @@ test("TypeScript parser project-service allowlist matches an out-of-project file
 
   assert.ok(result.services.program);
 });
+
+const MIN_PATCHED_ASTRO = "7.4.7";
+
+function parseSemver(version) {
+  const match = /^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?(?:\+.*)?$/.exec(version.trim());
+  if (!match) return null;
+
+  return {
+    major: Number(match[1]),
+    minor: Number(match[2]),
+    patch: Number(match[3]),
+    prerelease: match[4] ?? null,
+  };
+}
+
+function compareSemver(left, right) {
+  const a = parseSemver(left);
+  const b = parseSemver(right);
+  assert.ok(a, `Invalid semver string: ${left}`);
+  assert.ok(b, `Invalid semver string: ${right}`);
+
+  for (const key of ["major", "minor", "patch"]) {
+    if (a[key] !== b[key]) return a[key] - b[key];
+  }
+
+  if (a.prerelease === b.prerelease) return 0;
+  if (a.prerelease === null) return 1;
+  if (b.prerelease === null) return -1;
+  return a.prerelease.localeCompare(b.prerelease);
+}
+
+function minimumVersionFromSpecifier(specifier) {
+  assert.equal(typeof specifier, "string", "dependencies.astro specifier must be a string");
+  const match = /^\s*(?:\^|~|>=|=)?\s*(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)\s*$/.exec(specifier);
+  assert.ok(
+    match,
+    `dependencies.astro (${specifier}) must declare a concrete minimum semver version`,
+  );
+  return match[1];
+}
+
+// GHSA-mh32-jxcr-mh9f (fixed in 7.4.5) and GHSA-r3h5-4585-7x3w (fixed in 7.4.7).
+test("Astro resolves and declares >= 7.4.7 to patch known advisories", async (t) => {
+  await t.test("package.json dependencies.astro requires >= 7.4.7", () => {
+    const manifest = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
+    const declaredSpecifier = manifest.dependencies?.astro;
+    const declaredMinimum = minimumVersionFromSpecifier(declaredSpecifier);
+
+    assert.ok(
+      compareSemver(declaredMinimum, MIN_PATCHED_ASTRO) >= 0,
+      `package.json dependencies.astro (${declaredSpecifier}) must require >= ${MIN_PATCHED_ASTRO}`,
+    );
+  });
+
+  await t.test("resolved astro package version is >= 7.4.7", () => {
+    const resolvedVersion = dependencyVersionFrom(import.meta.url, "astro");
+
+    assert.ok(
+      compareSemver(resolvedVersion, MIN_PATCHED_ASTRO) >= 0,
+      `Resolved astro version (${resolvedVersion}) must be >= ${MIN_PATCHED_ASTRO}`,
+    );
+  });
+});

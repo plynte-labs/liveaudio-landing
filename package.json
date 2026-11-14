@@ -21,10 +21,10 @@
     "og": "node scripts/gen-og.mjs"
   },
   "dependencies": {
-    "@astrojs/react": "^7.0.1",
-    "@astrojs/sitemap": "^3.7.4",
+    "@astrojs/react": "7.1.5",
+    "@astrojs/sitemap": "^3.7.5",
     "@vercel/analytics": "^2.0.1",
-    "astro": "^7.3.8",
+    "astro": "^7.4.12",
     "lucide-react": "^1.16.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
