@@ -54,13 +54,13 @@ const {
       </div>
     </header>
 
-    <main class="section legal-body">
+    <div class="section legal-body">
       <div class="container legal-container">
         <article class="legal-article">
           <slot />
         </article>
       </div>
-    </main>
+    </div>
   </div>
 </Layout>
 
@@ -172,8 +172,13 @@ const {
     margin: var(--space-6) 0;
   }
 
+  .legal-article :global(.callout-signal h2),
   .legal-article :global(.callout-signal h3) {
     margin-top: 0;
+    margin-bottom: var(--space-3);
+    padding-bottom: 0;
+    border-bottom: none;
+    font-size: var(--text-lg);
     color: var(--color-green);
     display: flex;
     align-items: center;

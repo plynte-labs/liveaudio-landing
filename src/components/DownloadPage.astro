@@ -9,13 +9,13 @@
  *      giant `.btn-primary` for the matched build. BOTH Windows + Linux primary
  *      targets render server-side first (no-JS safe); detection only re-orders /
  *      relabels and the giant CTA is the page hero (the ONE Download/glow object).
- *   2. Brutalist `.vs-table`-style table of ALL real v1.6.0 assets with the EXACT
- *      URLs from the GitHub release — always visible, never gated by JS.
+ *   2. Brutalist `.vs-table`-style table of all release assets with direct URLs
+ *      — always visible, never gated by JS.
  *   3. Amber operator-notes module — SmartScreen (More info -> Run anyway),
- *      legacy Python auto-migration, Rust single-binary note. Amber = warn/verify law.
- *   4. Trust, Community & Open Source Support — sponsors, issue reporting, and code audit.
- *   5. Mono two-column requirements — GPU optional; CUDA driver >=525, VRAM
- *      >=4 GiB; 8/16 GB RAM; internet first run only.
+ *      Parakeet + Whisper zero-Python note, stream-safe signed updater, migration.
+ *   4. Trust, Community & Open Source Support — GitHub star, issue reporting, and code audit.
+ *   5. Mono two-column requirements — GPU optional; Parakeet-TDT int8 on 4-thread CPU,
+ *      DirectML, optional CUDA 12.8; Windows WASAPI & Linux PipeWire/PulseAudio loopback.
  *   6. Closing Download module — the Download CTA is the hero of every page.
  *
  * JSON-LD: SoftwareApplication(downloadUrl = the Windows installer, §5) — the
@@ -50,8 +50,8 @@ const allFilesLabel = visualCopy(lang).allFiles;
 
 const copy = downloadCopy(lang);
 
-// JSON-LD: the SoftwareApplication download-endpoint variant carries the real
-// v1.6.0 Windows installer as downloadUrl (§5), plus WebSite for grounding.
+// JSON-LD: the SoftwareApplication download-endpoint variant carries the
+// Windows installer as downloadUrl, plus WebSite for grounding.
 const jsonLd = [
   softwareApplication({ lang, downloadUrl: PRIMARY_ASSETS.windows.url }),
   organizationWebSite(),
@@ -109,7 +109,7 @@ const jsonLd = [
                         stroke-linecap="round"
                         stroke-linejoin="round"
                       >
-                        <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
                       </svg>
                     )}
                     {idx === 1 && (
@@ -257,7 +257,7 @@ const jsonLd = [
     </div>
   </section>
 
-  {/* Every real v1.6.0 asset, exact URLs, collapsed for non-technical visitors (still in the HTML, no-JS safe) */}
+  {/* Every release asset, collapsed for non-technical visitors (still in the HTML, no-JS safe) */}
   <section class="section section-alt" aria-labelledby="dl-assets-h2">
     <div class="container dl-assets-head">
       <p class="eyebrow">{copy.tableEyebrow}</p>

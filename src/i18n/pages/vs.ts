@@ -1,26 +1,16 @@
 /**
  * /vs comparison-page copy — EN default + ES mirror.
  *
- * Single decisive, FACT-BASED comparison table. Every cell is traceable to
- * the product spec:
- *   - 100% local / no telemetry.
- *   - Local transcription has no per-minute fee.
- *   - Platforms: Windows x64 native (v1.6.0 Rust) plus Linux AppImage / .deb
- *     fallback (loopback Windows-only -> conditional ◐).
- *   - OBS integration via WebSocket Browser Source (subtitulos_obs.html).
- *   - Open-source MIT.
- *   - GPU optional (CPU works).
+ * Single decisive, FACT-BASED comparison table.
+ * Accurate competitive positioning:
+ *   "Prebuilt native Rust desktop app for Windows & Linux with Parakeet-TDT
+ *    ONNX + built-in OBS WebSocket/Browser Source overlay."
  *
- * No disparagement: competitor cells describe capabilities factually. Cloud
- * cost/latency cells carry the amber operator-attention flag (timing/cost is the
- * amber semantic per the design system). The LiveAudio column is highlighted
- * (.vs-col-self). Glyphs: ● yes (.vs-yes) · ○ no (.vs-no) · ◐ conditional
- * (.vs-cond, amber) — e.g. WASAPI loopback is Windows-only.
- *
- * Spanish is neutral/professional (no Rioplatense slang in artifacts).
+ * Spanish is neutral/professional (no regional slang or Spanglish leaks).
  */
 
 import type { Locale } from "../routes";
+import { LIVEAUDIO_TAG } from "../../config/release";
 
 /** Glyph state for a comparison cell. */
 export type VsState = "yes" | "no" | "cond";
@@ -28,25 +18,19 @@ export type VsState = "yes" | "no" | "cond";
 /** A single cell: a glyph state plus a short factual note. */
 export interface VsCell {
   state: VsState;
-  /** Short factual qualifier shown under the glyph (mono). */
   note: string;
-  /** Amber operator-attention flag (cost/timing/conditional). Default false. */
   flag?: boolean;
 }
 
 /** One comparison row: a feature label + one cell per column. */
 export interface VsRow {
-  /** Row feature label (sticky first column on mobile). */
   feature: string;
-  /** Cells, in column order: self, obsPlugin, browserTool, cloud. */
   cells: [VsCell, VsCell, VsCell, VsCell];
 }
 
 /** Column headers, in order. The first entry is the highlighted self column. */
 export interface VsColumn {
-  /** Display name. */
   name: string;
-  /** Short factual descriptor (e.g. an example tool), mono sub-label. */
   example: string;
 }
 
@@ -54,21 +38,14 @@ export interface VsCopy {
   title: string;
   description: string;
   eyebrow: string;
-  /** Answer-first H2. */
   heading: string;
-  /** One-paragraph intro under the H2. */
   intro: string;
-  /** Caption above the table (mono). */
   tableCaption: string;
-  /** Accessible caption/summary for the <table>. */
   tableSummary: string;
-  /** Header for the leftmost (feature) column. */
   featureHeader: string;
   columns: [VsColumn, VsColumn, VsColumn, VsColumn];
   rows: VsRow[];
-  /** Mono legend explaining the glyphs. */
   legend: { yes: string; no: string; cond: string };
-  /** Closing Download module. */
   closingEyebrow: string;
   closingHeading: string;
   closingBody: string;
@@ -78,17 +55,17 @@ export interface VsCopy {
 const en: VsCopy = {
   title: "LiveAudio vs OBS plugins, browser tools & cloud ASR",
   description:
-    "Fact-based comparison: LiveAudio runs Whisper captions 100% locally, free under MIT, on Windows x64 (100% Rust + ONNX Runtime DirectML / CPU), and streams to OBS over a local WebSocket — versus OBS caption plugins, browser-source tools and paid cloud ASR APIs.",
-  eyebrow: "// vs",
+    "Fact-based comparison: LiveAudio is a prebuilt native Rust desktop app for Windows & Linux with NVIDIA Parakeet-TDT ONNX + Whisper, built-in OBS WebSocket/Browser Source overlay, and zero desktop data collection — versus OBS plugins, browser tools, and cloud ASR APIs.",
+  eyebrow: "// compare",
   heading: "Local, free, and yours — versus everything else.",
   intro:
-    "LiveAudio generates real-time Whisper captions 100% on your own machine and broadcasts them to OBS over a local WebSocket. The table below compares it on the facts: cost, platforms, OBS integration, license, privacy and hardware. No spin — every cell is a capability statement.",
-  tableCaption: "// capability comparison · v1.6.0",
+    "LiveAudio is a prebuilt native Rust desktop app for Windows & Linux with Parakeet-TDT ONNX + Whisper and a built-in OBS WebSocket/Browser Source overlay — with zero data collected or retained by the app. The table below compares it on the facts: engines, cost, platforms, loopback, OBS integration, privacy, and hardware.",
+  tableCaption: `// capability comparison · ${LIVEAUDIO_TAG}`,
   tableSummary:
-    "Capability comparison across LiveAudio, OBS caption plugins, browser-source caption tools and cloud ASR APIs. Rows: local processing, cost, platforms, OBS integration, open-source license, privacy, and GPU requirement.",
+    "Capability comparison across LiveAudio, OBS caption plugins, browser-source caption tools and cloud ASR APIs. Rows: local processing, engines, per-minute cost, platforms, system-audio loopback, OBS integration, open-source license, privacy, CPU performance, and offline operation.",
   featureHeader: "capability",
   columns: [
-    { name: "LiveAudio", example: "v1.6.0 · this app" },
+    { name: "LiveAudio", example: `${LIVEAUDIO_TAG} · this app` },
     { name: "OBS caption plugins", example: "e.g. LocalVocal" },
     { name: "Browser-source tools", example: "e.g. Caption.Ninja" },
     { name: "Cloud ASR APIs", example: "e.g. OpenAI Whisper API" },
@@ -97,7 +74,7 @@ const en: VsCopy = {
     {
       feature: "100% local processing",
       cells: [
-        { state: "yes", note: "on-device Whisper" },
+        { state: "yes", note: "Parakeet-TDT + Whisper on-device" },
         { state: "yes", note: "on-device" },
         { state: "cond", note: "varies by tool" },
         { state: "no", note: "audio sent to cloud" },
@@ -115,7 +92,7 @@ const en: VsCopy = {
     {
       feature: "Platforms",
       cells: [
-        { state: "cond", note: "Windows x64 v1.6.0 · Linux AppImage / .deb", flag: true },
+        { state: "cond", note: `Windows x64 (.exe) & Linux x86_64 (.AppImage / .deb) · ${LIVEAUDIO_TAG}`, flag: true },
         { state: "cond", note: "depends on host" },
         { state: "yes", note: "any browser" },
         { state: "yes", note: "any with internet" },
@@ -124,7 +101,7 @@ const en: VsCopy = {
     {
       feature: "System-audio loopback",
       cells: [
-        { state: "cond", note: "Windows-only (WASAPI)", flag: true },
+        { state: "yes", note: "Windows (WASAPI) + Linux (PipeWire/PulseAudio + ALSA)" },
         { state: "cond", note: "host-dependent" },
         { state: "cond", note: "browser-dependent" },
         { state: "cond", note: "source-dependent" },
@@ -133,8 +110,8 @@ const en: VsCopy = {
     {
       feature: "OBS integration",
       cells: [
-        { state: "yes", note: "WebSocket Browser Source" },
-        { state: "yes", note: "native OBS plugin" },
+        { state: "yes", note: "Built-in WebSocket /overlay · 7 live themes · isolated process" },
+        { state: "yes", note: "in-process OBS plugin" },
         { state: "yes", note: "Browser Source URL" },
         { state: "cond", note: "via add-ons" },
       ],
@@ -149,9 +126,9 @@ const en: VsCopy = {
       ],
     },
     {
-      feature: "No application telemetry",
+      feature: "Zero desktop data collected",
       cells: [
-        { state: "yes", note: "no application telemetry" },
+        { state: "yes", note: "zero app data collected or retained" },
         { state: "cond", note: "varies by plugin" },
         { state: "cond", note: "varies by tool" },
         { state: "no", note: "server-side logs", flag: true },
@@ -160,7 +137,7 @@ const en: VsCopy = {
     {
       feature: "Works without a GPU",
       cells: [
-        { state: "yes", note: "CPU fallback · DirectML native" },
+        { state: "yes", note: "Parakeet-TDT int8 CPU (4-thread laptops) · DirectML · opt. CUDA" },
         { state: "cond", note: "model-dependent" },
         { state: "yes", note: "remote compute" },
         { state: "yes", note: "remote compute" },
@@ -169,7 +146,7 @@ const en: VsCopy = {
     {
       feature: "Works offline",
       cells: [
-        { state: "cond", note: "after selected models are downloaded (zero Python runtimes)" },
+        { state: "cond", note: "once chosen models are cached (SHA-256 verified, zero Python)" },
         { state: "yes", note: "on-device" },
         { state: "no", note: "needs the web page" },
         { state: "no", note: "needs internet", flag: true },
@@ -184,24 +161,24 @@ const en: VsCopy = {
   closingEyebrow: "// download",
   closingHeading: "Local captions, on your terms.",
   closingBody:
-    "Free & open-source (MIT). No subscription, no API key. You only pay your own electricity — hardware not included.",
-  download: "Download LiveAudio v1.6.0 (free)",
+    "Free & open-source (MIT) for Windows x64 & Linux x86_64. No subscription, no API key, and zero data collected or retained by the desktop app.",
+  download: `Download LiveAudio ${LIVEAUDIO_TAG} (free)`,
 };
 
 const es: VsCopy = {
   title: "LiveAudio frente a plugins de OBS, herramientas web y ASR en la nube",
   description:
-    "Comparativa basada en hechos: LiveAudio genera subtítulos Whisper 100% en tu equipo, gratis con licencia MIT, en Windows x64 (100% Rust + ONNX Runtime DirectML / CPU), y los envía a OBS por un WebSocket local — frente a plugins de subtítulos de OBS, herramientas de origen de navegador y APIs de ASR en la nube de pago.",
+    "Comparativa basada en hechos: LiveAudio es una app de escritorio nativa en Rust precompilada para Windows y Linux con NVIDIA Parakeet-TDT ONNX + Whisper, overlay WebSocket/Browser Source integrado para OBS y cero recolección de datos en la app.",
   eyebrow: "// comparativa",
   heading: "Local, gratis y tuyo — frente a todo lo demás.",
   intro:
-    "LiveAudio genera subtítulos Whisper en tiempo real 100% en tu propio equipo y los emite a OBS por un WebSocket local. La tabla siguiente lo compara con datos: costo, plataformas, integración con OBS, licencia, privacidad y hardware. Sin adornos — cada celda es una afirmación de capacidad.",
-  tableCaption: "// comparativa de capacidades · v1.6.0",
+    "LiveAudio es una app de escritorio nativa en Rust precompilada para Windows y Linux con Parakeet-TDT ONNX + Whisper y overlay WebSocket/Browser Source integrado para OBS — sin recopilar ni retener datos en la app. La tabla siguiente compara los hechos: motores, costo, plataformas, loopback, integración con OBS, privacidad y hardware.",
+  tableCaption: `// comparativa de capacidades · ${LIVEAUDIO_TAG}`,
   tableSummary:
-    "Comparativa de capacidades entre LiveAudio, plugins de subtítulos de OBS, herramientas de origen de navegador y APIs de ASR en la nube. Filas: procesamiento local, costo, plataformas, integración con OBS, licencia de código abierto, privacidad y requisito de GPU.",
+    "Comparativa de capacidades entre LiveAudio, plugins de subtítulos de OBS, herramientas de origen de navegador y APIs de ASR en la nube. Filas: procesamiento local, costo, plataformas, loopback, integración con OBS, licencia de código abierto, privacidad, CPU y modo sin conexión.",
   featureHeader: "capacidad",
   columns: [
-    { name: "LiveAudio", example: "v1.6.0 · esta app" },
+    { name: "LiveAudio", example: `${LIVEAUDIO_TAG} · esta app` },
     { name: "Plugins de OBS", example: "p. ej. LocalVocal" },
     { name: "Herramientas web", example: "p. ej. Caption.Ninja" },
     { name: "ASR en la nube", example: "p. ej. OpenAI Whisper API" },
@@ -210,7 +187,7 @@ const es: VsCopy = {
     {
       feature: "Procesamiento 100% local",
       cells: [
-        { state: "yes", note: "Whisper en el equipo" },
+        { state: "yes", note: "Parakeet-TDT + Whisper en el equipo" },
         { state: "yes", note: "en el equipo" },
         { state: "cond", note: "según la herramienta" },
         { state: "no", note: "audio enviado a la nube" },
@@ -228,7 +205,7 @@ const es: VsCopy = {
     {
       feature: "Plataformas",
       cells: [
-        { state: "cond", note: "Windows x64 v1.6.0 · Linux AppImage / .deb", flag: true },
+        { state: "cond", note: `Windows x64 (.exe) y Linux x86_64 (.AppImage / .deb) · ${LIVEAUDIO_TAG}`, flag: true },
         { state: "cond", note: "según el anfitrión" },
         { state: "yes", note: "cualquier navegador" },
         { state: "yes", note: "cualquiera con internet" },
@@ -237,7 +214,7 @@ const es: VsCopy = {
     {
       feature: "Loopback de audio del sistema",
       cells: [
-        { state: "cond", note: "solo Windows (WASAPI)", flag: true },
+        { state: "yes", note: "Windows (WASAPI) + Linux (PipeWire/PulseAudio + ALSA)" },
         { state: "cond", note: "según el anfitrión" },
         { state: "cond", note: "según el navegador" },
         { state: "cond", note: "según la fuente" },
@@ -246,8 +223,8 @@ const es: VsCopy = {
     {
       feature: "Integración con OBS",
       cells: [
-        { state: "yes", note: "Browser Source por WebSocket" },
-        { state: "yes", note: "plugin nativo de OBS" },
+        { state: "yes", note: "WebSocket /overlay integrado · 7 temas · proceso aislado" },
+        { state: "yes", note: "plugin interno de OBS" },
         { state: "yes", note: "URL en Browser Source" },
         { state: "cond", note: "mediante complementos" },
       ],
@@ -262,9 +239,9 @@ const es: VsCopy = {
       ],
     },
     {
-      feature: "Sin telemetría en la aplicación",
+      feature: "Cero datos recopilados en la app",
       cells: [
-        { state: "yes", note: "sin telemetría en la aplicación" },
+        { state: "yes", note: "sin recolección ni retención en la app" },
         { state: "cond", note: "según el plugin" },
         { state: "cond", note: "según la herramienta" },
         { state: "no", note: "registros en servidor", flag: true },
@@ -273,7 +250,7 @@ const es: VsCopy = {
     {
       feature: "Funciona sin GPU",
       cells: [
-        { state: "yes", note: "fallback CPU · DirectML nativo" },
+        { state: "yes", note: "Parakeet-TDT int8 CPU (4 hilos) · DirectML · CUDA opc." },
         { state: "cond", note: "según el modelo" },
         { state: "yes", note: "cómputo remoto" },
         { state: "yes", note: "cómputo remoto" },
@@ -282,7 +259,7 @@ const es: VsCopy = {
     {
       feature: "Funciona sin conexión",
       cells: [
-        { state: "cond", note: "con el modelo descargado (sin runtimes de Python)" },
+        { state: "cond", note: "con modelos en caché (SHA-256, cero Python)" },
         { state: "yes", note: "en el equipo" },
         { state: "no", note: "necesita la página web" },
         { state: "no", note: "necesita internet", flag: true },
@@ -297,8 +274,8 @@ const es: VsCopy = {
   closingEyebrow: "// descargar",
   closingHeading: "Subtítulos locales, en tus términos.",
   closingBody:
-    "Gratis y de código abierto (MIT). Sin suscripción, sin API key. Solo pagas tu propia electricidad — el hardware no está incluido.",
-  download: "Descargar LiveAudio v1.6.0 (gratis)",
+    "Gratis y de código abierto (MIT) para Windows x64 y Linux x86_64. Sin suscripción, sin clave API y sin recolección ni retención de datos en la aplicación de escritorio.",
+  download: `Descargar LiveAudio ${LIVEAUDIO_TAG} (gratis)`,
 };
 
 /** Return the /vs copy bound to a locale (EN default). */

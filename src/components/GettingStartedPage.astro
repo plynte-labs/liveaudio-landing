@@ -3,15 +3,12 @@
  * GettingStartedPage — /getting-started/ body (EN at /getting-started/,
  * ES mirror at /es/getting-started/).
  *
- * THE SIGNAL DESK numbered "signal timeline" (per the design system's
- * Pipeline and /getting-started/ layout): the EARNED, real activation sequence for
- * LiveAudio v1.6.0, on a single vertical emerald spine. Numbering is honest —
- * each step is a real ordered action the user performs:
- *
- *   01  get LiveAudio   installer (.exe) / Linux AppImage + .deb vs source (Rust + Tauri 2)
-  *   02  first run       fetches transcription models; first-run internet only (amber)
- *   03  GPU auto-detect  CPU works; CUDA driver >= 525 / VRAM >= 4 GiB ladder
- *   04  pick + START SYSTEM  Fast/Balanced/Quality/Stable Streaming -> START SYSTEM
+ * THE SIGNAL DESK numbered "signal timeline": the real activation sequence for
+ * LiveAudio on Windows x64 and Linux x86_64, on a single vertical emerald spine.
+ *   01  get LiveAudio       Windows installer (.exe) / Linux .AppImage + .deb vs source
+ *   02  first run           instant startup, Parakeet-TDT (EN/ES) or Whisper, SHA-256 on-demand models
+ *   03  compute ladder      CPU int8 (automatic threads) / DirectML GPU / optional CUDA 12.8
+ *   04  pick + START SYSTEM Fast/Balanced/Quality/Stable Streaming -> START SYSTEM -> Copy OBS URL
  *
  * Every claim is traceable to the product spec (GPU optional; first-run
  * footprint, SmartScreen, manual Linux updates). Copy lives in
@@ -419,7 +416,7 @@ const rungToneClass: Record<"go" | "warn" | "info", string> = {
     font-size: var(--text-sm);
     margin: 0;
     max-width: none;
-    /* Names like LiveAudio-Setup-1.6.0.exe appear inline; allow breaks. */
+    /* Long filenames like the Windows installer appear inline; allow breaks. */
     overflow-wrap: anywhere;
   }
   .gs-track-flag {

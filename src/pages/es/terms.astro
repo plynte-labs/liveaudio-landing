@@ -21,7 +21,7 @@ const path = localizedPath("es", "terms");
   description="Términos del Servicio para la aplicación de escritorio LiveAudio y el sitio web liveaudio.opencohost.com. Licencia de código abierto MIT, exención de garantías y términos de uso."
   eyebrow="ACUERDO · LEGAL"
   heading="Términos del Servicio"
-  lastUpdated="Última actualización: Octubre 2026"
+  lastUpdated="Última actualización: Noviembre 2026"
   badge="CÓDIGO ABIERTO MIT"
   lang="es"
   path={path}
@@ -63,11 +63,12 @@ const path = localizedPath("es", "terms");
   <ul>
     <li>
       <strong>Capacidad de Hardware:</strong> Usted es el único responsable de asegurar que su equipo disponga de los requisitos técnicos
-      (instrucciones de CPU, memoria RAM y memoria VRAM de GPU) necesarios para ejecutar el modelo Whisper seleccionado de forma estable.
+      (instrucciones de CPU, memoria RAM y VRAM de GPU opcional) necesarios para ejecutar el modelo de voz seleccionado de forma estable.
     </li>
     <li>
-      <strong>Modelos de Inteligencia Artificial:</strong> Aunque LiveAudio facilita la descarga de binarios compatibles con Whisper en formato GGML,
-      la arquitectura de red neuronal Whisper original pertenece a OpenAI. Los pesos se rigen por sus respectivas licencias de pesos abiertos.
+      <strong>Modelos de Inteligencia Artificial:</strong> Aunque LiveAudio facilita la descarga de modelos compatibles con ONNX Runtime
+      (NVIDIA Parakeet-TDT y Whisper) y pesos opcionales de CTranslate2, las arquitecturas de redes neuronales y los pesos preentrenados
+      pertenecen a sus respectivos autores (incluidos NVIDIA y OpenAI) y se rigen por sus licencias de pesos abiertos correspondientes.
     </li>
     <li>
       <strong>Punto de Enlace WebSocket Local:</strong> LiveAudio emite un flujo WebSocket sin cifrar (por defecto: <code>ws://127.0.0.1:8765</code>)
@@ -147,7 +148,7 @@ const path = localizedPath("es", "terms");
     Para cualquier consulta legal o de licencia, puede contactarnos:
   </p>
   <ul>
-    <li><strong>Correo electrónico:</strong> <a href="mailto:contact@opencohost.com">contact@opencohost.com</a></li>
+    <li><strong>Correo electrónico:</strong> <a href="mailto:gitrafuh@gmail.com">gitrafuh@gmail.com</a></li>
     <li><strong>Repositorio GitHub:</strong> <a href="https://github.com/plynte-labs/LiveAudio" target="_blank" rel="noopener noreferrer">github.com/plynte-labs/LiveAudio</a></li>
     <li><strong>Organización:</strong> Plynte Labs</li>
   </ul>

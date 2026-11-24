@@ -2,18 +2,18 @@
  * JSON-LD builders — return plain serializable objects (no <script> tags).
  * Callers embed them via `<script type="application/ld+json" set:html={...}>`.
  *
- * Product facts traceable to the v1.6.0 release:
- *   - operatingSystem: "Windows" (primary Windows x64 Rust + Tauri 2 build;
- *     Linux ships as AppImage / .deb from the same release).
- *   - price 0 USD, softwareVersion 1.6.0, MIT license.
- *   - softwareRequirements: DirectX 12 (DirectML) or CPU fallback. NVIDIA CUDA optional via CTranslate2 worker.
+ * Product facts traceable to the current LiveAudio release:
+ *   - operatingSystem: "Windows 10, Windows 11, Linux (x86_64)"
+ *   - price 0 USD, softwareVersion from src/config/release.ts, MIT license.
+ *   - ASR: NVIDIA Parakeet-TDT 0.6B v3 (ONNX Runtime CPU/DirectML) + Whisper + optional CUDA (CTranslate2).
+ *   - Zero data collection and zero data retention in the desktop application.
  *   - canonical org / repo: github.com/plynte-labs/LiveAudio.
  */
 
 import type { Locale } from "./routes";
+import { LIVEAUDIO_VERSION, REPO_URL } from "../config/release";
 
 const SITE_URL = "https://liveaudio.opencohost.com";
-const REPO_URL = "https://github.com/plynte-labs/LiveAudio";
 const MIT_LICENSE = "https://opensource.org/licenses/MIT";
 
 /** Map our locale codes to BCP-47 `inLanguage` values. */
@@ -23,7 +23,7 @@ function inLanguage(lang: Locale): string {
 
 export interface SoftwareApplicationInput {
   lang: Locale;
-  /** Direct v1.6.0 asset URL (e.g. the Windows installer) when the page is the download endpoint. */
+  /** Direct installer URL (e.g. the Windows installer) when the page is the download endpoint. */
   downloadUrl?: string;
 }
 
@@ -37,17 +37,26 @@ export function softwareApplication({ lang, downloadUrl }: SoftwareApplicationIn
     "@type": "SoftwareApplication",
     name: "LiveAudio",
     applicationCategory: "MultimediaApplication",
-    operatingSystem: "Windows, Linux",
-    softwareVersion: "1.6.0",
+    operatingSystem: "Windows 10, Windows 11, Linux (x86_64)",
+    softwareVersion: LIVEAUDIO_VERSION,
     inLanguage: inLanguage(lang),
     url: SITE_URL,
     license: MIT_LICENSE,
+    description:
+      "Free, open-source (MIT) native Rust desktop app for 100% local real-time OBS captions powered by NVIDIA Parakeet-TDT 0.6B v3 and Whisper on ONNX Runtime (CPU / DirectML) with optional CUDA, Windows WASAPI & Linux PipeWire/PulseAudio loopback, and zero desktop data collection or retention.",
     softwareRequirements:
-      "DirectX 12 (DirectML) GPU acceleration or CPU transcription. NVIDIA CUDA is an optional, user-initiated download (CTranslate2 engine).",
+      "Windows 10/11 x64 or Linux x86_64 (.AppImage / .deb). Runs locally on CPU (smooth on 4-thread laptops with Parakeet-TDT int8) or DirectX 12 (DirectML) GPU via ONNX Runtime. NVIDIA CUDA 12.8 acceleration is an optional, opt-in CTranslate2 download.",
+    featureList: [
+      "NVIDIA Parakeet-TDT 0.6B v3 (recommended for EN/ES) and Whisper on native Rust + ONNX Runtime",
+      "100% local audio transcription with zero desktop data collection or retention",
+      "System-audio loopback on Windows (WASAPI) and Linux (PipeWire/PulseAudio monitor capture with ALSA fallback)",
+      "Built-in OBS Browser Source overlay with 7 live themes and anti-burst reconnection",
+      "Session recording to .srt (DaVinci Resolve-ready), .vtt, and .jsonl",
+      "Dual-consent MCP stdio server (liveaudio-cli mcp) and stream-safe Minisign signed in-app updater (Windows NSIS & Linux AppImage)",
+    ],
     offers: {
       "@type": "Offer",
-      // The product spec hard gate specifies the string "0" (schema.org Offer.price
-      // is a Text type); keep it as a string to match the verification gate.
+      // schema.org Offer.price is a Text type; keep string "0".
       price: "0",
       priceCurrency: "USD",
     },
@@ -122,7 +131,7 @@ export function howTo({ name, steps }: HowToInput) {
 
 /**
  * schema.org WebSite + Organization for the canonical domain.
- * `sameAs` points at the upstream GitHub repo (§11).
+ * `sameAs` points at the upstream GitHub repo.
  */
 export function organizationWebSite() {
   return {

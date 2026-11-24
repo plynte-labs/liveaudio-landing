@@ -1,5 +1,5 @@
 /**
- * i18n routing helpers — LiveAudio v1.6.0
+ * i18n routing helpers — LiveAudio
  *
  * EN is the default locale served at `/` (no prefix). ES is mirrored under
  * `/es/`. `trailingSlash: "always"` in astro.config.mjs, so every URL these

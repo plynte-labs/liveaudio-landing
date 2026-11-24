@@ -1,22 +1,19 @@
 import type { APIRoute } from "astro";
+import { LIVEAUDIO_TAG } from "../config/release";
 
 /**
- * robots.txt — crawl/agent policy for LiveAudio v1.6.0.
+ * robots.txt — crawl/agent policy for LiveAudio.
  *
  * Static endpoint (export GET). Allow-all baseline plus an explicit Allow for
- * the AI/GEO crawlers we want indexing the citation surfaces (llms.txt, docs,
- * faq). Sitemap points at the @astrojs/sitemap index.
- *
- * Resolved decision (the product spec): allow-all + explicitly welcome GPTBot,
- * PerplexityBot, Google-Extended.
+ * AI/GEO crawlers indexing citation surfaces (llms.txt, docs, faq).
  */
 export const GET: APIRoute = ({ site }) => {
-  // `site` is set in astro.config.mjs → https://liveaudio.opencohost.com
+  // `site` is set in astro.config.mjs -> https://liveaudio.opencohost.com
   const sitemap = new URL("sitemap-index.xml", site).href;
 
   const body = [
-    "# https://liveaudio.opencohost.com — LiveAudio v1.6.0",
-    "# Free, open-source (MIT) real-time local Whisper captions for OBS.",
+    `# https://liveaudio.opencohost.com — LiveAudio ${LIVEAUDIO_TAG}`,
+    "# Free, open-source (MIT) real-time local captions (NVIDIA Parakeet-TDT & Whisper) for OBS.",
     "",
     "User-agent: *",
     "Allow: /",

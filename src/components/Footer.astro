@@ -7,13 +7,14 @@
  *   2. product links (product tour / download / getting-started / obs-setup /
  *      docs / faq / vs)
  *   3. resources (GitHub / releases / llms.txt / SHA256SUMS)
- * Mono micro-row `© Plynte · LiveAudio v1.6.0 · MIT · Windows x64 · Rust` + en/es
- * toggle. No newsletter / no social.
+ * Mono micro-row `© Plynte · LiveAudio · MIT · Windows x64 & Linux x86_64 · Rust`
+ * + en/es toggle. No newsletter / no social.
  *
  * Props: lang, path (current path — used for the language toggle alternate).
  */
 import { t } from "../i18n/ui";
 import { localizedPath, altLangPath, type Locale } from "../i18n/routes";
+import { REPO_URL, RELEASES_URL, CHECKSUMS_URL } from "../config/release";
 
 interface Props {
   lang?: Locale;
@@ -22,11 +23,6 @@ interface Props {
 
 const { lang = "en", path = "/" } = Astro.props;
 const tt = t(lang);
-
-const REPO_URL = "https://github.com/plynte-labs/LiveAudio";
-const RELEASES_URL = `${REPO_URL}/releases`;
-const CHECKSUMS_URL =
-  "https://github.com/plynte-labs/LiveAudio/releases/tag/v1.6.0";
 
 const navItems = [
   { seg: "product-tour", label: tt("nav.productTour") },

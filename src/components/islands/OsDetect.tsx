@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import {
   Download,
   MonitorDown,
@@ -8,15 +8,15 @@ import {
   ShieldCheck,
   FileCheck,
   Bug,
-  Heart,
+  Star,
 } from "lucide-react";
 import {
   PRIMARY_ASSETS,
   CLI_ASSET,
   RELEASE_LATEST,
-  RELEASE_TAG,
   ISSUES_URL,
-  SPONSORS_URL,
+  REPO_URL,
+  LIVEAUDIO_TAG,
   downloadCopy,
   type Os,
   type PrimaryAsset,
@@ -66,19 +66,19 @@ function detectOs(): Os | null {
   return null;
 }
 
+const subscribeNoop = () => () => {};
+const getServerOs = (): Os | null => null;
+
 export default function OsDetect({ lang = "en" }: Props) {
   const copy = downloadCopy(lang);
 
-  // Deterministic first paint → matches SSR. Promote on the client.
-  const [active, setActive] = useState<Os>("windows");
-  const [detected, setDetected] = useState<Os | null>(null);
+  // Deterministic SSR ("windows") promoted client-side via useSyncExternalStore
+  // without synchronous setState-in-effect.
+  const detected = useSyncExternalStore(subscribeNoop, detectOs, getServerOs);
+  const [manualOs, setManualOs] = useState<Os | null>(null);
   const [downloadedAsset, setDownloadedAsset] = useState<PrimaryAsset | null>(null);
 
-  useEffect(() => {
-    const os = detectOs();
-    setDetected(os);
-    if (os) setActive(os);
-  }, []);
+  const active: Os = manualOs ?? detected ?? "windows";
 
   const osLabel = (os: Os): string =>
     os === "windows" ? copy.windowsLabel : copy.linuxLabel;
@@ -102,7 +102,7 @@ export default function OsDetect({ lang = "en" }: Props) {
           <span className="osd-dot" />
           <span className="osd-dot" />
         </span>
-        <span className="osd-tab">liveaudio · v1.6.0 · rust</span>
+        <span className="osd-tab">liveaudio · {LIVEAUDIO_TAG} · rust</span>
         <span className="osd-status" aria-live="polite">
           <span className="live-dot" aria-hidden="true" />
           {statusText}
@@ -124,7 +124,7 @@ export default function OsDetect({ lang = "en" }: Props) {
                 type="button"
                 className={`osd-toggle-btn${isActive ? " is-active" : ""}`}
                 aria-pressed={isActive}
-                onClick={() => setActive(os)}
+                onClick={() => setManualOs(os)}
               >
                 {osLabel(os)}
               </button>
@@ -231,17 +231,17 @@ export default function OsDetect({ lang = "en" }: Props) {
               </a>
               <a
                 className="osd-post-btn"
-                href={SPONSORS_URL}
+                href={REPO_URL}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Heart size={14} strokeWidth={1.75} aria-hidden="true" />
-                <span>{copy.postDownloadSponsorBtn}</span>
+                <Star size={14} strokeWidth={1.75} aria-hidden="true" />
+                <span>{copy.postDownloadStarBtn}</span>
                 <ArrowUpRight size={14} strokeWidth={1.75} aria-hidden="true" />
               </a>
               <a
                 className="osd-post-link"
-                href={RELEASE_TAG}
+                href={RELEASE_LATEST}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -308,16 +308,16 @@ export default function OsDetect({ lang = "en" }: Props) {
           <ArrowUpRight size={16} strokeWidth={1.75} aria-hidden="true" />
         </a>
 
-        {/* Honest platform flag: Linux updates are manual */}
+        {/* Platform note: Linux loopback + signed AppImage updates */}
         <p className="osd-legacy">{copy.linuxNote}</p>
 
         {/* Release notes (hashes + changelog) */}
         <a
           className="btn-tertiary osd-latest"
-          href={RELEASE_TAG}
+          href={RELEASE_LATEST}
           rel="noopener"
         >
-          v1.6.0 · Tauri 2
+          {LIVEAUDIO_TAG} · Tauri 2
           <ArrowUpRight size={16} strokeWidth={1.75} aria-hidden="true" />
         </a>
       </div>

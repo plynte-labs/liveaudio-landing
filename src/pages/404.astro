@@ -14,6 +14,7 @@
  */
 import Layout from "../layouts/Layout.astro";
 import Button from "../components/Button.astro";
+import { LIVEAUDIO_TAG } from "../config/release";
 
 const homeHref = "/";
 const downloadHref = "/download/";
@@ -22,10 +23,11 @@ const docsHref = "/docs/overview/";
 
 <Layout
   title="Page not found"
-  description="The page you were looking for does not exist. Head back home or download LiveAudio v1.6.0."
+  description={`The page you were looking for does not exist. Head back home or download LiveAudio ${LIVEAUDIO_TAG}.`}
   lang="en"
   path="/404/"
   transport={false}
+  noindex={true}
 >
   <section class="section section-glow" aria-labelledby="nf-h1">
     <div class="container nf">
@@ -33,7 +35,7 @@ const docsHref = "/docs/overview/";
       <h1 id="nf-h1" class="nf-title">Page not found.</h1>
       <p class="nf-body">
         That route does not exist on the Signal Desk. The page may have moved,
-        or the link was mistyped. You can still grab LiveAudio v1.6.0 below, or
+        or the link was mistyped. You can still grab LiveAudio {LIVEAUDIO_TAG} below, or
         head back to a known page.
       </p>
 
@@ -41,7 +43,7 @@ const docsHref = "/docs/overview/";
         <Button
           variant="primary"
           href={downloadHref}
-          label="Download LiveAudio v1.6.0 (free)"
+          label={`Download LiveAudio ${LIVEAUDIO_TAG} (free)`}
         />
         <a class="btn-tertiary nf-link" href={homeHref}>Back to home →</a>
         <a class="btn-tertiary nf-link" href={docsHref}>Read the docs →</a>
