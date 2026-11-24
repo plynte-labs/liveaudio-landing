@@ -1,149 +1,135 @@
 import type { APIRoute } from "astro";
+import {
+  LIVEAUDIO_TAG,
+  REPO_URL,
+  RELEASE_LATEST_URL,
+  RELEASE_DOWNLOAD_BASE,
+  WINDOWS_INSTALLER_FILENAME,
+  WINDOWS_INSTALLER_URL,
+  WINDOWS_CLI_URL,
+  LINUX_CLI_URL,
+} from "../config/release";
 
 /**
- * llms-full.txt — expanded, concatenated reference of LiveAudio v1.6.0 facts.
+ * llms-full.txt — expanded, concatenated reference of LiveAudio facts.
  *
- * A single plain-text document an LLM can ingest to answer questions about the
- * product without crawling every page. Every claim is traceable to
- * the product spec. Static endpoint (export GET).
+ * A single plain-text document an LLM can ingest to answer questions about
+ * LiveAudio without crawling every page.
  */
 export const GET: APIRoute = ({ site }) => {
   const base = (site ?? new URL("https://liveaudio.opencohost.com")).href.replace(/\/$/, "");
-  const REL = "https://github.com/plynte-labs/LiveAudio/releases/download/v1.6.0";
-  const TAG_URL = "https://github.com/plynte-labs/LiveAudio/releases/tag/v1.6.0";
 
-  const body = `# LiveAudio — Full Reference (v1.6.0)
+  const body = `# LiveAudio — Full Reference (${LIVEAUDIO_TAG})
 
-> LiveAudio is a free, open-source (MIT) app that transcribes speech locally and streams captions to OBS over a local WebSocket. 100% native Rust architecture with Tauri 2 desktop and ONNX Runtime DirectML/CPU Whisper inference worker (zero Python). Windows x64 release: v1.6.0. No cloud transcription service or API key is needed.
+> LiveAudio is a free, open-source (MIT) prebuilt native Rust desktop app for Windows x64 and Linux x86_64 with NVIDIA Parakeet-TDT ONNX + Whisper and a built-in OBS WebSocket/Browser Source overlay. Zero Python, no cloud transcription, no API key, and zero data collected or retained by the desktop app.
 
 Canonical site: ${base}/
-Source: https://github.com/plynte-labs/LiveAudio (MIT)
-Release: v1.6.0 (100% Native Rust + ONNX Runtime + Tauri 2)
+Source: ${REPO_URL} (MIT)
+Release: ${LIVEAUDIO_TAG} (100% Native Rust + ONNX Runtime + Tauri 2)
 
 ---
 
 ## What it is
 
-A real-time, local automatic-speech-recognition (ASR) engine for streamers and creators. It is a 100% native Rust desktop app (Tauri 2 shell) that:
-- Transcribes speech with Whisper (tiny, base, small, turbo models) on a native Rust worker (liveaudio-asr-worker.exe) via ONNX Runtime with DirectML (DirectX 12) acceleration for NVIDIA, AMD, and Intel GPUs, plus automatic CPU fallback.
-- Offers an optional NVIDIA CUDA engine (CTranslate2), downloaded only after an explicit user action.
-- Features total elimination of Python: no Python runtime, no virtual environment, no uv, no Python dependencies to provision, and instant application startup.
-- Uses Silero VAD (voice activity detection) to trim silence, with configurable pause-to-close, max segment duration, VAD pre-roll and threshold.
-- Optionally suppresses noise with local RNNoise and emits acoustic speech-metadata events.
-- Captures from a physical microphone or system audio. System-audio loopback uses WASAPI and is Windows-only.
-- Broadcasts subtitle JSON over a local WebSocket at ws://127.0.0.1:8765 (configurable via ws_port) to OBS or any HTML/WebSocket client on localhost.
-- Includes a WebSocket Loopback Origin Allowlist in Advanced against Cross-Site WebSocket Hijacking (CSWSH), with real-time rejected connection monitoring and Allow/Revoke controls for local ports.
-- Provides a Model Context Protocol (MCP) granular stdio server (liveaudio-cli mcp) for AI assistants (Claude Desktop/Code) with dual explicit consent switches: Style switch (themes, CSS tokens, presets) and System switch (device, model, VAD). Port allowlist and local paths are strictly excluded from AI mutation.
-- Features a signed In-App Updater (Windows only): checks GitHub Releases every 24 h (can be disabled), verifies Minisign signatures before executing any installer, and blocks downloads and installs while transcribing or while OBS clients are connected. Linux updates are manual.
-- Maintains 100% private local usage metrics (sessions, active minutes, subtitles broadcast) with 0 telemetry and 0 external server transmissions.
-- Features a style engine with sanitized CSS tokens, WCAG AA contrast validation, immediate partial caption broadcast for OBS, and late-join client synchronization.
-- Shows a live stream-chat subtitle feed with timestamps, plus a collapsible event log.
+A real-time, 100% local automatic-speech-recognition (ASR) desktop application for streamers and creators:
+- Recommended ASR engine for EN & ES: **NVIDIA Parakeet-TDT 0.6B v3** on native Rust + ONNX Runtime (int8 on CPU, DirectML on GPU; hardware-matched download on demand with automatic CPU fallback).
+  - Measured on \`es_media\` clip: Parakeet CPU int8 = 1390 ms vs Whisper \`small\` on CPU = 2877 ms (~2x faster on CPU), GPU DirectML = 501 ms (WER 0.189).
+  - Transducer decoder emits blank on silence/noise for near-zero silence hallucinations.
+  - Runs smoothly on 4-thread CPU-only laptops using the automatic CPU threads switch.
+- **Whisper** (tiny, base, small, turbo) remains available for other languages, translate-to-English, and context prompts.
+- Optional **NVIDIA CUDA 12.8** acceleration via CTranslate2 worker (\`ct2-worker-v1.6.0\`, validated against on-demand cuBLAS 12.8 / cuDNN 9 runtime, with protocol-version guard and automatic fallback to ONNX Runtime).
+- **Zero Python**: completely native Rust and Tauri 2 with instant startup and no virtual environments or uv provisioning.
+- **Zero data collection / zero data retention (Desktop App)**: running 100% locally is the core benefit. Audio, transcripts, settings, and usage never leave the user's machine. Only the website (\`liveaudio.opencohost.com\`) uses Microsoft Clarity for web analytics.
+- **Outbound Network Scope (Desktop App)**:
+  1. On-demand model downloads (SHA-256 verified).
+  2. Optional 24-hour GitHub Releases update check (zero telemetry, toggleable in Settings > Advanced).
+  3. Opt-in NVIDIA CUDA runtime download.
+  Audio and transcripts never leave your machine.
 
-## Platforms
+## Platforms & Linux x86_64 capabilities
 
-- Windows 10/11 x64 — v1.6.0: microphone + WASAPI system loopback; use the official NSIS installer (LiveAudio-Setup-1.6.0.exe, VC++ runtime bundled).
-- Linux x86_64 — v1.6.0: AppImage and .deb on the release page (manual updates; no system-audio loopback).
-- macOS — NOT supported.
+- **Windows 10/11 x64**: official NSIS installer (\`${WINDOWS_INSTALLER_FILENAME}\`, VC++ runtime bundled), WASAPI system-audio loopback, signed Minisign Ed25519 in-app updates.
+- **Linux x86_64**: prebuilt \`.AppImage\` and \`.deb\` packages on GitHub Releases (${RELEASE_LATEST_URL}).
+  - System-audio loopback works on BOTH Windows (WASAPI) and Linux (PipeWire/PulseAudio monitor capture with ALSA fallback).
+  - Signed Minisign Ed25519 in-app updates work on Windows (NSIS) and Linux (\`.AppImage\`); \`.deb\` users update via GitHub Releases.
+- **macOS**: not supported.
 
-## Features (v1.6.0)
+## Key features (${LIVEAUDIO_TAG})
 
-- 100% native Rust Whisper engine over ONNX Runtime (DirectML DirectX 12 / CPU) with instant startup and zero Python.
-- Real-time transcription with Whisper (tiny / base / small / turbo).
-- Silero VAD with configurable pause, pre-roll and threshold.
-- Optional local RNNoise suppression + acoustic speech-metadata events.
-- WebSocket Loopback Origin Allowlist with real-time rejected-connection monitor.
-- Model Context Protocol (MCP) server with dual explicit consent switches (Style & System).
-- Signed In-App Updater (Windows) with Minisign signature validation and stream-safety blocking.
-- 100% Private local metrics with zero telemetry.
-- Style engine with sanitized CSS tokens, WCAG AA contrast validation, instant partial broadcasts, and late-join client sync.
-- Live stream-chat subtitle feed (timestamps, stick-to-bottom, circular buffer).
-- On-the-fly blacklist and vocabulary-prompt enrichment with retroactive strike-through.
-- Flexible capture: mic or system loopback (loopback is Windows-only).
-- Integrated WebSocket server feeding an OBS Browser Source or any HTML/WS client.
-- OBS overlay: improved subtitle legibility, capped reveal-animation timing, and an adaptive vertical "ribbon" subtitle buffer.
-- OBS backlog policy: Auto / Live only / Send all (controls only what shows live in OBS; everything valid is always saved).
-- Hallucination filtering via an editable blacklist.
-- Session management: transcript.jsonl + subtitles.vtt (+ session.json).
-- Hot-swap of device/model without restarting.
-- Profiles: Fast, Balanced, Quality, Stable Streaming (FPS-aware presets).
-- Local-first diagnostics: no telemetry; event log records service lifecycle and config changes.
+- NVIDIA Parakeet-TDT 0.6B v3 (recommended for EN/ES) + Whisper (multilingual, translate-to-English, context prompts) on native Rust + ONNX Runtime (CPU int8 / DirectML) + optional CUDA 12.8 (CTranslate2).
+- 7 live OBS themes (\`default\`, \`karaoke\`, \`neon\`, \`minimal\`, \`bold\`, \`rgb\`, \`typewriter\`) with sanitized CSS tokens, WCAG AA contrast validation, and anti-burst \`/overlay\` reconnection.
+- Local session recording to \`.srt\` (DaVinci Resolve-ready), \`.vtt\`, and \`.jsonl\`.
+- Dual-consent MCP server (\`liveaudio-cli mcp\`): granular stdio server for AI assistants with separate Style and System consent switches (loopback allowlist and filesystem paths strictly excluded from AI mutation).
+- "Follow OpenCohost Language": OpenCohost locale sync behind an opt-in switch.
+- Upgraded Blacklist filter: whole-word matching that trims phrases only at utterance edges (so long sentences are not dropped), plus dedicated switches for context prompt and blacklist.
+- Automatic CPU threads switch + redesigned Advanced tab.
+- Stream-safe signed in-app updater (Minisign Ed25519 on Windows NSIS and Linux \`.AppImage\`): blocks updates while live or OBS is connected.
+- Silero VAD (configurable onset pre-roll + threshold) + optional local RNNoise noise suppression.
+- WebSocket Loopback Origin Allowlist in Advanced against Cross-Site WebSocket Hijacking (CSWSH) with real-time rejected-connection monitor.
+- OBS backlog policy (\`auto\` / \`live_only\` / \`send_all\`) controlling only live OBS display while saving every valid line locally.
+- FPS-aware profiles: Fast, Balanced (recommended), Quality, Stable Streaming.
+- Local-first diagnostics (sanitizes secrets and paths, excludes raw audio and full transcripts, zero telemetry).
 - Bilingual UI (English / Spanish).
 
 ## System requirements
 
-- OS: Windows 10/11 x64 (v1.6.0). Linux x86_64: AppImage / .deb.
+- OS: Windows 10/11 x64 (\`.exe\`), Linux x86_64 (\`.AppImage\` / \`.deb\`).
 - Runtime: 100% native Rust and Tauri 2 desktop; zero Python runtime dependencies.
-- GPU: optional. DirectML (DirectX 12) for NVIDIA, AMD, and Intel GPUs; automatic CPU fallback. Optional CT2 CUDA worker for NVIDIA.
+- CPU / GPU: GPU optional. Parakeet-TDT 0.6B v3 int8 runs smoothly on 4-thread CPU-only laptops (automatic CPU threads switch). DirectML (DirectX 12) for NVIDIA, AMD, and Intel GPUs with automatic CPU fallback; optional CTranslate2 CUDA 12.8 worker for NVIDIA GPUs.
 - RAM: 4 GB minimum / 8 GB+ recommended.
-- Disk: 250 MB (app) + about 500 MB per model cache; models are stored locally (Windows: %LOCALAPPDATA%\\LiveAudio\\models\\onnx; settings in %APPDATA%\\LiveAudio).
-- Internet: only needed to download selected transcription models upon first selection. Transcription runs 100% offline once models are stored locally.
+- Disk: 250 MB (app) + ~500 MB–1.5 GB per cached model; Windows stores models in \`%LOCALAPPDATA%\\LiveAudio\\models\\onnx\` and settings in \`%APPDATA%\\LiveAudio\`.
 
-## Downloads — real v1.6.0 assets
+## Downloads (${LIVEAUDIO_TAG})
 
-Base URL: ${REL}/
-Always-latest: https://github.com/plynte-labs/LiveAudio/releases/latest
-Release notes (changelog + hashes): https://github.com/plynte-labs/LiveAudio/releases/tag/v1.6.0
+Base download URL: ${RELEASE_DOWNLOAD_BASE}/
+Always-latest release (changelog, SHA-256 checksums, Linux packages): ${RELEASE_LATEST_URL}
 
-- Windows installer (primary): ${REL}/LiveAudio-Setup-1.6.0.exe
-- Windows CLI + ASR worker only (not the desktop app): ${REL}/liveaudio-cli-1.6.0-windows-x64.zip
-- Linux x86_64 desktop app (.AppImage and .deb; exact filenames are on the release page): ${TAG_URL}
-- Linux x64 CLI + ASR worker only (not the desktop app): ${REL}/liveaudio-cli-1.6.0-linux-x64.tar.gz
+- Windows installer (primary): ${WINDOWS_INSTALLER_URL}
+- Windows CLI + ASR worker only (not the desktop app): ${WINDOWS_CLI_URL}
+- Linux x86_64 desktop app (\`.AppImage\` and \`.deb\`): ${RELEASE_LATEST_URL}
+- Linux x86_64 CLI + ASR worker only (not the desktop app): ${LINUX_CLI_URL}
 
-Windows SmartScreen: the v1.6.0 installer is not code-signed yet, so SmartScreen may warn. Choose "More info → Run anyway"; the exact files and hashes are on the v1.6.0 release page.
-Upgrading: users on v1.5.1 or older must install v1.6.0 manually once (those versions have no in-app updater). Back up custom settings and sessions first.
-
-## Install / first run
-
-End users: download the official installer. The app starts immediately with zero Python provisioning wait. Whisper models download upon first selection.
-
-Developers: clone https://github.com/plynte-labs/LiveAudio.git and follow the repository README (Rust toolchain + Tauri 2 prerequisites).
+Windows SmartScreen: the Windows installer is not code-signed yet, so SmartScreen may warn. Choose "More info -> Run anyway"; exact files and SHA-256 hashes are published on GitHub Releases.
+Upgrading: users on v1.5.1 or older must install ${LIVEAUDIO_TAG} manually once because older versions lack the signed in-app updater. Back up custom settings and sessions first.
 
 ## OBS setup
 
-1. In OBS: Sources → + → Browser.
-2. In LiveAudio select a profile, device and model; apply changes, start the system, then copy the overlay URL. In OBS leave Local File unchecked, paste the URL, and set size 1920×1080.
+1. In OBS: Sources -> + -> Browser.
+2. In LiveAudio select a profile, audio device (mic or Windows WASAPI / Linux PipeWire-PulseAudio loopback), and engine (Parakeet-TDT or Whisper); click Save, start the system before copying the overlay URL. In OBS leave Local File unchecked, paste the URL, and set size 1920x1080.
 3. Disable "Shut down source when not visible" (and "Refresh browser when scene becomes active").
-4. While the system is running, the copied URL contains the active port; the server starts at 8765 and can use an alternative through 8774. Advanced includes the loopback port allowlist.
-5. Speak and check the OBS captions.
+4. While the system is running, the copied URL contains the active port (base 8765, fallback up to 8774). Advanced includes the loopback Origin allowlist.
+5. Speak, check captions in OBS, and switch live across the 7 built-in themes.
 
-WebSocket payload fields include id, text, timing fields, is_replay, and style. Connections are accepted from localhost only, subject to the loopback origin filter.
+WebSocket payload fields: \`id\`, \`text\`, \`style\`, \`created_at\`, \`processed_at\`, \`queue_delay\`, \`total_delay\`, \`latency\`, \`is_replay\`, \`catchup_interval_sec\`. Connections are accepted from localhost (\`127.0.0.1\`) only, subject to the loopback Origin allowlist.
 
-## Profiles, models, and blacklist
+## Default hallucination blacklist
 
-- Profiles: Fast (low latency), Balanced (recommended), Quality (higher accuracy, more VRAM), Stable Streaming (reduces GPU load while gaming). Editing a built-in profile creates a Custom one. Apply changes to activate.
-- Models: tiny / base / small / turbo. Storage, memory and latency depend on the selected model and configuration.
-- Default hallucination blacklist (from config.json.example): amara.org, subtítulos por, suscríbete, dale like, gracias por ver, memos, gracias, activar la campanita, ¡Hasta la próxima!, por favor.
+\`amara.org, subtítulos por, suscríbete, dale like, gracias por ver, memos, gracias, activar la campanita\`
+(Whole-word edge-trimming matcher trims phrases only at utterance edges so long sentences are not dropped; switching to NVIDIA Parakeet-TDT 0.6B v3 eliminates most silence hallucinations for EN/ES.)
 
 ## Pricing & licensing
 
-Free & open-source (MIT). Local transcription requires no subscription or API key.
+Free & open-source (MIT). Local transcription requires no subscription and no API key.
 
 ## FAQ
 
 Q: Is it really 100% local?
-A: Transcription runs 100% on your machine with a native Rust Whisper engine over ONNX Runtime (DirectML / CPU). There is zero Python runtime to install, zero telemetry, and zero network traffic during transcription.
+A: Yes. The LiveAudio desktop app collects zero data and retains zero data — audio and transcripts never leave your machine. Outbound desktop network access is limited to on-demand SHA-256 model downloads, an optional 24-hour GitHub Releases check (zero telemetry, toggleable), and opt-in CUDA runtime downloads. Only the website (liveaudio.opencohost.com) uses Microsoft Clarity.
 
 Q: Does it work on Linux?
-A: Yes. v1.6.0 ships a Windows 10/11 x64 installer and a Linux x86_64 AppImage and .deb (updates are manual on Linux). System-audio loopback is Windows-only.
-
-Q: Is it free / open-source?
-A: Yes — it's free and open-source under the MIT license. No subscription and no API key; you only pay your own electricity.
+A: Yes. LiveAudio ships prebuilt Linux x86_64 .AppImage and .deb packages alongside the Windows 10/11 x64 installer. System-audio loopback works on both Windows (WASAPI) and Linux (PipeWire/PulseAudio monitor capture + ALSA fallback), and signed Minisign Ed25519 in-app updates work on Windows (NSIS) and Linux .AppImage (.deb updates via GitHub Releases).
 
 Q: Do I need a GPU?
-A: No — DirectML accelerates Whisper inference on DirectX 12 GPUs (NVIDIA, AMD, Intel) out of the box, with automatic CPU fallback. An optional CTranslate2 CUDA worker is available for dedicated NVIDIA GPUs.
+A: No. NVIDIA Parakeet-TDT 0.6B v3 int8 is ~2x faster on CPU than Whisper small and runs smoothly on 4-thread CPU-only laptops using the automatic CPU threads switch. DirectML (DirectX 12 GPU) and optional CTranslate2 CUDA 12.8 acceleration are also built in.
 
-Q: Do I need internet or an API key?
-A: No API key is needed for local transcription, and there are no Python runtimes to download. Internet is only used when downloading a newly selected Whisper model.
+Q: Whisper writes words I never said. Why?
+A: Switch to NVIDIA Parakeet-TDT 0.6B v3 first for EN/ES: its transducer decoder emits blank on silence/noise for near-zero hallucinations. For Whisper, enable the upgraded whole-word edge-trimming Blacklist switch in Settings > Advanced.
 
 Q: What's the latency?
-A: Latency depends on speech segmentation, model, hardware and load. Profiles let you adjust the tradeoff between latency and accuracy.
+A: Latency depends on speech segmentation, chosen engine/model, hardware, and system load. Profiles let you adjust the tradeoff between responsiveness and accuracy.
 
-Q: How is it different from cloud APIs / OBS caption plugins?
-A: LiveAudio runs Whisper locally with zero cloud dependencies, zero per-minute cost, and zero data leaving your machine. It broadcasts subtitle JSON over a local WebSocket with CSWSH protection and full OBS/client integration.
-
-## Compatibility
-
-LiveAudio broadcasts clean subtitle JSON over a local WebSocket (ws://127.0.0.1:8765). OBS is the built-in target via the included subtitulos_obs.html overlay, but any HTML or WebSocket client on localhost can connect and receive the same broadcast subject to the configurable loopback origin allowlist.
+Q: How is it different from cloud APIs or OBS caption plugins?
+A: LiveAudio is a prebuilt native Rust desktop app for Windows & Linux with Parakeet-TDT ONNX + built-in OBS WebSocket/Browser Source overlay. Unlike cloud APIs it has zero per-minute cost and zero app data collection, and unlike in-process OBS plugins it runs isolated from OBS so it cannot take your stream down.
 `;
 
   return new Response(body, {

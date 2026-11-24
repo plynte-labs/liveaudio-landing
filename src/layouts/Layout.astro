@@ -5,22 +5,21 @@
  * Head responsibilities:
  *   - charset + viewport
  *   - per-page <title> + meta description (lang-aware, from props)
- *   - absolute canonical from Astro.site + the page path
- *   - hreflang alternates en / es / x-default (= en) via altLangPath
- *   - Open Graph + Twitter summary_large_image (og:image -> /og.png absolute)
+ *   - absolute canonical from Astro.site + the page path (omitted when noindex)
+ *   - hreflang alternates en / es / x-default (= en) via altLangPath (omitted when noindex)
+ *   - Open Graph + Twitter summary_large_image (og:image -> /og.png or /og-es.png)
  *   - preload the two self-hosted variable fonts
  *   - JSON-LD injected from the `jsonLd` prop (array of plain objects)
- *   - import global.css, skip-link to #main, Vercel Analytics
+ *   - import global.css, skip-link to #main, Microsoft Clarity (production only)
  *
  * Body shell: Header -> main#main (slot) -> Footer -> TransportBar (unless
  * transport === false).
  *
  * Props:
  *   title, description, lang (default "en"), path, jsonLd (default []),
- *   transport (default true), ogTitle, ogDescription.
+ *   transport (default true), noindex (default false), ogTitle, ogDescription.
  */
 import "../styles/global.css";
-import Analytics from "@vercel/analytics/astro";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import TransportBar from "../components/TransportBar.astro";
@@ -34,6 +33,7 @@ interface Props {
   path?: string;
   jsonLd?: Record<string, unknown>[];
   transport?: boolean;
+  noindex?: boolean;
   ogTitle?: string;
   ogDescription?: string;
 }
@@ -45,6 +45,7 @@ const {
   path,
   jsonLd = [],
   transport = true,
+  noindex = false,
   ogTitle,
   ogDescription,
 } = Astro.props;
@@ -58,7 +59,7 @@ const currentPath = path ?? Astro.url.pathname;
 // Absolute URLs from the configured site (astro.config.mjs `site`).
 const site = Astro.site ?? new URL("https://liveaudio.opencohost.com");
 const canonical = new URL(currentPath, site).href;
-const ogImage = new URL("/og.png", site).href;
+const ogImage = new URL(lang === "es" ? "/og-es.png" : "/og.png", site).href;
 
 // hreflang alternates. EN lives at the bare path, ES at its mirror; x-default
 // points at the EN canonical (default locale).
@@ -85,12 +86,19 @@ const skipHref = "#main";
 
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
-
-    <!-- hreflang alternates -->
-    <link rel="alternate" hreflang="en" href={enHref} />
-    <link rel="alternate" hreflang="es" href={esHref} />
-    <link rel="alternate" hreflang="x-default" href={enHref} />
+    {
+      noindex ? (
+        <meta name="robots" content="noindex, nofollow" />
+      ) : (
+        <>
+          <link rel="canonical" href={canonical} />
+          <!-- hreflang alternates -->
+          <link rel="alternate" hreflang="en" href={enHref} />
+          <link rel="alternate" hreflang="es" href={esHref} />
+          <link rel="alternate" hreflang="x-default" href={enHref} />
+        </>
+      )
+    }
 
     <!-- Icons -->
     <link rel="icon" href="/favicon.ico?v=2" sizes="any" />
@@ -141,8 +149,6 @@ const skipHref = "#main";
         />
       ))
     }
-
-    <Analytics />
 
     {
       import.meta.env.PROD && (

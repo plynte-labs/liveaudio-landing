@@ -3,31 +3,32 @@
  * skip link, language names. Page-specific marketing copy lives with each page,
  * NOT here. All strings traceable to the product spec.
  *
- * Spanish is neutral/professional (no Rioplatense slang in artifacts).
+ * Spanish is neutral/professional (no regional slang in artifacts).
  */
 
 import type { Locale } from "./routes";
+import { LIVEAUDIO_TAG } from "../config/release";
 
 export const ui = {
   en: {
     // Skip link / a11y
     "a11y.skipToContent": "Skip to content",
 
-    // Nav labels (mono lowercase links in the header)
+    // Nav labels
     "nav.home": "Home",
-    "nav.productTour": "product-tour",
-    "nav.download": "download",
-    "nav.gettingStarted": "getting-started",
-    "nav.obsSetup": "obs-setup",
-    "nav.docs": "docs",
-    "nav.faq": "faq",
-    "nav.vs": "vs",
+    "nav.productTour": "Product Tour",
+    "nav.download": "Download",
+    "nav.gettingStarted": "Getting Started",
+    "nav.obsSetup": "OBS Setup",
+    "nav.docs": "Docs",
+    "nav.faq": "FAQ",
+    "nav.vs": "Compare",
     "nav.menu": "Menu",
     "nav.closeMenu": "Close menu",
     "nav.openMenu": "Open menu",
 
     // Common buttons / CTAs (chrome-level; page heroes own their own copy)
-    "cta.download": "Download LiveAudio v1.6.0 (free)",
+    "cta.download": `Download LiveAudio ${LIVEAUDIO_TAG} (free)`,
     "cta.github": "GitHub",
     "cta.x": "X (@franguhh) — bug reports & collabs",
     "cta.xShort": "X · @franguhh",
@@ -36,11 +37,11 @@ export const ui = {
 
     // Brand / version
     "brand.name": "LiveAudio",
-    "brand.version": "v1.6.0",
-    "brand.versionLinkLabel": "View LiveAudio v1.6.0 release",
+    "brand.version": LIVEAUDIO_TAG,
+    "brand.versionLinkLabel": `View LiveAudio ${LIVEAUDIO_TAG} release`,
 
     // Footer columns
-    "footer.tagline": "100% local · MIT open-source",
+    "footer.tagline": "100% local · Zero data collected · MIT open-source",
     "footer.colProduct": "Product",
     "footer.colDocs": "Docs",
     "footer.colResources": "Resources",
@@ -48,7 +49,7 @@ export const ui = {
     "footer.resources.releases": "Releases",
     "footer.resources.llms": "llms.txt",
     "footer.resources.checksums": "SHA256SUMS",
-    "footer.legal": "© Plynte · LiveAudio v1.6.0 · MIT · Windows x64 · Rust",
+    "footer.legal": `© Plynte · LiveAudio ${LIVEAUDIO_TAG} · MIT · Windows x64 & Linux x86_64 · Rust`,
     "footer.privacy": "Privacy Policy",
     "footer.terms": "Terms of Service",
 
@@ -62,21 +63,21 @@ export const ui = {
     // Skip link / a11y
     "a11y.skipToContent": "Saltar al contenido",
 
-    // Nav labels (mono lowercase links in the header)
+    // Nav labels
     "nav.home": "Inicio",
-    "nav.productTour": "tour-del-producto",
-    "nav.download": "descargar",
-    "nav.gettingStarted": "primeros-pasos",
-    "nav.obsSetup": "configurar-obs",
-    "nav.docs": "docs",
-    "nav.faq": "faq",
-    "nav.vs": "comparativa",
+    "nav.productTour": "Tour del producto",
+    "nav.download": "Descargar",
+    "nav.gettingStarted": "Primeros pasos",
+    "nav.obsSetup": "Configurar OBS",
+    "nav.docs": "Documentación",
+    "nav.faq": "Preguntas frecuentes",
+    "nav.vs": "Comparativa",
     "nav.menu": "Menú",
     "nav.closeMenu": "Cerrar menú",
     "nav.openMenu": "Abrir menú",
 
     // Common buttons / CTAs
-    "cta.download": "Descargar LiveAudio v1.6.0 (gratis)",
+    "cta.download": `Descargar LiveAudio ${LIVEAUDIO_TAG} (gratis)`,
     "cta.github": "GitHub",
     "cta.x": "X (@franguhh) — reportes y colaboraciones",
     "cta.xShort": "X · @franguhh",
@@ -85,19 +86,19 @@ export const ui = {
 
     // Brand / version
     "brand.name": "LiveAudio",
-    "brand.version": "v1.6.0",
-    "brand.versionLinkLabel": "Ver versión de LiveAudio v1.6.0",
+    "brand.version": LIVEAUDIO_TAG,
+    "brand.versionLinkLabel": `Ver versión de LiveAudio ${LIVEAUDIO_TAG}`,
 
     // Footer columns
-    "footer.tagline": "100% local · Código abierto MIT",
+    "footer.tagline": "100% local · Sin recolección de datos · Código abierto MIT",
     "footer.colProduct": "Producto",
-    "footer.colDocs": "Docs",
+    "footer.colDocs": "Documentación",
     "footer.colResources": "Recursos",
     "footer.resources.github": "GitHub",
     "footer.resources.releases": "Versiones",
     "footer.resources.llms": "llms.txt",
     "footer.resources.checksums": "SHA256SUMS",
-    "footer.legal": "© Plynte · LiveAudio v1.6.0 · MIT · Windows x64 · Rust",
+    "footer.legal": `© Plynte · LiveAudio ${LIVEAUDIO_TAG} · MIT · Windows x64 y Linux x86_64 · Rust`,
     "footer.privacy": "Política de Privacidad",
     "footer.terms": "Términos del Servicio",
 

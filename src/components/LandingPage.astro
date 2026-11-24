@@ -19,6 +19,7 @@ import HeroProductProof from "./home/HeroProductProof.astro";
 import TrustStrip from "./home/TrustStrip.astro";
 import ObjectionCards from "./home/ObjectionCards.astro";
 import Pipeline from "./home/Pipeline.astro";
+import FeatureBento from "./home/FeatureBento.astro";
 import LiveDemo from "./home/LiveDemo.astro";
 import HomePathChooser from "./home/HomePathChooser.astro";
 import ClosingDownload from "./home/ClosingDownload.astro";
@@ -84,6 +85,9 @@ const jsonLd = [
 
   <!-- 4b · Signal path (stage details collapsed inside) -->
   <Pipeline copy={copy.pipeline} docsHref={docsHref} lang={lang} />
+
+  <!-- 4c · Differentiators built in -->
+  <FeatureBento copy={copy.bento} />
 
   <!-- 5 · Download -->
   <ClosingDownload

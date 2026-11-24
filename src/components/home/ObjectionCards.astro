@@ -4,10 +4,9 @@
  * (card pattern per the design system: "100% local / Linux / GPU").
  *
  * Each card = mono `// kicker` + answer-first H3 (the question IS the heading)
- * + 2-line substantiation + mono micro-spec line. The Linux card carries the
- * amber Windows-only loopback flag (per the product spec — loopback is
- * Windows-only; amber = warn/verify law). One `.section-glow` per section;
- * answer-first H2.
+ * + 2-line substantiation + mono micro-spec line. The Linux card carries an
+ * amber operator note (.deb updates via GitHub Releases; amber = warn/verify).
+ * One `.section-glow` per section; answer-first H2.
  *
  * Props: copy = HomeCopy["objections"].
  */
@@ -18,14 +17,14 @@ interface Props {
     eyebrow: string;
     heading: string;
     cards: ObjectionCard[];
-    loopbackFlag: string;
+    linuxNoteFlag: string;
   };
 }
 
 const { copy } = Astro.props;
 
-// The Linux card (index 1) is the only one carrying the loopback caveat flag.
-const LOOPBACK_CARD_INDEX = 1;
+// The Linux card (index 1) carries the amber .deb update caveat flag.
+const LINUX_CARD_INDEX = 1;
 ---
 
 <section class="section section-glow" aria-labelledby="why-h2">
@@ -41,8 +40,8 @@ const LOOPBACK_CARD_INDEX = 1;
             <h3 class="why-card-title">{card.title}</h3>
             <p class="why-card-body">{card.body}</p>
             <p class="why-card-spec">{card.spec}</p>
-            {i === LOOPBACK_CARD_INDEX && (
-              <span class="pill pill-amber why-flag">{copy.loopbackFlag}</span>
+            {i === LINUX_CARD_INDEX && (
+              <span class="pill pill-amber why-flag">{copy.linuxNoteFlag}</span>
             )}
           </article>
         ))

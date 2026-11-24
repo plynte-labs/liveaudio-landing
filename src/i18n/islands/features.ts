@@ -6,21 +6,19 @@
  * ~28 Spanish literals: preset names Rápido/Balanceado, "Esperando audio",
  * device names, "[PANTALLA CONGELADA...]", etc.).
  *
- * Fact-checked against the v1.6.0 release (100% native Rust + ONNX Runtime DirectML / CPU rewrite):
+ * Fact-checked against the current LiveAudio release (100% native Rust + ONNX Runtime):
  *   - Profiles: Fast / Balanced / Quality / Stable Streaming. FPS-aware,
  *     never "no FPS drops". Stable Streaming = "reduces GPU
  *     load while gaming" — no third-party game name.
- *   - Whisper models: tiny / base / small / turbo. Per-model VRAM/latency
- *     are SIMULATED — every such metric carries an amber sim-label.
- *   - Blacklist defaults = config.json.example list VERBATIM — NOT invented
- *     words.
+ *   - ASR models: NVIDIA Parakeet-TDT 0.6B v3 & Whisper (tiny / base / small / turbo).
+ *     Per-model VRAM/latency are SIMULATED — every such metric carries an amber sim-label.
+ *   - Blacklist defaults = config.json.example list VERBATIM — NOT invented words.
  *   - Backlog policy: Auto / Live only / Send all — controls only what shows
  *     live in OBS; everything valid is always saved.
- *   - Hot-swap device/model without restart. Loopback is Windows-only
- *     → amber flag on the loopback device.
+ *   - Hot-swap device/model without restart. Loopback works on Windows (WASAPI)
+ *     and Linux (PipeWire/PulseAudio + ALSA fallback).
  *   - Silero VAD trims silence. GPU acceleration via DirectML (DirectX 12);
- *     CPU works; optional CT2 CUDA worker. Latency "well under a second", never
- *     "milliseconds".
+ *     CPU works; optional CT2 CUDA 12.8 worker.
  */
 
 export type Lang = "en" | "es";
@@ -401,7 +399,7 @@ export const features: Record<Lang, FeaturesStrings> = {
     devices: {
       title: "Dispositivos en caliente",
       description:
-        "Cambiá micrófono o audio del sistema sin reiniciar. Elegí la entrada activa; el motor cambia la captura en vivo sin perder subtítulos.",
+        "Cambia el micrófono o el audio del sistema sin reiniciar. Elige la entrada activa; el motor cambia la captura en vivo sin perder subtítulos.",
       kicker: "// hot-swap",
       listLabel: "Entradas disponibles",
       placeholder: "Agregar un dispositivo simulado…",
@@ -409,22 +407,22 @@ export const features: Record<Lang, FeaturesStrings> = {
       activeLabel: "Entrada activa",
       list: [
         "Micrófono (Realtek Audio)",
-        "Audio del sistema (WASAPI loopback)",
+        "Audio del sistema (WASAPI / PipeWire loopback)",
         "Micrófono de auriculares (USB)",
       ],
       loopbackIndex: 1,
-      loopbackFlag: "loopback — solo Windows",
+      loopbackFlag: "loopback — Windows y Linux",
     },
     vad: {
       title: "Filtro Silero VAD",
       description:
-        "Silero VAD recorta el silencio y el ruido para que Whisper solo corra con voz real. El filtro incluye un pre-roll de inicio y un umbral VAD configurables.",
+        "Silero VAD recorta el silencio y el ruido para que el motor ASR solo corra con voz real. El filtro incluye un pre-roll de inicio y un umbral VAD configurables.",
       kicker: "// silero vad",
       speechLabel: "Voz normal",
       speechSub: "Stream de voz a 16 kHz",
       noiseLabel: "Golpe / clic en el escritorio",
       noiseSub: "Ruido mecánico",
-      empty: "Enviá una señal para ver al filtro VAD dejar pasar la voz y bloquear el ruido.",
+      empty: "Envía una señal para ver al filtro VAD dejar pasar la voz y bloquear el ruido.",
       inputSignal: "Señal de entrada",
       speechName: "Streamer hablando (\"hola a todos, ¿cómo va?\")",
       noiseName: "Golpe de taza / toque seco en el escritorio",

@@ -1,25 +1,27 @@
 /**
- * Docs content model — LiveAudio v1.6.0 · 5 sections, bilingual.
+ * Docs content model — LiveAudio · 5 sections, bilingual.
  *
  * This is the CONTENT source for /docs/[section]/ (EN) + /es/docs/[section]/ (ES).
- * v1.6.0 is 100% native Rust + Tauri 2 with ONNX Runtime DirectML/CPU.
- * The legacy Python line (v1.0.0–v1.2.7) is covered only as a
- * migration source and as the Linux fallback tarball.
- *
- * Structure-only port of the OLD DocViewer.tsx; EVERY product fact is reconciled
- * to the product spec (no macOS, no Kira, no milliseconds, GPU optional w/ VRAM >= 4
- * GiB, blacklist verbatim from config.json.example, WS schema + ports, backlog
- * policy, profiles, session files, config paths + LIVEAUDIO_HOME).
+ * 100% native Rust + Tauri 2 with ONNX Runtime (NVIDIA Parakeet-TDT 0.6B v3 &
+ * Whisper on CPU / DirectML) plus optional NVIDIA CUDA via CTranslate2.
  *
  * Rendering: DocsPage.astro walks `blocks[]`. Each `heading` block contributes an
  * anchor to the right-rail "on this page" list (its `id` + text). Inline markup in
  * prose/cells is restricted to the SIGNAL DESK palette: <code> mono tokens, <strong>
  * emphasis. NO hardcoded colors — code tints come from .code-block / <code> CSS.
  *
- * Spanish copy is neutral/professional (no Rioplatense slang in artifacts).
+ * Spanish copy is neutral/professional (no regional slang or Spanglish leaks).
  */
 
 import type { Locale } from "../routes";
+import {
+  LIVEAUDIO_TAG,
+  REPO_URL,
+  RELEASE_LATEST_URL,
+  WINDOWS_INSTALLER_FILENAME,
+  WINDOWS_CLI_FILENAME,
+  LINUX_CLI_FILENAME,
+} from "../../config/release";
 
 /** The 5 doc sections, in nav order. Drives getStaticPaths. */
 export const DOC_SECTIONS = [
@@ -115,7 +117,7 @@ export interface DocSectionContent {
 /* Shared facts (single source — keeps EN/ES in lockstep, the product spec) */
 /* ------------------------------------------------------------------ */
 
-const REPO = "https://github.com/plynte-labs/LiveAudio";
+const REPO = REPO_URL;
 
 /** WebSocket JSON payload example — verbatim shape from §7. */
 const WS_PAYLOAD_EN = `{
@@ -209,20 +211,25 @@ const WS_HTML_CLIENT = `<!-- serve from a local http server, e.g. python -m http
   connect();
 </script>`;
 
-/** Installer and provisioning overview; actual recovery requires verification. */
-const NATIVE_INSTALL_FLOW = `LiveAudio-Setup-1.6.0.exe
+/** Installer and provisioning overview. */
+const NATIVE_INSTALL_FLOW = `${WINDOWS_INSTALLER_FILENAME}  (or Linux .AppImage / .deb)
   │
   ├─ Back up custom settings and sessions before upgrading
-  ├─ Consult the release notes and run the installer
-  └─ 100% native Rust, zero Python setup; models download on first selection`;
+  ├─ Run the installer or launch the Linux .AppImage / .deb package
+  └─ 100% native Rust, zero Python; SHA-256 models download on demand`;
 
-/** config.json example — §8 values, blacklist trimmed to verbatim words. */
+/** config.json example — blacklist trimmed to verbatim words. */
 const CONFIG_EXAMPLE_EN = `{
     "output_dir": "C:\\\\streams\\\\sessions",
     "device": "cpu",
-    "cpu_threads": 8,
-    "model_size": "small (Balance CPU)",
+    "cpu_threads": 4,
+    "auto_cpu_threads": true,
+    "asr_engine": "parakeet",
+    "model_size": "parakeet-tdt-0.6b-v3",
     "blacklist": "amara.org, subtítulos por, gracias por ver",
+    "blacklist_enabled": true,
+    "context_prompt_enabled": false,
+    "follow_opencohost_language": false,
     "continuous_session": true,
     "subtitle_style": "default",
     "subtitle_backlog_policy": "auto",
@@ -248,9 +255,14 @@ const CONFIG_EXAMPLE_EN = `{
 const CONFIG_EXAMPLE_ES = `{
     "output_dir": "E:\\\\streams\\\\sessions",
     "device": "cpu",
-    "cpu_threads": 8,
-    "model_size": "small (Balance CPU)",
+    "cpu_threads": 4,
+    "auto_cpu_threads": true,
+    "asr_engine": "parakeet",
+    "model_size": "parakeet-tdt-0.6b-v3",
     "blacklist": "amara.org, subtítulos por, gracias por ver",
+    "blacklist_enabled": true,
+    "context_prompt_enabled": false,
+    "follow_opencohost_language": false,
     "continuous_session": true,
     "subtitle_style": "default",
     "subtitle_backlog_policy": "auto",
@@ -280,14 +292,14 @@ const CONFIG_EXAMPLE_ES = `{
 const DOCS_EN: Record<DocSection, DocSectionContent> = {
   overview: {
     slug: "overview",
-    navLabel: "overview",
+    navLabel: "Overview",
     metaTitle: "LiveAudio docs — Overview",
     metaDescription:
-      "What LiveAudio is and what it needs: a free, open-source (MIT) app that generates real-time Whisper captions 100% locally and streams them to OBS over a local WebSocket. Windows x64 native 100% Rust + Tauri 2 build; GPU optional.",
+      "What LiveAudio is and what it needs: a free, open-source (MIT) native Rust desktop app for Windows & Linux powered by NVIDIA Parakeet-TDT and Whisper on ONNX Runtime with zero desktop data collection.",
     eyebrow: "// docs / overview",
     h1: "LiveAudio documentation",
     lede:
-      "LiveAudio is a free, open-source (MIT) desktop app that generates real-time Whisper speech captions 100% locally and streams them to OBS over a local WebSocket. v1.6.0 runs on Windows x64 as a native Rust + Tauri 2 build with ONNX Runtime DirectML/CPU — no cloud, no API key, no per-minute cost.",
+      `LiveAudio is a free, open-source (MIT) native Rust + Tauri 2 desktop app for Windows x64 and Linux x86_64 that generates real-time captions 100% locally and streams them to OBS. ${LIVEAUDIO_TAG} pairs NVIDIA Parakeet-TDT 0.6B v3 (recommended for EN/ES) and Whisper on ONNX Runtime (CPU / DirectML) plus optional CUDA — with zero Python, no API key, and zero data collected or retained by the desktop app.`,
     blocks: [
       {
         type: "heading",
@@ -296,14 +308,14 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "<strong>Plynte LiveAudio</strong> transcribes speech locally with Whisper and sends captions to OBS or other local WebSocket clients. Its architecture is 100% native Rust and Tauri 2 with an ONNX Runtime inference worker.",
+        html: "<strong>Plynte LiveAudio</strong> is a prebuilt native Rust desktop app for Windows &amp; Linux with <strong>NVIDIA Parakeet-TDT 0.6B v3</strong> ONNX (recommended for English &amp; Spanish — ~2&times; faster on CPU than Whisper small, near-zero silence hallucinations) and <strong>Whisper</strong> (other languages, translate-to-English, context prompts) plus a built-in OBS WebSocket/Browser Source overlay.",
       },
       {
         type: "list",
         items: [
-          "<strong>Local transcription.</strong> Audio is transcribed on your machine without a cloud transcription service or API key.",
-          "<strong>100% Native Rust pipeline.</strong> Rust handles audio capture, voice activity detection, and native Whisper inference over ONNX Runtime DirectML/CPU.",
-          "<strong>Live settings.</strong> Change the audio device or model size from the app. Applying a change restarts transcription and reconnects OBS, and the app asks you to confirm first.",
+          "<strong>Zero desktop data collection &amp; retention.</strong> Running 100% locally is the core benefit: audio and transcripts never leave your machine. Outbound traffic is strictly limited to on-demand SHA-256 model downloads, an optional 24-hour GitHub Releases update check (zero telemetry, toggleable in Settings &gt; Advanced), and an opt-in NVIDIA CUDA runtime download. Only the website uses Microsoft Clarity for web analytics.",
+          "<strong>100% Native Rust pipeline.</strong> Rust handles audio capture (Windows WASAPI and Linux PipeWire/PulseAudio loopback + ALSA fallback), Silero VAD, optional RNNoise, and ONNX Runtime inference (int8 CPU / DirectML GPU) with zero Python.",
+          "<strong>Built for OBS &amp; creators.</strong> Includes 7 live OBS themes (<code>default</code>, <code>karaoke</code>, <code>neon</code>, <code>minimal</code>, <code>bold</code>, <code>rgb</code>, <code>typewriter</code>), anti-burst <code>/overlay</code> reconnection, DaVinci Resolve-ready <code>.srt</code> / <code>.vtt</code> / <code>.jsonl</code> recording, Follow OpenCohost Language sync, and a dual-consent MCP server (<code>liveaudio-cli mcp</code>).",
         ],
       },
       {
@@ -317,31 +329,31 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
         rows: [
           [
             "Operating system",
-            "Windows 10/11 x64 (installer), Linux x86_64 (AppImage / .deb). <strong>No macOS.</strong>",
+            "Windows 10/11 x64 (<code>.exe</code> NSIS installer) and Linux x86_64 (<code>.AppImage</code> / <code>.deb</code>). <strong>No macOS.</strong>",
           ],
           [
-            "GPU",
-            "<strong>Optional</strong> — DirectX 12 (DirectML) hardware acceleration for NVIDIA, AMD, and Intel GPUs, or CPU fallback. Optional CTranslate2 CUDA worker for NVIDIA.",
+            "CPU / GPU",
+            "<strong>GPU optional</strong> — Parakeet-TDT 0.6B v3 int8 runs smoothly on 4-thread CPU-only laptops (automatic CPU threads switch). DirectML (DirectX 12 GPU) and optional NVIDIA CUDA 12.8 (CTranslate2) are also supported.",
           ],
           ["RAM", "4 GB minimum, 8 GB+ recommended."],
           [
             "Disk",
-            "250 MB for the app plus about 500 MB per model cache; models are stored locally in <code>%LOCALAPPDATA%\\LiveAudio\\models\\onnx</code>.",
+            "250 MB for the app plus ~500 MB&ndash;1.5 GB per cached model; models are stored locally (Windows: <code>%LOCALAPPDATA%\\LiveAudio\\models\\onnx</code>).",
           ],
           [
             "Runtime",
             "100% native Rust and ONNX Runtime — zero Python runtime dependencies.",
           ],
           [
-            "Internet",
-            "Only needed to download selected transcription models. Transcription runs 100% offline once models are stored locally.",
+            "Outbound network",
+            "On-demand SHA-256 model downloads, optional 24 h GitHub Releases update check (zero telemetry, toggleable), and opt-in CUDA runtime download. Audio and transcripts never leave your machine.",
           ],
         ],
       },
       {
         type: "callout",
-        flag: "models: internet needed to download models",
-        html: "No Python setup or virtual environment downloads are required. A newly selected model is downloaded on first selection; transcription runs completely offline once models are on disk.",
+        flag: "models: sha-256 on-demand download",
+        html: "No Python setup or virtual environment downloads are required. Parakeet-TDT and Whisper models download on demand (hardware-matched with automatic CPU fallback) and are SHA-256 verified before use; transcription runs 100% offline once models are cached.",
       },
       {
         type: "heading",
@@ -350,12 +362,12 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "LiveAudio captures from a <strong>physical microphone</strong>. On Windows it can also capture <strong>system audio</strong> via WASAPI loopback.",
+        html: "LiveAudio captures from a <strong>physical microphone</strong> or <strong>system-audio loopback</strong> on both <strong>Windows</strong> (WASAPI loopback) and <strong>Linux</strong> (PipeWire/PulseAudio monitor capture with ALSA fallback).",
       },
       {
         type: "callout",
-        flag: "windows-only",
-        html: "<strong>System-audio loopback (WASAPI) is Windows-only.</strong> On Linux (AppImage / .deb) capture from a microphone or a virtual audio source.",
+        flag: "linux packages",
+        html: "Prebuilt Linux x86_64 packages ship as <code>.AppImage</code> and <code>.deb</code>. Signed in-app updates (Minisign Ed25519) work on Windows (NSIS) and Linux <code>.AppImage</code>; <code>.deb</code> users update via GitHub Releases.",
       },
       {
         type: "heading",
@@ -364,7 +376,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Use the official Windows installer (<code>LiveAudio-Setup-1.6.0.exe</code>). The VC++ runtime is bundled, so it works on a clean Windows, and the app starts instantly with zero Python provisioning wait.",
+        html: `On Windows x64, use the official NSIS installer (<code>${WINDOWS_INSTALLER_FILENAME}</code>; VC++ runtime bundled). On Linux x86_64, use the <code>.AppImage</code> or <code>.deb</code> package from GitHub Releases. The app launches immediately with zero Python provisioning wait.`,
       },
       {
         type: "code",
@@ -373,7 +385,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Before upgrading, back up your settings and sessions and consult the release notes for installation guidance.",
+        html: "Before upgrading, back up your settings and sessions and consult the release notes on GitHub Releases.",
       },
       {
         type: "heading",
@@ -382,87 +394,87 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "LiveAudio stores configuration and session data locally. The following locations describe application data:",
+        html: "LiveAudio stores all configuration, models, and session transcripts strictly on your local disk:",
       },
       {
         type: "table",
         head: ["Location", "Content"],
         rows: [
           [
-            "<code>%APPDATA%\\LiveAudio</code>",
-            "Settings (<code>config.json</code>) and <code>sessions/</code> — back these up before upgrading.",
+            "<code>%APPDATA%\\LiveAudio</code> (Windows) / XDG config (Linux)",
+            "Settings (<code>config.json</code>) and <code>sessions/</code> (<code>.srt</code>, <code>.vtt</code>, <code>.jsonl</code>) — back these up before upgrading.",
           ],
           [
-            "<code>%LOCALAPPDATA%\\LiveAudio</code>",
-            "Downloaded models (<code>models\\onnx</code>) and the optional CUDA runtime. The uninstaller's &ldquo;delete app data&rdquo; option removes both folders (never during an update).",
+            "<code>%LOCALAPPDATA%\\LiveAudio</code> (Windows) / XDG data (Linux)",
+            "Downloaded ONNX models (Parakeet &amp; Whisper) and the optional CUDA runtime. The uninstaller's &ldquo;delete app data&rdquo; option removes both folders (never during an update).",
           ],
         ],
       },
       {
         type: "heading",
         id: "hardware-detection",
-        text: "Hardware detection",
+        text: "Compute &amp; ASR engines",
       },
       {
         type: "prose",
-        html: "By default LiveAudio runs Whisper on ONNX Runtime with DirectML (DirectX 12 GPUs) or the CPU. An NVIDIA CUDA engine is optional:",
+        html: "LiveAudio runs both <strong>NVIDIA Parakeet-TDT 0.6B v3</strong> and <strong>Whisper</strong> on ONNX Runtime (int8 on CPU, DirectML on DirectX 12 GPUs), with an optional NVIDIA CUDA CTranslate2 worker:",
       },
       {
         type: "list",
         items: [
-          "Your explicit choice in the <strong>Advanced</strong> tab (compute device and ASR engine) — picking CUDA dims the CPU-threads control because inference runs on the GPU.",
-          "The NVIDIA CUDA engine is used only after you explicitly install it (the NVIDIA card in the <strong>Setup</strong> tab). It needs an NVIDIA GPU and a driver that supports <strong>CUDA 12.8 or newer</strong>.",
-          "Without an NVIDIA GPU, a supported driver or the installed engine, LiveAudio stays on ONNX Runtime (DirectML or CPU).",
+          "<strong>NVIDIA Parakeet-TDT 0.6B v3 (recommended for EN/ES):</strong> Transducer architecture emits blank on silence/noise for near-zero hallucinations. Measured on <code>es_media</code>: 1390 ms on CPU int8 vs 2877 ms for Whisper <code>small</code> (~2&times; faster on CPU), and 501 ms on GPU DirectML (WER 0.189). Runs smoothly on 4-thread CPU-only laptops with the automatic CPU threads switch.",
+          "<strong>Whisper (tiny / base / small / turbo):</strong> Available for additional languages, translate-to-English, and context prompts.",
+          "<strong>Optional NVIDIA CUDA 12.8 (CTranslate2):</strong> Opt-in worker (<code>ct2-worker-v1.6.0</code>) validated against on-demand cuBLAS 12.8 / cuDNN 9 runtime libraries with a protocol-version guard and automatic fallback to ONNX Runtime.",
         ],
       },
       {
         type: "heading",
         id: "updates",
-        text: "Updates",
+        text: "Stream-safe signed updates",
       },
       {
         type: "prose",
-        html: `Find the installer, changelog and publisher hashes on <a href="${REPO}/releases/latest" target="_blank" rel="noopener noreferrer">GitHub Releases</a>. Back up your settings and sessions before upgrading.`,
+        html: `Signed in-app updates (Minisign Ed25519) work on Windows (NSIS) and Linux (<code>.AppImage</code>); <code>.deb</code> users update via <a href="${RELEASE_LATEST_URL}" target="_blank" rel="noopener noreferrer">GitHub Releases</a>. The optional 24-hour update check sends zero telemetry, can be turned off in <strong>Settings &gt; Advanced</strong>, and blocks updates while transcription is live or OBS is connected.`,
       },
     ],
   },
 
   getting_started: {
     slug: "getting_started",
-    navLabel: "getting-started",
-    metaTitle: "LiveAudio docs — Getting started",
+    navLabel: "Getting Started",
+    metaTitle: "LiveAudio docs — Getting Started",
     metaDescription:
-      "Install and run LiveAudio v1.6.0 on Windows x64, start instantly with 100% native Rust, and choose an audio device and profile.",
+      `Install and run LiveAudio ${LIVEAUDIO_TAG} on Windows x64 or Linux x86_64, pick NVIDIA Parakeet-TDT or Whisper, and configure profiles and sessions locally.`,
     eyebrow: "// docs / getting-started",
-    h1: "Getting started",
+    h1: "Getting Started",
     lede:
-      "Use the official Windows installer. The 100% native Rust and Tauri desktop starts instantly with zero Python setup; only newly selected models require a download.",
+      "Install the Windows NSIS installer or Linux .AppImage / .deb package. The 100% native Rust and Tauri 2 desktop app starts instantly with zero Python setup; chosen models download on demand and are SHA-256 verified.",
     blocks: [
       {
         type: "heading",
         id: "option-a-installer",
-        text: "Option A — Installer (recommended)",
+        text: "Option A — Prebuilt packages (recommended)",
       },
       {
         type: "prose",
-        html: `Download the latest release from <a href="${REPO}/releases/latest" target="_blank" rel="noopener noreferrer">GitHub Releases</a>:`,
+        html: `Download the latest release from <a href="${RELEASE_LATEST_URL}" target="_blank" rel="noopener noreferrer">GitHub Releases</a>:`,
       },
       {
         type: "list",
         items: [
-          "<strong>Windows x64:</strong> <code>LiveAudio-Setup-1.6.0.exe</code> (graphical installer).",
-          "<strong>Linux x86_64:</strong> the <code>.AppImage</code> or <code>.deb</code> from the v1.6.0 release page (updates are manual).",
-          "<strong>CLI only:</strong> <code>liveaudio-cli-1.6.0-windows-x64.zip</code> and <code>liveaudio-cli-1.6.0-linux-x64.tar.gz</code> contain the CLI and ASR worker, not the desktop app.",
+          `<strong>Windows x64:</strong> <code>${WINDOWS_INSTALLER_FILENAME}</code> (NSIS graphical installer, VC++ runtime bundled, Minisign signed in-app updater).`,
+          "<strong>Linux x86_64:</strong> <code>.AppImage</code> (Minisign signed in-app updater) or <code>.deb</code> (update via GitHub Releases), both with PipeWire/PulseAudio loopback and ALSA fallback.",
+          `<strong>CLI only:</strong> <code>${WINDOWS_CLI_FILENAME}</code> and <code>${LINUX_CLI_FILENAME}</code> contain the CLI (including <code>liveaudio-cli mcp</code>) and ASR worker, not the desktop app.`,
         ],
       },
       {
         type: "prose",
-        html: "Zero Python dependencies are downloaded or installed. Whisper models download locally upon first selection.",
+        html: "Zero Python dependencies are downloaded or installed. Models download locally on demand and are verified with SHA-256.",
       },
       {
         type: "callout",
         flag: "updates",
-        html: "On v1.5.1 or older, install v1.6.0 manually once: those versions have no in-app updater. From v1.6.0 the Windows app updates itself (signed with Minisign, never while you are transcribing or OBS is connected); on Linux, download new releases manually.",
+        html: `On v1.5.1 or older, install ${LIVEAUDIO_TAG} manually once: those versions have no signed in-app updater. From ${LIVEAUDIO_TAG}, Windows (NSIS) and Linux <code>.AppImage</code> support stream-safe Minisign Ed25519 updates (blocked while live or OBS is connected); Linux <code>.deb</code> users update from GitHub Releases.`,
       },
       {
         type: "heading",
@@ -485,12 +497,12 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Open the app — the header shows the live status (listening / VAD state) and the <strong>Advanced</strong> tab shows the active compute device (CUDA or CPU). Speak, and captions appear in the live subtitle feed and stream to OBS.",
+        html: "Open the app — the header shows the live status (listening / VAD state) and the redesigned <strong>Advanced</strong> tab shows the active ASR engine (Parakeet-TDT or Whisper) and compute device (CPU, DirectML, or optional CUDA). Speak, and captions appear in the live subtitle feed and stream to OBS.",
       },
       {
         type: "heading",
         id: "updates-recovery",
-        text: "Updates & recovery",
+        text: "Updates &amp; recovery",
       },
       {
         type: "prose",
@@ -499,11 +511,11 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       {
         type: "heading",
         id: "gpu-auto-detect",
-        text: "GPU auto-detection",
+        text: "Compute options (CPU, DirectML, optional CUDA)",
       },
       {
         type: "prose",
-        html: "LiveAudio can detect an NVIDIA GPU. CUDA inference also needs compatible runtime libraries; detection alone does not establish that CUDA is ready. CPU transcription is available.",
+        html: "With the <strong>automatic CPU threads</strong> switch enabled, Parakeet-TDT 0.6B v3 int8 runs smoothly on 4-thread CPU-only laptops without a GPU. On DirectX 12 GPUs, DirectML accelerates ONNX Runtime out of the box with automatic CPU fallback. For NVIDIA GPUs, an opt-in CTranslate2 CUDA 12.8 worker (cuBLAS 12.8 / cuDNN 9) is available with a protocol-version guard and automatic fallback to ONNX Runtime.",
       },
       {
         type: "heading",
@@ -530,11 +542,11 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       {
         type: "heading",
         id: "blacklist",
-        text: "Hallucination blacklist",
+        text: "Hallucination blacklist &amp; context prompt switches",
       },
       {
         type: "prose",
-        html: "Whisper can invent phrases during silence. LiveAudio filters them with an editable blacklist. The default list (from <code>config.json.example</code>) is:",
+        html: "For EN/ES, switching to <strong>NVIDIA Parakeet-TDT 0.6B v3</strong> eliminates almost all silence hallucinations because its transducer decoder emits blank on silence. When using Whisper, LiveAudio provides an upgraded <strong>whole-word edge-trimming Blacklist</strong> (plus dedicated switches for both the blacklist and context prompt in <strong>Advanced</strong>): blacklisted phrases are trimmed only at utterance edges so long sentences are never dropped. Default list:",
       },
       {
         type: "code",
@@ -543,48 +555,45 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Words and phrases are comma-separated and fully editable from the <strong>Advanced</strong> tab (<strong>Vocabulary and filters</strong>) — add the filler your stream tends to hallucinate, or clear entries you want to keep.",
+        html: "Words and phrases are comma-separated and fully editable from the <strong>Advanced</strong> tab (<strong>Vocabulary and filters</strong>).",
       },
       {
         type: "heading",
         id: "models",
-        text: "Models",
+        text: "Engines &amp; models",
       },
       {
         type: "prose",
-        html: "Pick a model in the <strong>Advanced</strong> tab (<strong>Engine and performance</strong>, Whisper Model Size). The audio device and profile are in the <strong>Setup</strong> tab. Larger models can need more memory and processing time. A newly selected model may require a download.",
+        html: "Pick your ASR engine and model in the <strong>Advanced</strong> tab (<strong>Engine and performance</strong>). The audio device, language (including <strong>Follow OpenCohost Language</strong>), and profile live in <strong>Setup</strong>. Models download on demand with SHA-256 verification and hardware-matched CPU fallback.",
       },
       {
         type: "table",
-        head: ["Model", "First-run download", "Notes"],
+        head: ["Engine / Model", "Best for", "Notes"],
         rows: [
-          ["<code>tiny</code>", "~150 MB", "Fastest; good on low-end CPUs."],
-          ["<code>base</code>", "~300 MB", "A step up in accuracy, still light."],
           [
-            "<code>small</code>",
-            "~480 MB",
-            "Balanced default for CPU.",
+            "<code>Parakeet-TDT 0.6B v3</code>",
+            "Recommended for EN &amp; ES",
+            "ONNX Runtime (int8 CPU / DirectML GPU). ~2&times; faster on CPU than Whisper small, near-zero silence hallucinations, smooth on 4-thread laptops.",
           ],
-          [
-            "<code>turbo</code>",
-            "~1.5 GB",
-            "Highest accuracy here; best on a GPU.",
-          ],
+          ["<code>Whisper tiny</code>", "Ultra-light fallback", "~150 MB; fastest Whisper tier."],
+          ["<code>Whisper base</code>", "Light multilingual", "~300 MB; other languages &amp; translate-to-English."],
+          ["<code>Whisper small</code>", "Balanced multilingual", "~480 MB; context prompts &amp; translate-to-English."],
+          ["<code>Whisper turbo</code>", "High-accuracy multilingual", "~1.5 GB; best with DirectML or optional CUDA GPU."],
         ],
       },
       {
         type: "callout",
-        flag: "first use: internet",
-        html: "On a metered connection, allow for runtime dependencies and model downloads. The required storage and download size depend on the components selected.",
+        flag: "on-demand sha-256 models",
+        html: "On a metered connection, allow for model downloads when switching engines or sizes (and the optional CUDA runtime only if you opt in). Once cached, transcription runs 100% offline.",
       },
       {
         type: "heading",
         id: "session-files",
-        text: "Session files",
+        text: "Session files (.srt, .vtt, .jsonl)",
       },
       {
         type: "prose",
-        html: "Every session is saved to disk as a transcript (<code>transcript.jsonl</code>) WebVTT subtitles (<code>subtitles.vtt</code>) and SubRip subtitles (<code>subtitles.srt</code>):",
+        html: "Every session is saved locally to disk as structured JSONL (<code>transcript.jsonl</code>), WebVTT subtitles (<code>subtitles.vtt</code>), and DaVinci Resolve-ready SubRip subtitles (<code>subtitles.srt</code>):",
       },
       {
         type: "code",
@@ -596,14 +605,14 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
 
   websocket_obs: {
     slug: "websocket_obs",
-    navLabel: "websocket-obs",
+    navLabel: "WebSocket & OBS",
     metaTitle: "LiveAudio docs — WebSocket & OBS",
     metaDescription:
-      "The LiveAudio WebSocket: ws://127.0.0.1:8765 (configurable ws_port, port fallback), the overlay URL, the JSON payload schema, OBS backlog policy (auto / live_only / send_all), loopback and Origin-allowlist security, and OBS Browser Source setup.",
+      "The LiveAudio WebSocket: ws://127.0.0.1:8765, anti-burst /overlay reconnection, 7 live OBS themes, JSON payload schema, OBS backlog policy, and loopback Origin-allowlist security.",
     eyebrow: "// docs / websocket-obs",
     h1: "WebSocket & OBS",
     lede:
-      "LiveAudio runs a local WebSocket server that broadcasts subtitle JSON in real time. OBS is the built-in target via the included subtitulos_obs.html overlay, but any HTML or WebSocket client on localhost can connect and receive the same broadcast.",
+      "LiveAudio runs a local WebSocket server that broadcasts subtitle JSON in real time to the built-in OBS /overlay (7 live themes + anti-burst reconnection) or any HTML/WebSocket client on localhost.",
     blocks: [
       {
         type: "heading",
@@ -684,7 +693,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
           [
             "<code>latency</code>",
             "number",
-            "Seconds Whisper spent transcribing the segment.",
+            "Seconds the ASR engine (Parakeet-TDT or Whisper) spent transcribing the segment.",
           ],
           [
             "<code>is_replay</code>",
@@ -819,7 +828,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       {
         type: "list",
         items: [
-          "<strong>Reconnect.</strong> The bundled overlay retries with exponential backoff from 1 s up to 8 s and cycles through the ports <code>ws_port</code> to <code>ws_port + 9</code>, so it also connects if OBS opens before LiveAudio. A client you write needs its own retry logic.",
+          "<strong>Anti-burst reconnect.</strong> The bundled <code>/overlay</code> page retries with exponential backoff from 1 s up to 8 s, rescans ports <code>ws_port</code> through <code>ws_port + 9</code>, and uses anti-burst reconnection so captions stay clean if OBS reconnects mid-stream. A custom client needs its own retry logic.",
           "<strong>Broadcast.</strong> Every connected client receives every message. Multiple clients (OBS plus a debug browser tab) all see the same stream, and a slow client does not block the others.",
           "<strong>Slow clients.</strong> Each client has a 64-frame outgoing queue and a 10-frame retry queue. When the retry queue is full the oldest frame is dropped; the client is not disconnected.",
         ],
@@ -883,14 +892,14 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
 
   troubleshooting: {
     slug: "troubleshooting",
-    navLabel: "troubleshooting",
+    navLabel: "Troubleshooting",
     metaTitle: "LiveAudio docs — Troubleshooting",
     metaDescription:
-      "Fixes for common LiveAudio issues: no captions, GPU fallback, OBS not connecting on port 8765, loopback allowlist, upgrading from the Python version, audio cutting out — plus local-first diagnostics export.",
+      "Fixes for common LiveAudio issues: no captions, Windows & Linux loopback, hallucinations (Parakeet-TDT vs Whisper), DirectML/CUDA fallback, OBS reconnection, SmartScreen, and local-first diagnostics.",
     eyebrow: "// docs / troubleshooting",
     h1: "Troubleshooting",
     lede:
-      "Root-cause fixes for the most common setup issues — capture, DirectML/CUDA, the WebSocket connection, and Python-version upgrades — followed by the local-first diagnostics export.",
+      "Root-cause fixes for the most common setup issues — Windows WASAPI and Linux PipeWire/PulseAudio loopback, DirectML/CUDA fallback, silence hallucinations, OBS WebSocket reconnection, and local-first diagnostics.",
     blocks: [
       {
         type: "heading",
@@ -899,21 +908,21 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Verify the selected audio device in the panel. If you are capturing desktop sound on Windows, make sure you enabled the correct <strong>WASAPI loopback</strong> channel.",
+        html: "Verify the selected audio device in the <strong>Setup</strong> tab. System-audio loopback works on both <strong>Windows</strong> (WASAPI loopback) and <strong>Linux</strong> (PipeWire/PulseAudio monitor capture with ALSA fallback) — make sure you picked the active output monitor channel.",
       },
       {
         type: "callout",
-        flag: "windows-only",
-        html: "System-audio loopback is Windows-only. On Linux, capture from the microphone instead.",
+        flag: "hallucinations",
+        html: "If Whisper invents phrases during silence, switch to <strong>NVIDIA Parakeet-TDT 0.6B v3</strong> for EN/ES (near-zero silence hallucinations) or enable the upgraded whole-word edge-trimming Blacklist switch in <strong>Advanced</strong>.",
       },
       {
         type: "heading",
         id: "cuda-oom",
-        text: "CUDA error / out of memory",
+        text: "GPU / CUDA error or out of memory",
       },
       {
         type: "prose",
-        html: "If transcription fails with a GPU error or runs out of memory, switch the compute device from <strong>cuda</strong> to <strong>cpu</strong> or load a smaller model (<code>tiny</code> or <code>base</code>) in the <strong>Advanced</strong> tab, and close other GPU-heavy programs (OBS with NVENC, games). Updating your GPU driver resolves many runtime failures.",
+        html: "If transcription fails with a GPU error or runs out of VRAM, switch to <strong>CPU</strong> (with Parakeet-TDT 0.6B v3 int8 and the automatic CPU threads switch) or <strong>DirectML</strong> in the <strong>Advanced</strong> tab, or pick a smaller Whisper model (<code>tiny</code> or <code>base</code>). The optional CTranslate2 CUDA 12.8 worker validates cuBLAS 12.8 / cuDNN 9 and falls back to ONNX Runtime automatically if CUDA initialization fails.",
       },
       {
         type: "heading",
@@ -959,7 +968,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       {
         type: "callout",
         flag: "not code-signed",
-        html: `The installer is not code-signed yet, so SmartScreen may warn. Choose <strong>More info &rarr; Run anyway</strong>. The exact files and hashes are published on the <a href="${REPO}/releases/tag/v1.6.0" target="_blank" rel="noopener noreferrer">v1.6.0 release page</a>.`,
+        html: `The Windows installer is not code-signed yet, so SmartScreen may warn. Choose <strong>More info &rarr; Run anyway</strong>. Exact release files and SHA-256 hashes are published on <a href="${RELEASE_LATEST_URL}" target="_blank" rel="noopener noreferrer">GitHub Releases</a>.`,
       },
       {
         type: "heading",
@@ -1026,14 +1035,14 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
 
   config: {
     slug: "config",
-    navLabel: "config",
+    navLabel: "Configuration",
     metaTitle: "LiveAudio docs — Configuration",
     metaDescription:
-      "The LiveAudio config.json reference: file location on Windows, every option key with its type, and a full example.",
+      "The LiveAudio config.json reference: file locations on Windows and Linux, Parakeet-TDT & Whisper keys, CPU/DirectML/CUDA compute options, edge-trimming blacklist, MCP switches, and full example.",
     eyebrow: "// docs / config",
     h1: "Configuration",
     lede:
-      "LiveAudio writes a config.json with sensible defaults on first run. Change everything from the GUI, or edit the file directly. This page is the full key reference.",
+      "LiveAudio writes a config.json with sensible defaults on first run. Change everything from the GUI (including the redesigned Advanced tab), or edit the file directly. This page is the key reference.",
     blocks: [
       {
         type: "heading",
@@ -1042,13 +1051,14 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Settings and sessions may be stored under <code>%APPDATA%\\LiveAudio</code> on Windows. Back them up before upgrading.",
+        html: "Settings and sessions are stored locally (<code>%APPDATA%\\LiveAudio</code> on Windows, XDG config on Linux). Back them up before upgrading.",
       },
       {
         type: "table",
         head: ["Build", "Path"],
         rows: [
-          ["Windows x64 (v1.6.0, Rust)", "<code>%APPDATA%\\LiveAudio</code>"],
+          [`Windows x64 (${LIVEAUDIO_TAG}, Rust)`, "<code>%APPDATA%\\LiveAudio</code>"],
+          [`Linux x86_64 (${LIVEAUDIO_TAG}, .AppImage / .deb)`, "<code>~/.config/LiveAudio</code> (XDG config)"],
           ["Any build (override)", "<code>LIVEAUDIO_HOME</code> environment variable"],
           ["Models (Windows)", "<code>%LOCALAPPDATA%\\LiveAudio\\models\\onnx</code>"],
         ],
@@ -1060,7 +1070,7 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Use the official Windows installer; the CLI archives contain only the CLI and ASR worker, not the desktop app.",
+        html: "Use the official Windows installer or Linux .AppImage / .deb package; the CLI archives contain only the CLI and ASR worker, not the desktop app.",
       },
       {
         type: "heading",
@@ -1071,22 +1081,32 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
         type: "table",
         head: ["Key", "Type", "Description"],
         rows: [
-          ["<code>output_dir</code>", "string", "Path to the sessions folder."],
-          ["<code>device</code>", "string", '"cpu" (default) or "cuda".'],
+          ["<code>output_dir</code>", "string", "Path to the sessions folder (<code>.srt</code>, <code>.vtt</code>, <code>.jsonl</code>)."],
+          ["<code>device</code>", "string", '<code>"cpu"</code> (default), <code>"directml"</code> (DirectX 12 GPU), or optional <code>"cuda"</code> (CTranslate2 CUDA 12.8).'],
           [
-            "<code>cpu_threads</code>",
-            "number",
-            "Number of CPU threads for inference (default: half the logical cores, minimum 1).",
+            "<code>auto_cpu_threads</code>, <code>cpu_threads</code>",
+            "boolean / number",
+            "Automatic CPU threads switch (recommended for 4-thread CPU-only laptops) or explicit thread count for CPU inference.",
           ],
           [
-            "<code>model_size</code>",
+            "<code>asr_engine</code>, <code>model_size</code>",
             "string",
-            'Whisper model, stored as the label chosen in Advanced: it starts with tiny, base, small or turbo. Default: "small (Balance CPU)".',
+            'Choose NVIDIA <code>parakeet-tdt-0.6b-v3</code> (recommended for EN/ES) or Whisper (<code>tiny</code>, <code>base</code>, <code>small</code>, <code>turbo</code>).',
           ],
           [
-            "<code>blacklist</code>",
-            "string",
-            "Comma-separated filter words (see the getting-started blacklist).",
+            "<code>blacklist</code>, <code>blacklist_enabled</code>",
+            "string / boolean",
+            "Comma-separated filter phrases with an enable switch. Whole-word matching trims phrases only at utterance edges so long sentences are not dropped.",
+          ],
+          [
+            "<code>context_prompt_enabled</code>",
+            "boolean",
+            "Dedicated switch to enable or disable Whisper context prompts.",
+          ],
+          [
+            "<code>follow_opencohost_language</code>",
+            "boolean",
+            'Opt-in "Follow OpenCohost Language" switch for automatic locale sync with OpenCohost.',
           ],
           [
             "<code>continuous_session</code>",
@@ -1235,14 +1255,14 @@ const DOCS_EN: Record<DocSection, DocSectionContent> = {
 const DOCS_ES: Record<DocSection, DocSectionContent> = {
   overview: {
     slug: "overview",
-    navLabel: "introducción",
-    metaTitle: "Docs de LiveAudio — Introducción",
+    navLabel: "Resumen",
+    metaTitle: "Documentación de LiveAudio — Resumen",
     metaDescription:
-      "Qué es LiveAudio y qué necesita: una app gratuita y de código abierto (MIT) que genera subtítulos Whisper en tiempo real 100% en tu equipo y los envía a OBS por un WebSocket local. Build 100% nativa Rust + Tauri 2 para Windows x64; GPU opcional.",
-    eyebrow: "// docs / introducción",
+      "Qué es LiveAudio y qué necesita: app de escritorio nativa en Rust, gratuita y de código abierto (MIT) para Windows y Linux impulsada por NVIDIA Parakeet-TDT y Whisper sobre ONNX Runtime sin recolección de datos en la app.",
+    eyebrow: "// docs / resumen",
     h1: "Documentación de LiveAudio",
     lede:
-      "LiveAudio es una app de escritorio gratuita y de código abierto (MIT) que genera subtítulos de voz Whisper en tiempo real 100% en tu equipo y los envía a OBS por un WebSocket local. La v1.6.0 corre en Windows x64 como build 100% nativa Rust + Tauri 2 con ONNX Runtime DirectML/CPU: sin nube, sin API key, sin costo por minuto.",
+      `LiveAudio es una app de escritorio gratuita y de código abierto (MIT) en Rust nativo + Tauri 2 para Windows x64 y Linux x86_64 que genera subtítulos en tiempo real 100% en tu equipo y los envía a OBS. ${LIVEAUDIO_TAG} combina NVIDIA Parakeet-TDT 0.6B v3 (recomendado para ES/EN) y Whisper sobre ONNX Runtime (CPU / DirectML) más CUDA opcional — con cero Python, sin clave API y sin recolección ni retención de datos en la app de escritorio.`,
     blocks: [
       {
         type: "heading",
@@ -1251,14 +1271,14 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "<strong>Plynte LiveAudio</strong> transcribe voz localmente con Whisper y envía subtítulos a OBS u otros clientes WebSocket locales. Su arquitectura es 100% Rust nativo y Tauri 2 con un worker de inferencia sobre ONNX Runtime.",
+        html: "<strong>Plynte LiveAudio</strong> es una app de escritorio nativa en Rust precompilada para Windows y Linux con <strong>NVIDIA Parakeet-TDT 0.6B v3</strong> ONNX (recomendado para español e inglés — ~2&times; más rápido en CPU que Whisper small, casi sin alucinaciones en silencio) y <strong>Whisper</strong> (otros idiomas, traducción al inglés y prompts de contexto) más un overlay WebSocket/Browser Source integrado para OBS.",
       },
       {
         type: "list",
         items: [
-          "<strong>Transcripción local.</strong> El audio se transcribe en tu equipo sin un servicio de transcripción en la nube ni claves API.",
-          "<strong>Pipeline 100% Rust nativo.</strong> Rust gestiona la captura, la detección de voz y la inferencia Whisper nativa con ONNX Runtime DirectML/CPU.",
-          "<strong>Ajustes en vivo.</strong> Cambia el dispositivo de audio o el tamaño del modelo desde la app. Aplicar un cambio reinicia la transcripción y reconecta OBS, y la app te pide confirmar antes.",
+          "<strong>Cero recolección ni retención de datos en la app.</strong> Ejecutarse 100% en local es el beneficio principal: el audio y las transcripciones nunca salen de tu equipo. La red saliente se limita estrictamente a descargas bajo demanda de modelos verificados por SHA-256, comprobación opcional de GitHub Releases cada 24 h (cero telemetría, desactivable en Ajustes &gt; Avanzado) y descarga voluntaria de NVIDIA CUDA. Solo el sitio web usa Microsoft Clarity para analítica web.",
+          "<strong>Pipeline 100% Rust nativo.</strong> Rust gestiona la captura de audio (loopback WASAPI en Windows y PipeWire/PulseAudio con respaldo ALSA en Linux), Silero VAD, RNNoise opcional e inferencia ONNX Runtime (CPU int8 / DirectML GPU) con cero Python.",
+          "<strong>Diseñado para OBS y creadores.</strong> Incluye 7 temas en vivo para OBS (<code>default</code>, <code>karaoke</code>, <code>neon</code>, <code>minimal</code>, <code>bold</code>, <code>rgb</code>, <code>typewriter</code>), reconexión anti-ráfagas en <code>/overlay</code>, grabación <code>.srt</code> lista para DaVinci Resolve junto con <code>.vtt</code> y <code>.jsonl</code>, sincronización Seguir idioma de OpenCohost y servidor MCP de doble consentimiento (<code>liveaudio-cli mcp</code>).",
         ],
       },
       {
@@ -1272,31 +1292,31 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
         rows: [
           [
             "Sistema operativo",
-            "Windows 10/11 x64 (instalador), Linux x86_64 (AppImage / .deb). <strong>Sin macOS.</strong>",
+            "Windows 10/11 x64 (instalador NSIS <code>.exe</code>) y Linux x86_64 (<code>.AppImage</code> / <code>.deb</code>). <strong>Sin macOS.</strong>",
           ],
           [
-            "GPU",
-            "<strong>Opcional</strong> — aceleración por hardware DirectX 12 (DirectML) para GPUs NVIDIA, AMD e Intel, o fallback a CPU. Worker opcional CTranslate2 CUDA para NVIDIA.",
+            "CPU / GPU",
+            "<strong>GPU opcional</strong> — Parakeet-TDT 0.6B v3 int8 funciona con fluidez en portátiles de 4 hilos sin GPU (interruptor automático de hilos de CPU). También admite DirectML (GPU DirectX 12) y NVIDIA CUDA 12.8 opcional (CTranslate2).",
           ],
           ["RAM", "4 GB mínimo, 8 GB+ recomendados."],
           [
             "Disco",
-            "250 MB para la app más unos 500 MB por caché de modelo; los modelos se guardan en local en <code>%LOCALAPPDATA%\\LiveAudio\\models\\onnx</code>.",
+            "250 MB para la app más ~500 MB&ndash;1.5 GB por modelo en caché; los modelos se guardan localmente (Windows: <code>%LOCALAPPDATA%\\LiveAudio\\models\\onnx</code>).",
           ],
           [
             "Runtime",
-            "100% Rust nativo y ONNX Runtime — cero dependencias del runtime de Python.",
+            "100% Rust nativo y ONNX Runtime — cero dependencias de Python.",
           ],
           [
-            "Internet",
-            "Solo necesaria para descargar los modelos de transcripción seleccionados. La transcripción funciona 100% sin conexión una vez guardados los modelos en local.",
+            "Red saliente",
+            "Descargas bajo demanda de modelos SHA-256, comprobación opcional cada 24 h en GitHub Releases (cero telemetría, desactivable) y descarga voluntaria de CUDA. El audio y las transcripciones nunca salen de tu equipo.",
           ],
         ],
       },
       {
         type: "callout",
-        flag: "modelos: internet solo necesaria para descarga",
-        html: "No se requieren descargas de configuración de Python ni de entornos virtuales. Un modelo recién seleccionado se descarga en su primera selección; la transcripción funciona 100% sin conexión una vez que los modelos están en disco.",
+        flag: "modelos: descarga bajo demanda sha-256",
+        html: "No se requieren descargas de Python ni entornos virtuales. Los modelos Parakeet-TDT y Whisper se descargan bajo demanda (adaptados al hardware con respaldo automático en CPU) y se verifican con SHA-256 antes de usarse; una vez en caché, la transcripción funciona 100% sin conexión.",
       },
       {
         type: "heading",
@@ -1305,12 +1325,12 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "LiveAudio captura desde un <strong>micrófono físico</strong>. En Windows también puede capturar el <strong>audio del sistema</strong> mediante WASAPI loopback.",
+        html: "LiveAudio captura desde un <strong>micrófono físico</strong> o mediante <strong>loopback de audio del sistema</strong> tanto en <strong>Windows</strong> (WASAPI loopback) como en <strong>Linux</strong> (captura de monitor PipeWire/PulseAudio con respaldo ALSA).",
       },
       {
         type: "callout",
-        flag: "solo Windows",
-        html: "<strong>El loopback de audio del sistema (WASAPI) es solo de Windows.</strong> En Linux (AppImage / .deb) captura desde un micrófono o una fuente de audio virtual.",
+        flag: "paquetes de linux",
+        html: "Los paquetes precompilados para Linux x86_64 se distribuyen en <code>.AppImage</code> y <code>.deb</code>. Las actualizaciones firmadas dentro de la app (Minisign Ed25519) funcionan en Windows (NSIS) y Linux <code>.AppImage</code>; los usuarios de <code>.deb</code> actualizan desde GitHub Releases.",
       },
       {
         type: "heading",
@@ -1319,7 +1339,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Usa el instalador oficial de Windows (<code>LiveAudio-Setup-1.6.0.exe</code>). Incluye el runtime VC++, así que funciona en un Windows limpio, y la app arranca instantáneamente sin fases de aprovisionamiento de Python.",
+        html: `En Windows x64, usa el instalador oficial NSIS (<code>${WINDOWS_INSTALLER_FILENAME}</code>; runtime VC++ incluido). En Linux x86_64, usa el paquete <code>.AppImage</code> o <code>.deb</code> de GitHub Releases. La app arranca de inmediato sin aprovisionamiento de Python.`,
       },
       {
         type: "code",
@@ -1328,7 +1348,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Antes de actualizar, respalda tu configuración y sesiones y consulta las notas de la versión para obtener instrucciones de instalación.",
+        html: "Antes de actualizar, respalda tu configuración y sesiones y consulta las notas del lanzamiento en GitHub Releases.",
       },
       {
         type: "heading",
@@ -1337,87 +1357,87 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "LiveAudio almacena la configuración y los datos de sesión localmente. Estas ubicaciones describen los datos de la aplicación:",
+        html: "LiveAudio almacena toda la configuración, los modelos y las transcripciones de sesión exclusivamente en tu disco local:",
       },
       {
         type: "table",
         head: ["Ubicación", "Contenido"],
         rows: [
           [
-            "<code>%APPDATA%\\LiveAudio</code>",
-            "Tu configuración (<code>config.json</code>) y <code>sessions/</code> — haz una copia de seguridad antes de actualizar.",
+            "<code>%APPDATA%\\LiveAudio</code> (Windows) / configuración XDG (Linux)",
+            "Tu configuración (<code>config.json</code>) y <code>sessions/</code> (<code>.srt</code>, <code>.vtt</code>, <code>.jsonl</code>) — haz una copia de seguridad antes de actualizar.",
           ],
           [
-            "<code>%LOCALAPPDATA%\\LiveAudio</code>",
-            "Modelos descargados (<code>models\\onnx</code>) y el runtime CUDA opcional. La opción &ldquo;borrar datos de la app&rdquo; del desinstalador elimina ambas carpetas (nunca durante una actualización).",
+            "<code>%LOCALAPPDATA%\\LiveAudio</code> (Windows) / datos XDG (Linux)",
+            "Modelos ONNX descargados (Parakeet y Whisper) y el runtime CUDA opcional. La opción &ldquo;borrar datos de la app&rdquo; del desinstalador elimina ambas carpetas (nunca durante una actualización).",
           ],
         ],
       },
       {
         type: "heading",
         id: "deteccion-de-hardware",
-        text: "Detección de hardware",
+        text: "Cómputo y motores ASR",
       },
       {
         type: "prose",
-        html: "Por defecto LiveAudio ejecuta Whisper sobre ONNX Runtime con DirectML (GPUs DirectX 12) o la CPU. Un motor NVIDIA CUDA es opcional:",
+        html: "LiveAudio ejecuta tanto <strong>NVIDIA Parakeet-TDT 0.6B v3</strong> como <strong>Whisper</strong> sobre ONNX Runtime (int8 en CPU, DirectML en GPUs DirectX 12), con un worker opcional NVIDIA CUDA sobre CTranslate2:",
       },
       {
         type: "list",
         items: [
-          "Tu elección explícita en la pestaña <strong>Avanzado</strong> (dispositivo de cómputo y motor ASR) — elegir CUDA atenúa el control de hilos de CPU porque la inferencia corre en la GPU.",
-          "El motor NVIDIA CUDA solo se usa después de instalarlo de forma explícita (la tarjeta NVIDIA en la pestaña <strong>Inicio</strong>). Requiere una GPU NVIDIA y un driver compatible con <strong>CUDA 12.8 o superior</strong>.",
-          "Sin GPU NVIDIA, sin un driver compatible o sin el motor instalado, LiveAudio se queda en ONNX Runtime (DirectML o CPU).",
+          "<strong>NVIDIA Parakeet-TDT 0.6B v3 (recomendado para ES/EN):</strong> Su arquitectura transductora emite blanco en silencio o ruido para casi cero alucinaciones. Medido en <code>es_media</code>: 1390 ms en CPU int8 frente a 2877 ms de Whisper <code>small</code> (~2&times; más rápido en CPU), y 501 ms en GPU DirectML (WER 0.189). Corre con soltura en portátiles de 4 hilos sin GPU con el interruptor automático de hilos de CPU.",
+          "<strong>Whisper (tiny / base / small / turbo):</strong> Disponible para otros idiomas, traducción al inglés y prompts de contexto.",
+          "<strong>NVIDIA CUDA 12.8 opcional (CTranslate2):</strong> Worker voluntario (<code>ct2-worker-v1.6.0</code>) validado con bibliotecas cuBLAS 12.8 / cuDNN 9 bajo demanda, con verificación de versión de protocolo y respaldo automático a ONNX Runtime.",
         ],
       },
       {
         type: "heading",
         id: "actualizaciones",
-        text: "Actualizaciones",
+        text: "Actualizaciones firmadas seguras en directo",
       },
       {
         type: "prose",
-        html: `Encontrarás el instalador, los cambios y los hashes publicados en <a href="${REPO}/releases/latest" target="_blank" rel="noopener noreferrer">GitHub Releases</a>. Respalda tu configuración y sesiones antes de actualizar.`,
+        html: `Las actualizaciones firmadas dentro de la app (Minisign Ed25519) funcionan en Windows (NSIS) y Linux (<code>.AppImage</code>); los usuarios de <code>.deb</code> actualizan desde <a href="${RELEASE_LATEST_URL}" target="_blank" rel="noopener noreferrer">GitHub Releases</a>. La comprobación opcional cada 24 h no envía telemetría, se puede desactivar en <strong>Ajustes &gt; Avanzado</strong> y bloquea actualizaciones mientras estás transcribiendo o OBS está conectado.`,
       },
     ],
   },
 
   getting_started: {
     slug: "getting_started",
-    navLabel: "primeros-pasos",
-    metaTitle: "Docs de LiveAudio — Primeros pasos",
+    navLabel: "Primeros pasos",
+    metaTitle: "Documentación de LiveAudio — Primeros pasos",
     metaDescription:
-      "Instala LiveAudio v1.6.0 en Windows x64, arranca de forma instantánea con 100% Rust nativo y elige un dispositivo de audio y un perfil.",
+      `Instala y ejecuta LiveAudio ${LIVEAUDIO_TAG} en Windows x64 o Linux x86_64, elige NVIDIA Parakeet-TDT o Whisper y configura perfiles y sesiones en local.`,
     eyebrow: "// docs / primeros-pasos",
     h1: "Primeros pasos",
     lede:
-      "Usa el instalador oficial de Windows. El escritorio 100% Rust nativo y Tauri arranca instantáneamente sin setup de Python; solo los modelos seleccionados requieren descarga.",
+      "Usa el instalador NSIS de Windows o el paquete .AppImage / .deb de Linux. La app nativa en Rust y Tauri 2 arranca de inmediato sin setup de Python; los modelos seleccionados se descargan bajo demanda con verificación SHA-256.",
     blocks: [
       {
         type: "heading",
         id: "opcion-a-instalador",
-        text: "Opción A — Instalador (recomendado)",
+        text: "Opción A — Paquetes precompilados (recomendado)",
       },
       {
         type: "prose",
-        html: `Descarga la última versión desde <a href="${REPO}/releases/latest" target="_blank" rel="noopener noreferrer">GitHub Releases</a>:`,
+        html: `Descarga la última versión desde <a href="${RELEASE_LATEST_URL}" target="_blank" rel="noopener noreferrer">GitHub Releases</a>:`,
       },
       {
         type: "list",
         items: [
-          "<strong>Windows x64:</strong> <code>LiveAudio-Setup-1.6.0.exe</code> (instalador gráfico).",
-          "<strong>Linux x86_64:</strong> el <code>.AppImage</code> o el <code>.deb</code> de la página del release v1.6.0 (las actualizaciones son manuales).",
-          "<strong>Solo CLI:</strong> <code>liveaudio-cli-1.6.0-windows-x64.zip</code> y <code>liveaudio-cli-1.6.0-linux-x64.tar.gz</code> contienen la CLI y el worker ASR, no la app de escritorio.",
+          `<strong>Windows x64:</strong> <code>${WINDOWS_INSTALLER_FILENAME}</code> (instalador gráfico NSIS, runtime VC++ incluido, actualizador firmado Minisign).`,
+          "<strong>Linux x86_64:</strong> <code>.AppImage</code> (actualizador firmado Minisign) o <code>.deb</code> (actualizar vía GitHub Releases), ambos con loopback PipeWire/PulseAudio y respaldo ALSA.",
+          `<strong>Solo CLI:</strong> <code>${WINDOWS_CLI_FILENAME}</code> y <code>${LINUX_CLI_FILENAME}</code> contienen la CLI (incluido <code>liveaudio-cli mcp</code>) y el worker ASR, no la app de escritorio.`,
         ],
       },
       {
         type: "prose",
-        html: "Cero dependencias de Python se descargan o instalan. Los modelos Whisper se descargan localmente en su primera selección.",
+        html: "No se descarga ni instala ninguna dependencia de Python. Los modelos se descargan localmente bajo demanda y se verifican mediante SHA-256.",
       },
       {
         type: "callout",
         flag: "actualizaciones",
-        html: "Si estás en la v1.5.1 o anterior, instala la v1.6.0 manualmente una vez: esas versiones no tienen actualizador integrado. Desde la v1.6.0 la app de Windows se actualiza sola (firmada con Minisign, nunca mientras transcribes o OBS está conectado); en Linux, descarga las nuevas versiones manualmente.",
+        html: `Si estás en la v1.5.1 o anterior, instala ${LIVEAUDIO_TAG} manualmente una vez: esas versiones no incluyen el actualizador firmado. Desde ${LIVEAUDIO_TAG}, Windows (NSIS) y Linux <code>.AppImage</code> cuentan con actualizaciones seguras Minisign Ed25519 (bloqueadas mientras estás en directo o OBS está conectado); en Linux <code>.deb</code> se actualiza desde GitHub Releases.`,
       },
       {
         type: "heading",
@@ -1440,7 +1460,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Abre la app — la cabecera muestra el estado en vivo (escuchando / estado VAD) y la pestaña <strong>Avanzado</strong> muestra el dispositivo de cómputo activo (CUDA o CPU). Habla, y los subtítulos aparecen en el feed en vivo y se envían a OBS.",
+        html: "Abre la app — la cabecera muestra el estado en vivo (escuchando / estado VAD) y la pestaña <strong>Avanzado</strong> rediseñada muestra el motor ASR activo (Parakeet-TDT o Whisper) y el dispositivo de cómputo (CPU, DirectML o CUDA opcional). Habla, y los subtítulos aparecen en el feed en vivo y se envían a OBS.",
       },
       {
         type: "heading",
@@ -1454,11 +1474,11 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       {
         type: "heading",
         id: "deteccion-gpu",
-        text: "Detección automática de GPU",
+        text: "Opciones de cómputo (CPU, DirectML, CUDA opcional)",
       },
       {
         type: "prose",
-        html: "LiveAudio puede detectar una GPU NVIDIA. La inferencia CUDA también requiere bibliotecas compatibles; la detección no garantiza que CUDA esté preparado. La transcripción puede usar la CPU.",
+        html: "Con el interruptor de <strong>hilos de CPU automáticos</strong> activado, Parakeet-TDT 0.6B v3 int8 corre con fluidez en portátiles de 4 hilos sin GPU. En GPUs DirectX 12, DirectML acelera ONNX Runtime de inmediato con respaldo automático en CPU. Para GPUs NVIDIA, existe un worker voluntario CTranslate2 CUDA 12.8 (cuBLAS 12.8 / cuDNN 9) con verificación de protocolo y respaldo automático a ONNX Runtime.",
       },
       {
         type: "heading",
@@ -1467,7 +1487,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Los perfiles son presets sensibles a los FPS. Editar un perfil integrado lo convierte en <strong>Personalizado</strong>; los cambios solo se activan al pulsar <strong>Guardar</strong>.",
+        html: "Los perfiles son presets conscientes de los FPS. Editar un perfil integrado lo convierte en <strong>Personalizado</strong>; los cambios solo se activan al pulsar <strong>Guardar</strong>.",
       },
       {
         type: "table",
@@ -1485,11 +1505,11 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       {
         type: "heading",
         id: "blacklist",
-        text: "Blacklist de alucinaciones",
+        text: "Blacklist de alucinaciones y conmutadores",
       },
       {
         type: "prose",
-        html: "Whisper puede inventar frases durante el silencio. LiveAudio las filtra con una blacklist editable. La lista por defecto (de <code>config.json.example</code>) es:",
+        html: "Para español e inglés, cambiar a <strong>NVIDIA Parakeet-TDT 0.6B v3</strong> elimina casi por completo las alucinaciones en silencio porque su decodificador transductor emite blanco. Al usar Whisper, LiveAudio incluye una <strong>Blacklist mejorada de coincidencia por palabra completa en los bordes</strong> (junto con interruptores dedicados para blacklist y prompt de contexto en <strong>Avanzado</strong>): recorta frases bloqueadas solo en los extremos sin descartar oraciones largas. Lista por defecto:",
       },
       {
         type: "code",
@@ -1498,48 +1518,45 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Las palabras y frases se separan por comas y son totalmente editables desde la pestaña <strong>Avanzado</strong> (<strong>Vocabulario y filtros</strong>) — agrega el relleno que tu stream tiende a alucinar, o borra entradas que quieras conservar.",
+        html: "Las palabras y frases se separan por comas y son totalmente editables desde la pestaña <strong>Avanzado</strong> (<strong>Vocabulario y filtros</strong>).",
       },
       {
         type: "heading",
         id: "modelos",
-        text: "Modelos",
+        text: "Motores y modelos",
       },
       {
         type: "prose",
-        html: "Elige un modelo en la pestaña <strong>Avanzado</strong> (<strong>Motor y rendimiento</strong>, Tamaño de Modelo Whisper). El dispositivo de audio y el perfil están en la pestaña <strong>Inicio</strong>. Los modelos más grandes pueden necesitar más memoria y tiempo de procesamiento. Un modelo recién seleccionado puede requerir una descarga.",
+        html: "Elige el motor ASR y el modelo en la pestaña <strong>Avanzado</strong> (<strong>Motor y rendimiento</strong>). El dispositivo de audio, el idioma (incluido <strong>Seguir idioma de OpenCohost</strong>) y el perfil están en <strong>Inicio</strong>. Los modelos se descargan bajo demanda con verificación SHA-256 y respaldo automático en CPU.",
       },
       {
         type: "table",
-        head: ["Modelo", "Descarga inicial", "Notas"],
+        head: ["Motor / Modelo", "Recomendado para", "Notas"],
         rows: [
-          ["<code>tiny</code>", "~150 MB", "El más rápido; bien en CPUs modestas."],
-          ["<code>base</code>", "~300 MB", "Un escalón más de precisión, todavía liviano."],
           [
-            "<code>small</code>",
-            "~480 MB",
-            "Default equilibrado para CPU.",
+            "<code>Parakeet-TDT 0.6B v3</code>",
+            "Recomendado para ES y EN",
+            "ONNX Runtime (int8 CPU / DirectML GPU). ~2&times; más rápido en CPU que Whisper small, casi sin alucinaciones, fluido en equipos de 4 hilos.",
           ],
-          [
-            "<code>turbo</code>",
-            "~1.5 GB",
-            "La mayor precisión aquí; mejor con GPU.",
-          ],
+          ["<code>Whisper tiny</code>", "Respaldo ultraligero", "~150 MB; el nivel más rápido de Whisper."],
+          ["<code>Whisper base</code>", "Multilingüe ligero", "~300 MB; otros idiomas y traducción al inglés."],
+          ["<code>Whisper small</code>", "Multilingüe equilibrado", "~480 MB; prompts de contexto y traducción al inglés."],
+          ["<code>Whisper turbo</code>", "Alta precisión multilingüe", "~1.5 GB; ideal con DirectML o GPU CUDA opcional."],
         ],
       },
       {
         type: "callout",
-        flag: "primer uso: internet",
-        html: "En una conexión con límite de datos, considera las descargas de dependencias y modelos. El tamaño y el almacenamiento necesarios dependen de los componentes seleccionados.",
+        flag: "modelos sha-256 bajo demanda",
+        html: "En una conexión medida, ten en cuenta la descarga inicial al cambiar de motor o tamaño (y del runtime CUDA opcional solo si lo activas). Una vez en caché, la transcripción funciona 100% sin conexión.",
       },
       {
         type: "heading",
         id: "archivos-de-sesion",
-        text: "Archivos de sesión",
+        text: "Archivos de sesión (.srt, .vtt, .jsonl)",
       },
       {
         type: "prose",
-        html: "Cada sesión se guarda en disco como un transcript (<code>transcript.jsonl</code>) subtítulos WebVTT (<code>subtitles.vtt</code>) y subtítulos SubRip (<code>subtitles.srt</code>):",
+        html: "Cada sesión se guarda localmente en disco como transcripción JSONL (<code>transcript.jsonl</code>), subtítulos WebVTT (<code>subtitles.vtt</code>) y subtítulos SubRip listos para DaVinci Resolve (<code>subtitles.srt</code>):",
       },
       {
         type: "code",
@@ -1551,14 +1568,14 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
 
   websocket_obs: {
     slug: "websocket_obs",
-    navLabel: "websocket-obs",
-    metaTitle: "Docs de LiveAudio — WebSocket y OBS",
+    navLabel: "WebSocket y OBS",
+    metaTitle: "Documentación de LiveAudio — WebSocket y OBS",
     metaDescription:
-      "El WebSocket de LiveAudio: ws://127.0.0.1:8765 (ws_port configurable, puertos alternativos), la URL del overlay, el esquema del payload JSON, la política de backlog (auto / live_only / send_all), la seguridad loopback con lista de orígenes permitidos y la configuración del Browser Source en OBS.",
+      "El WebSocket de LiveAudio: ws://127.0.0.1:8765, reconexión anti-ráfagas en /overlay, 7 temas en vivo para OBS, esquema JSON, política de backlog y seguridad loopback con lista de orígenes permitidos.",
     eyebrow: "// docs / websocket-obs",
     h1: "WebSocket y OBS",
     lede:
-      "LiveAudio levanta un servidor WebSocket local que emite subtítulos en JSON en tiempo real. OBS es el destino integrado mediante el overlay incluido subtitulos_obs.html, pero cualquier cliente HTML o WebSocket en localhost puede conectarse y recibir la misma transmisión.",
+      "LiveAudio levanta un servidor WebSocket local que emite subtítulos en JSON en tiempo real hacia el /overlay integrado para OBS (7 temas en vivo y reconexión anti-ráfagas) o cualquier cliente HTML/WebSocket en localhost.",
     blocks: [
       {
         type: "heading",
@@ -1639,7 +1656,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
           [
             "<code>latency</code>",
             "number",
-            "Segundos que Whisper usó para transcribir el segmento.",
+            "Segundos que el motor ASR (Parakeet-TDT o Whisper) usó para transcribir el segmento.",
           ],
           [
             "<code>is_replay</code>",
@@ -1774,7 +1791,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       {
         type: "list",
         items: [
-          "<strong>Reconexión.</strong> El overlay incluido reintenta con espera exponencial de 1 s hasta 8 s y recorre los puertos <code>ws_port</code> a <code>ws_port + 9</code>, así que también conecta si OBS abre antes que LiveAudio. Un cliente propio necesita su propia lógica de reintento.",
+          "<strong>Reconexión anti-ráfagas.</strong> La página integrada <code>/overlay</code> reintenta con espera exponencial de 1 s hasta 8 s, recorre los puertos <code>ws_port</code> a <code>ws_port + 9</code> y usa reconexión anti-ráfagas para mantener limpios los subtítulos si OBS reconecta en pleno directo. Un cliente propio necesita su propia lógica de reintento.",
           "<strong>Broadcast.</strong> Cada cliente conectado recibe cada mensaje. Varios clientes (OBS más una pestaña de depuración) ven el mismo flujo, y un cliente lento no bloquea a los demás.",
           "<strong>Clientes lentos.</strong> Cada cliente tiene una cola de salida de 64 frames y una cola de reintento de 10 frames. Cuando la cola de reintento se llena se descarta el frame más antiguo; el cliente no se desconecta.",
         ],
@@ -1838,14 +1855,14 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
 
   troubleshooting: {
     slug: "troubleshooting",
-    navLabel: "solución-de-problemas",
-    metaTitle: "Docs de LiveAudio — Solución de problemas",
+    navLabel: "Solución de problemas",
+    metaTitle: "Documentación de LiveAudio — Solución de problemas",
     metaDescription:
-      "Soluciones a los problemas más comunes de LiveAudio: sin subtítulos, fallback de GPU, OBS que no conecta en el puerto 8765, allowlist loopback, actualización desde la versión Python, audio que se corta — más la exportación de diagnóstico local-first.",
+      "Soluciones a problemas comunes de LiveAudio: sin subtítulos, loopback en Windows y Linux, alucinaciones (Parakeet-TDT vs Whisper), respaldo DirectML/CUDA, reconexión de OBS, SmartScreen y diagnóstico local.",
     eyebrow: "// docs / solución-de-problemas",
     h1: "Solución de problemas",
     lede:
-      "Soluciones de raíz para los problemas de configuración más comunes — captura, DirectML/CUDA, la conexión WebSocket y actualizaciones desde versiones heredadas — seguidas de la exportación de diagnóstico local-first.",
+      "Soluciones de raíz para los problemas de configuración más comunes — loopback WASAPI en Windows y PipeWire/PulseAudio en Linux, respaldo DirectML/CUDA, alucinaciones en silencio, reconexión WebSocket en OBS y diagnóstico local.",
     blocks: [
       {
         type: "heading",
@@ -1854,21 +1871,21 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Verifica el dispositivo de audio seleccionado en el panel. Si capturas el sonido del escritorio en Windows, asegúrate de haber activado el canal de <strong>WASAPI loopback</strong> correcto.",
+        html: "Verifica el dispositivo de audio seleccionado en la pestaña <strong>Inicio</strong>. El loopback de audio del sistema funciona tanto en <strong>Windows</strong> (WASAPI loopback) como en <strong>Linux</strong> (captura de monitor PipeWire/PulseAudio con respaldo ALSA) — comprueba que seleccionaste el canal monitor activo.",
       },
       {
         type: "callout",
-        flag: "solo Windows",
-        html: "El loopback de audio del sistema es solo de Windows. En Linux, captura desde el micrófono.",
+        flag: "alucinaciones",
+        html: "Si Whisper inventa frases durante el silencio, cambia a <strong>NVIDIA Parakeet-TDT 0.6B v3</strong> para español e inglés (casi sin alucinaciones en silencio) o activa el interruptor de la Blacklist mejorada de recorte por bordes en <strong>Avanzado</strong>.",
       },
       {
         type: "heading",
         id: "cuda-sin-memoria",
-        text: "Error de CUDA / sin memoria",
+        text: "Error de GPU / CUDA o sin memoria",
       },
       {
         type: "prose",
-        html: "Si la transcripción falla con un error de GPU o se queda sin memoria, cambia el dispositivo de cómputo de <strong>cuda</strong> a <strong>cpu</strong> o carga un modelo más chico (<code>tiny</code> o <code>base</code>) en la pestaña <strong>Avanzado</strong>, y cierra otros programas que usen mucho la GPU (OBS con NVENC, juegos). Actualizar el driver de la GPU resuelve muchos fallos de runtime.",
+        html: "Si la transcripción falla con un error de GPU o se queda sin VRAM, cambia a <strong>CPU</strong> (con Parakeet-TDT 0.6B v3 int8 y el interruptor de hilos de CPU automáticos) o a <strong>DirectML</strong> en la pestaña <strong>Avanzado</strong>, o elige un modelo Whisper más ligero (<code>tiny</code> o <code>base</code>). El worker opcional CTranslate2 CUDA 12.8 valida cuBLAS 12.8 / cuDNN 9 y vuelve automáticamente a ONNX Runtime si CUDA falla.",
       },
       {
         type: "heading",
@@ -1914,7 +1931,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       {
         type: "callout",
         flag: "sin firma de código",
-        html: `El instalador aún no está firmado, así que SmartScreen puede avisar. Elige <strong>Más información &rarr; Ejecutar de todas formas</strong>. Los archivos exactos y sus hashes están publicados en la <a href="${REPO}/releases/tag/v1.6.0" target="_blank" rel="noopener noreferrer">página del release v1.6.0</a>.`,
+        html: `El instalador de Windows aún no cuenta con firma comercial, así que SmartScreen puede avisar. Elige <strong>Más información &rarr; Ejecutar de todas formas</strong>. Los archivos exactos y sus hashes SHA-256 están publicados en <a href="${RELEASE_LATEST_URL}" target="_blank" rel="noopener noreferrer">GitHub Releases</a>.`,
       },
       {
         type: "heading",
@@ -1981,14 +1998,14 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
 
   config: {
     slug: "config",
-    navLabel: "configuración",
-    metaTitle: "Docs de LiveAudio — Configuración",
+    navLabel: "Configuración",
+    metaTitle: "Documentación de LiveAudio — Configuración",
     metaDescription:
-      "Referencia de config.json de LiveAudio: ubicación del archivo en Windows, cada clave de opción con su tipo y un ejemplo completo.",
+      "Referencia de config.json de LiveAudio: ubicaciones en Windows y Linux, claves para Parakeet-TDT y Whisper, opciones de cómputo CPU/DirectML/CUDA, blacklist por bordes, interruptores MCP y ejemplo completo.",
     eyebrow: "// docs / configuración",
     h1: "Configuración",
     lede:
-      "LiveAudio escribe un config.json con valores por defecto sensatos en la primera ejecución. Cambia todo desde la GUI o edita el archivo directamente. Esta página es la referencia completa de claves.",
+      "LiveAudio escribe un config.json con valores por defecto sensatos en la primera ejecución. Cambia todo desde la GUI (incluida la pestaña Avanzado rediseñada) o edita el archivo directamente. Esta página es la referencia de claves.",
     blocks: [
       {
         type: "heading",
@@ -1997,13 +2014,14 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "La configuración y las sesiones pueden estar en <code>%APPDATA%\\LiveAudio</code> en Windows. Haz una copia de seguridad antes de actualizar.",
+        html: "La configuración y las sesiones se guardan en local (<code>%APPDATA%\\LiveAudio</code> en Windows, configuración XDG en Linux). Haz una copia de seguridad antes de actualizar.",
       },
       {
         type: "table",
         head: ["Build", "Ruta"],
         rows: [
-          ["Windows x64 (v1.6.0, Rust)", "<code>%APPDATA%\\LiveAudio</code>"],
+          [`Windows x64 (${LIVEAUDIO_TAG}, Rust)`, "<code>%APPDATA%\\LiveAudio</code>"],
+          [`Linux x86_64 (${LIVEAUDIO_TAG}, .AppImage / .deb)`, "<code>~/.config/LiveAudio</code> (configuración XDG)"],
           ["Cualquier build (override)", "variable de entorno <code>LIVEAUDIO_HOME</code>"],
           ["Modelos (Windows)", "<code>%LOCALAPPDATA%\\LiveAudio\\models\\onnx</code>"],
         ],
@@ -2015,7 +2033,7 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
       },
       {
         type: "prose",
-        html: "Usa el instalador oficial de Windows; el ejecutable de escritorio separado no incluye la CLI ni los recursos.",
+        html: "Usa el instalador oficial de Windows o el paquete .AppImage / .deb de Linux; los archivos CLI solo contienen la CLI y el worker ASR, no la app de escritorio.",
       },
       {
         type: "heading",
@@ -2026,22 +2044,32 @@ const DOCS_ES: Record<DocSection, DocSectionContent> = {
         type: "table",
         head: ["Clave", "Tipo", "Descripción"],
         rows: [
-          ["<code>output_dir</code>", "string", "Ruta a la carpeta de sesiones."],
-          ["<code>device</code>", "string", '"cpu" (por defecto) o "cuda".'],
+          ["<code>output_dir</code>", "string", "Ruta a la carpeta de sesiones (<code>.srt</code>, <code>.vtt</code>, <code>.jsonl</code>)."],
+          ["<code>device</code>", "string", '<code>"cpu"</code> (por defecto), <code>"directml"</code> (GPU DirectX 12) o <code>"cuda"</code> opcional (CTranslate2 CUDA 12.8).'],
           [
-            "<code>cpu_threads</code>",
-            "number",
-            "Número de hilos de CPU para inferencia (por defecto: la mitad de los núcleos lógicos, mínimo 1).",
+            "<code>auto_cpu_threads</code>, <code>cpu_threads</code>",
+            "boolean / number",
+            "Interruptor de hilos de CPU automáticos (recomendado en portátiles de 4 hilos sin GPU) o número manual de hilos.",
           ],
           [
-            "<code>model_size</code>",
+            "<code>asr_engine</code>, <code>model_size</code>",
             "string",
-            'Modelo Whisper, guardado como la etiqueta elegida en Avanzado: empieza con tiny, base, small o turbo. Por defecto: "small (Balance CPU)".',
+            'Elige NVIDIA <code>parakeet-tdt-0.6b-v3</code> (recomendado para ES/EN) o Whisper (<code>tiny</code>, <code>base</code>, <code>small</code>, <code>turbo</code>).',
           ],
           [
-            "<code>blacklist</code>",
-            "string",
-            "Palabras de filtro separadas por coma (ver la blacklist en primeros-pasos).",
+            "<code>blacklist</code>, <code>blacklist_enabled</code>",
+            "string / boolean",
+            "Frases de filtro separadas por coma con interruptor propio. La coincidencia por palabra completa recorta solo en los extremos sin descartar oraciones largas.",
+          ],
+          [
+            "<code>context_prompt_enabled</code>",
+            "boolean",
+            "Interruptor dedicado para activar o desactivar los prompts de contexto de Whisper.",
+          ],
+          [
+            "<code>follow_opencohost_language</code>",
+            "boolean",
+            'Interruptor voluntario "Seguir idioma de OpenCohost" para sincronizar automáticamente el idioma con OpenCohost.',
           ],
           [
             "<code>continuous_session</code>",

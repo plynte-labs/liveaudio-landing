@@ -3,38 +3,40 @@
  * Política de Privacidad (ES) — /es/privacy/
  *
  * Divulga:
- *   1. Garantía de procesamiento de audio 100% local con Whisper en LiveAudio
- *   2. Integración con Microsoft Clarity (mapas de calor, repetición de sesiones, _clck, _clsk, enlace a declaración de privacidad)
- *   3. Analítica y Speed Insights de Vercel
+ *   1. Cero recolección y cero retención de datos en la app de escritorio LiveAudio (100% local)
+ *   2. Alcance de red saliente (Aplicación de escritorio): modelos SHA-256 bajo demanda, comprobación opcional cada 24 h, runtime CUDA opcional
+ *   3. Analítica exclusiva del sitio web: Microsoft Clarity (mapas de calor, repetición de sesiones, _clck, _clsk, declaración de privacidad)
  *   4. Derechos de privacidad y canales de contacto
  */
 import LegalPage from "../../components/LegalPage.astro";
 import { localizedPath } from "../../i18n/routes";
+import { REPO_URL, ISSUES_URL } from "../../config/release";
 
 const path = localizedPath("es", "privacy");
 ---
 
 <LegalPage
   title="Política de Privacidad — LiveAudio"
-  description="Política de Privacidad para LiveAudio y liveaudio.opencohost.com. Conozca nuestra arquitectura de procesamiento de audio 100% local, analítica web y la integración de Microsoft Clarity."
+  description="Política de Privacidad para LiveAudio y liveaudio.opencohost.com. La aplicación de escritorio LiveAudio no recopila ni retiene datos: el audio y las transcripciones nunca salen de tu equipo. Solo el sitio web utiliza Microsoft Clarity."
   eyebrow="CUMPLIMIENTO · LEGAL"
   heading="Política de Privacidad"
-  lastUpdated="Última actualización: Octubre 2026"
-  badge="PROCESAMIENTO 100% LOCAL"
+  lastUpdated="Última actualización: Noviembre 2026"
+  badge="SIN DATOS EN LA APP · 100% LOCAL"
   lang="es"
   path={path}
 >
   <div class="callout-signal">
-    <h3>
+    <h2>
       <span class="live-dot" aria-hidden="true"></span>
-      Garantía de Procesamiento de Audio 100% Local
-    </h3>
+      Cero Recolección de Datos y Procesamiento 100% Local
+    </h2>
     <p>
-      LiveAudio está diseñado desde su arquitectura fundamental como una <strong>aplicación de escritorio local</strong>.
-      Todo el reconocimiento de voz, la captura de audio y la inferencia de inteligencia artificial con Whisper se ejecutan
-      exclusivamente en el hardware local de su equipo (CPU o GPU compatible con CUDA/Vulkan).
-      <strong>Ningún dato de audio, voz o transcripción se envía, retransmite ni almacena jamás en servidores externos en la nube,
-      APIs remotas ni bases de datos de terceros.</strong>
+      <strong>No recopilamos ni retenemos ningún dato de usuario en la aplicación de escritorio LiveAudio</strong>: ejecutarse
+      100% en local es el beneficio principal de LiveAudio. Todo el reconocimiento de voz, la captura de audio y la inferencia
+      de IA (NVIDIA Parakeet-TDT y Whisper) se ejecutan exclusivamente en el hardware local de su equipo (CPU, DirectML en GPU
+      DirectX 12 o NVIDIA CUDA opcional mediante CTranslate2).
+      <strong>El audio y las transcripciones nunca salen de tu equipo.</strong> Únicamente este sitio web
+      (<code>liveaudio.opencohost.com</code>) utiliza Microsoft Clarity para analítica web.
     </p>
   </div>
 
@@ -44,55 +46,91 @@ const path = localizedPath("es", "privacy");
   </p>
   <ul>
     <li>
-      <strong>La Aplicación de Escritorio LiveAudio:</strong> El software descargable para Windows y Linux que genera
-      subtítulos en tiempo real mediante Whisper a través de un WebSocket local.
+      <strong>La Aplicación de Escritorio LiveAudio:</strong> El software gratuito y de código abierto (MIT) para Windows x64 y
+      Linux x86_64 que genera subtítulos en tiempo real de forma local y los envía a OBS a través de un WebSocket local. La
+      aplicación de escritorio no recopila ni retiene ningún dato en nuestros servidores.
     </li>
     <li>
-      <strong>El Sitio Web de LiveAudio:</strong> El sitio de documentación y presentación accesible en <code>liveaudio.opencohost.com</code>.
+      <strong>El Sitio Web de LiveAudio:</strong> El sitio de documentación y presentación accesible en
+      <code>liveaudio.opencohost.com</code>, que es la única superficie que utiliza analítica web mediante Microsoft Clarity.
     </li>
   </ul>
 
-  <h2>2. Aplicación de Escritorio LiveAudio</h2>
+  <h2>2. Aplicación de Escritorio LiveAudio — Cero Recolección y Retención</h2>
   <p>
-    El software de escritorio LiveAudio no recopila, graba, transmite ni comercializa su información personal ni sus señales de audio:
+    El software de escritorio LiveAudio no recopila información personal, no retiene datos de usuarios en servidores externos y
+    jamás graba, transmite ni comercializa sus flujos de audio, transcripciones, ajustes ni uso:
   </p>
   <ul>
     <li>
-      <strong>Cero Transmisión de Audio:</strong> Las señales de audio capturadas desde su micrófono o el audio del sistema se procesan
-      únicamente en la memoria RAM de su equipo y se descartan inmediatamente tras emitir los fotogramas de subtítulos.
+      <strong>Cero Transmisión de Audio:</strong> Las señales de audio capturadas desde su micrófono o el loopback de audio del
+      sistema (WASAPI en Windows o monitor PipeWire/PulseAudio con respaldo ALSA en Linux) se procesan en memoria en su equipo y
+      se descartan tras emitir los fotogramas de subtítulos.
     </li>
     <li>
-      <strong>Inferencia Local del Modelo:</strong> Los pesos y binarios del modelo Whisper residen en su disco local y se procesan
-      en su propia CPU o acelerador gráfico.
+      <strong>Inferencia Local de Modelos:</strong> Los modelos ONNX Runtime (Parakeet y Whisper) y los pesos opcionales de
+      CTranslate2 se almacenan en su disco local y se ejecutan íntegramente en su propia CPU, DirectML (GPU DirectX 12) o
+      NVIDIA CUDA opcional (CTranslate2).
     </li>
     <li>
       <strong>WebSocket Estrictamente Local:</strong> LiveAudio emite los eventos de subtítulos a través de un servidor WebSocket
-      configurado por defecto en <code>127.0.0.1:8765</code>. Este canal es estrictamente interno a su equipo y nunca se expone a internet
-      a menos que usted configure explícitamente un túnel de red propio.
+      vinculado únicamente a <code>127.0.0.1</code> (puerto predeterminado <code>8765</code>) con lista de orígenes loopback
+      permitidos. Este canal permanece estrictamente interno a su equipo salvo que usted configure un túnel remoto por su cuenta.
     </li>
     <li>
-      <strong>Sin Telemetría Oculta:</strong> La aplicación no incluye rastreadores de comportamiento en segundo plano ni módulos automáticos
-      de telemetría hacia nuestros servidores.
+      <strong>Cero Telemetría y Almacenamiento Local:</strong> Las transcripciones de sesión (<code>.srt</code>, <code>.vtt</code>,
+      <code>.jsonl</code>), la configuración y las estadísticas de uso se guardan únicamente en su disco local. La aplicación no
+      incluye SDKs de analítica, telemetría de uso ni reportes automáticos de fallos.
     </li>
   </ul>
 
-  <h2>3. Recopilación de Información en el Sitio Web</h2>
+  <h2>3. Alcance de red saliente (Aplicación de escritorio)</h2>
   <p>
-    Al navegar en <code>liveaudio.opencohost.com</code>, recopilamos métricas estadísticas agregadas para evaluar el rendimiento técnico,
-    detectar enlaces rotos y mejorar la documentación. No solicitamos registros de cuenta ni recopilamos identificadores personales directos
-    como nombres, direcciones postales o datos financieros.
+    La aplicación de escritorio LiveAudio solo realiza conexiones de red salientes para los siguientes fines explícitos y nunca
+    transmite audio, transcripciones ni telemetría:
+  </p>
+  <ul>
+    <li>
+      <strong>Descargas de modelos bajo demanda:</strong> Los modelos ONNX de Parakeet-TDT y Whisper se descargan desde los
+      servidores oficiales de modelos cuando usted selecciona un modelo que aún no está en caché local, y cada descarga se verifica
+      mediante SHA-256 antes de usarse.
+    </li>
+    <li>
+      <strong>Comprobación opcional de actualizaciones en GitHub Releases cada 24 horas:</strong> La aplicación puede consultar
+      únicamente los metadatos de la última versión en GitHub Releases cada 24 horas (cero telemetría; desactivable en cualquier
+      momento en <strong>Ajustes &gt; Avanzado</strong>). Las actualizaciones firmadas dentro de la app (Minisign Ed25519 en
+      Windows NSIS y Linux <code>.AppImage</code>) protegen las transmisiones y nunca se aplican mientras la transcripción está
+      activa o OBS está conectado.
+    </li>
+    <li>
+      <strong>Descarga voluntaria del runtime NVIDIA CUDA:</strong> El worker opcional CTranslate2 CUDA (<code>ct2-worker</code>)
+      y las bibliotecas de ejecución cuBLAS/cuDNN solo se descargan si usted lo solicita explícitamente en los ajustes.
+    </li>
+  </ul>
+  <p>
+    <strong>El audio y las transcripciones nunca salen de tu equipo.</strong> Una vez descargados los modelos elegidos, la
+    transcripción funciona completamente sin conexión.
   </p>
 
-  <h3>Integración con Microsoft Clarity</h3>
+  <h2>4. Recopilación de Información y Analítica en el Sitio Web</h2>
   <p>
-    Nos asociamos con Microsoft Clarity y Microsoft Advertising para registrar cómo utiliza e interactúa con nuestro sitio web a través
-    de métricas de comportamiento, mapas de calor (heatmaps) y repetición de sesiones (session replay) con el fin de mejorar y promocionar nuestros
-    productos y servicios. Los datos de uso del sitio web se recopilan utilizando cookies propias y de terceros y otras tecnologías de seguimiento
-    para determinar la popularidad de productos y servicios y la actividad en línea. Asimismo, utilizamos esta información para la optimización del sitio,
-    fines de seguridad y prevención de fraude, y publicidad.
+    <strong>Únicamente este sitio web (<code>liveaudio.opencohost.com</code>) recopila analítica web.</strong> Al navegar por la
+    documentación y las páginas informativas, utilizamos exclusivamente Microsoft Clarity para comprender cómo interactúan los
+    visitantes con el sitio, detectar problemas de usabilidad y mejorar la documentación. No utilizamos ningún otro proveedor de
+    analítica en este sitio web, no solicitamos registro de cuenta ni recopilamos identificadores personales directos como
+    nombres, direcciones postales o datos financieros.
+  </p>
+
+  <h3>Integración con Microsoft Clarity (Solo sitio web)</h3>
+  <p>
+    Nos asociamos con Microsoft Clarity y Microsoft Advertising en <code>liveaudio.opencohost.com</code> para registrar cómo
+    utiliza e interactúa con nuestro sitio web mediante métricas de comportamiento, mapas de calor (heatmaps) y repetición de
+    sesiones (session replay) con el fin de mejorar el sitio y su documentación. Los datos de uso del sitio web se recopilan
+    mediante cookies propias y de terceros y otras tecnologías de seguimiento para evaluar la actividad del sitio, optimizar la
+    experiencia y reforzar la seguridad y la prevención de fraude.
   </p>
   <p>
-    Microsoft Clarity establece las siguientes cookies propias en su navegador:
+    Microsoft Clarity establece las siguientes cookies propias en su navegador al visitar este sitio web:
   </p>
 
   <div class="table-wrap">
@@ -123,22 +161,15 @@ const path = localizedPath("es", "privacy");
   </div>
 
   <p>
-    Clarity recopila interacciones como clics del ratón, desplazamientos (scrolling) y dimensiones agregadas de la pantalla.
-    Los campos de texto sensibles se ocultan y enmascaran automáticamente antes de ser transmitidos.
-    Para obtener información detallada sobre cómo Microsoft recopila y procesa sus datos personales, consulte la
+    Clarity recopila interacciones en el sitio web como clics del ratón, desplazamientos (scrolling) y dimensiones agregadas de
+    la pantalla. Los campos de texto sensibles se ocultan y enmascaran automáticamente antes de ser transmitidos.
+    Para obtener información detallada sobre cómo Microsoft recopila y procesa los datos, consulte la
     <a href="https://privacy.microsoft.com/privacystatement" target="_blank" rel="noopener noreferrer">Declaración de Privacidad de Microsoft</a>.
   </p>
 
-  <h3>Vercel Analytics y Speed Insights</h3>
+  <h2>5. Gestión de Cookies y Preferencias</h2>
   <p>
-    Utilizamos Vercel Analytics y Speed Insights para supervisar métricas agregadas de Core Web Vitals (como LCP, INP y CLS) y tiempos de entrega
-    de páginas. Vercel Analytics está diseñado para respetar la privacidad: no emplea cookies de seguimiento persistentes, no recopila datos personales
-    identificables y procesa las solicitudes mediante identificadores IP anónimos y temporales.
-  </p>
-
-  <h2>4. Gestión de Cookies y Preferencias</h2>
-  <p>
-    Usted puede configurar, bloquear o eliminar cookies en cualquier momento a través de las opciones de su navegador web:
+    Usted puede configurar, bloquear o eliminar las cookies del sitio web en cualquier momento desde las preferencias de su navegador:
   </p>
   <ul>
     <li>Bloquear cookies de terceros o inhabilitar todas las cookies.</li>
@@ -150,34 +181,42 @@ const path = localizedPath("es", "privacy");
     <a href="https://account.microsoft.com/privacy/ad-settings" target="_blank" rel="noopener noreferrer">página de configuración de anuncios de Microsoft</a>.
   </p>
 
-  <h2>5. Retención y Seguridad de Datos</h2>
+  <h2>6. Retención y Seguridad de Datos</h2>
   <p>
-    Los registros de analítica web agregados se conservan según los periodos estándar de Microsoft Clarity (habitualmente entre 30 y 90 días
-    para repeticiones de sesión). Protegemos el sitio web mediante encabezados estrictos de Content-Security-Policy (CSP), cifrado HTTPS moderno (TLS 1.3)
-    y distribución estática verificada.
+    <strong>Aplicación de escritorio:</strong> No retenemos ningún dato de usuario porque la aplicación de escritorio LiveAudio
+    no recopila datos ni envía audio, transcripciones o ajustes a nuestros servidores.
+  </p>
+  <p>
+    <strong>Sitio web:</strong> Los registros de analítica web agregados recopilados por Microsoft Clarity se conservan según
+    los periodos estándar de Microsoft Clarity (habitualmente entre 30 y 90 días para repeticiones de sesión). Protegemos el
+    sitio web mediante encabezados estrictos de Content-Security-Policy (CSP), cifrado HTTPS moderno (TLS 1.3) y distribución
+    estática verificada.
   </p>
 
-  <h2>6. Transparencia de Código Abierto</h2>
+  <h2>7. Transparencia de Código Abierto</h2>
   <p>
-    Dado que LiveAudio es un software de código abierto bajo la Licencia MIT, cualquier desarrollador puede auditar el código fuente en nuestro
-    <a href="https://github.com/plynte-labs/LiveAudio" target="_blank" rel="noopener noreferrer">repositorio de GitHub</a>
-    para comprobar que ningún flujo de audio ni datos privados salen de su máquina.
+    Dado que LiveAudio es un software de código abierto bajo la Licencia MIT, cualquier desarrollador puede auditar el código
+    fuente del pipeline de audio en Rust, el servidor WebSocket, el worker ONNX Runtime (Parakeet y Whisper) y el comprobador de
+    actualizaciones en nuestro
+    <a href={REPO_URL} target="_blank" rel="noopener noreferrer">repositorio de GitHub</a>
+    para comprobar que ningún flujo de audio, transcripción ni telemetría sale de su equipo.
   </p>
 
-  <h2>7. Sus Derechos de Privacidad</h2>
+  <h2>8. Sus Derechos de Privacidad</h2>
   <p>
-    Conforme a las leyes de protección de datos vigentes (como el RGPD o leyes internacionales equivalentes), usted tiene derecho a solicitar
-    acceso, rectificación o supresión de los datos personales que pudieran haberse registrado. Debido a que no almacenamos perfiles de usuario
-    ni identificadores personales directos en el sitio, podríamos solicitar detalles contextuales para localizar registros anonimizados si fuera necesario.
+    Conforme a las leyes de protección de datos vigentes (como el RGPD o leyes internacionales equivalentes), usted tiene derecho
+    a solicitar acceso, rectificación o supresión de los datos personales que pudieran haberse registrado. Debido a que no
+    recopilamos datos en la aplicación de escritorio ni almacenamos perfiles de usuario o identificadores personales directos en
+    el sitio web, podríamos solicitar detalles contextuales para localizar registros anonimizados de analítica web si fuera necesario.
   </p>
 
-  <h2>8. Contacto</h2>
+  <h2>9. Contacto</h2>
   <p>
-    Si tiene dudas o consultas sobre esta Política de Privacidad o sobre nuestras directrices de privacidad local, comuníquese con nosotros:
+    Si tiene dudas o consultas sobre esta Política de Privacidad o sobre nuestras prácticas de privacidad local, comuníquese con nosotros:
   </p>
   <ul>
     <li><strong>Correo electrónico:</strong> <a href="mailto:gitrafuh@gmail.com">gitrafuh@gmail.com</a></li>
-    <li><strong>Incidencias del proyecto:</strong> <a href="https://github.com/plynte-labs/LiveAudio/issues" target="_blank" rel="noopener noreferrer">github.com/plynte-labs/LiveAudio/issues</a></li>
+    <li><strong>Incidencias del proyecto:</strong> <a href={ISSUES_URL} target="_blank" rel="noopener noreferrer">github.com/plynte-labs/LiveAudio/issues</a></li>
     <li><strong>Organización:</strong> Plynte Labs</li>
   </ul>
 </LegalPage>

@@ -12,6 +12,7 @@
  */
 import { t } from "../i18n/ui";
 import { localizedPath, altLangPath, type Locale } from "../i18n/routes";
+import { REPO_URL, RELEASE_LATEST_URL } from "../config/release";
 import Button from "./Button.astro";
 import MobileNav from "./MobileNav.astro";
 
@@ -23,9 +24,7 @@ interface Props {
 const { lang = "en", path = "/" } = Astro.props;
 const tt = t(lang);
 
-const REPO_URL = "https://github.com/plynte-labs/LiveAudio";
 const X_URL = "https://x.com/franguhh";
-const RELEASE_TAG_URL = `${REPO_URL}/releases/tag/v1.6.0`;
 
 // Logical segments -> localized href + label. Order per the design system.
 const navItems = [
@@ -68,7 +67,7 @@ const mobileLinks = navItems.map(({ href, label }) => ({ href, label }));
       </a>
       <a
         class="pill brand-version"
-        href={RELEASE_TAG_URL}
+        href={RELEASE_LATEST_URL}
         target="_blank"
         rel="noopener noreferrer"
         aria-label={tt("brand.versionLinkLabel")}
@@ -253,7 +252,6 @@ const mobileLinks = navItems.map(({ href, label }) => ({ href, label }));
   .nav-link {
     font-family: var(--font-mono);
     font-size: var(--text-xs);
-    text-transform: lowercase;
     color: var(--color-text-muted);
     position: relative;
     display: inline-flex;

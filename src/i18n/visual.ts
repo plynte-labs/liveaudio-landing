@@ -1,8 +1,6 @@
 /**
  * Shared plain-language copy for the visual sections (step flow, call-to-action
- * bands, "technical details" labels). Facts mirror the existing v1.6.0 page copy:
- * Windows x64 installer, pick device + model, start the system, copy the overlay
- * URL into an OBS Browser source. EN and ES are kept in sync.
+ * bands, "technical details" labels). EN and ES are kept in sync.
  */
 import type { Locale } from "./routes";
 import { localizedPath } from "./routes";
@@ -38,18 +36,36 @@ const en = (l: Locale): VisualCopy => ({
   flow: {
     eyebrow: "// how it works",
     heading: "How it works in 3 steps.",
-    intro: "From install to captions on your stream. No account and no API key.",
+    intro: "From install to captions on your stream. No account, no API key, and zero data collected by the app.",
     steps: [
-      { icon: "download", title: "Install", body: "Download the free Windows installer and run it.", route: "download", linkLabel: "Get the installer" },
-      { icon: "mic", title: "Pick your mic", body: "Choose your microphone and a speech model, then start the system.", route: "getting-started", linkLabel: "See the setup guide" },
-      { icon: "monitor", title: "Add it to OBS", body: "Copy the overlay link into an OBS Browser source. Captions show on your stream.", route: "obs-setup", linkLabel: "Set up OBS" },
+      {
+        icon: "download",
+        title: "Install",
+        body: "Download the free Windows installer (.exe) or Linux package (.AppImage / .deb) and launch it.",
+        route: "download",
+        linkLabel: "Get LiveAudio",
+      },
+      {
+        icon: "mic",
+        title: "Pick your mic & engine",
+        body: "Choose your microphone or system audio, pick Parakeet-TDT (EN/ES) or Whisper, and start the system.",
+        route: "getting-started",
+        linkLabel: "See the setup guide",
+      },
+      {
+        icon: "monitor",
+        title: "Add it to OBS",
+        body: "Copy the overlay link into an OBS Browser source. Captions show on your stream with 7 live themes.",
+        route: "obs-setup",
+        linkLabel: "Set up OBS",
+      },
     ],
   },
   band: {
     download: {
       icon: "download",
       heading: "Need LiveAudio first?",
-      body: "It is free and open source (MIT), and it runs on your own PC.",
+      body: "It is free and open source (MIT), runs 100% locally on Windows & Linux, and collects zero data.",
       actions: [{ label: "Download LiveAudio (free)", href: localizedPath(l, "download"), variant: "primary" }],
     },
     obs: {
@@ -77,18 +93,36 @@ const es = (l: Locale): VisualCopy => ({
   flow: {
     eyebrow: "// cómo funciona",
     heading: "Cómo funciona en 3 pasos.",
-    intro: "De la instalación a los subtítulos en tu stream. Sin cuenta y sin API key.",
+    intro: "De la instalación a los subtítulos en tu transmisión. Sin cuenta, sin clave API y sin recolección de datos en la app.",
     steps: [
-      { icon: "download", title: "Instala", body: "Descarga el instalador gratuito para Windows y ejecútalo.", route: "download", linkLabel: "Obtener el instalador" },
-      { icon: "mic", title: "Elige tu micrófono", body: "Elige tu micrófono y un modelo de voz, y luego inicia el sistema.", route: "getting-started", linkLabel: "Ver la guía de inicio" },
-      { icon: "monitor", title: "Agrégalo a OBS", body: "Copia el enlace del overlay en una fuente de navegador de OBS. Los subtítulos aparecen en tu stream.", route: "obs-setup", linkLabel: "Configurar OBS" },
+      {
+        icon: "download",
+        title: "Instala",
+        body: "Descarga el instalador gratuito para Windows (.exe) o el paquete para Linux (.AppImage / .deb) y ábrelo.",
+        route: "download",
+        linkLabel: "Obtener LiveAudio",
+      },
+      {
+        icon: "mic",
+        title: "Elige micrófono y motor",
+        body: "Selecciona tu micrófono o audio del sistema, elige Parakeet-TDT (ES/EN) o Whisper e inicia el sistema.",
+        route: "getting-started",
+        linkLabel: "Ver la guía de inicio",
+      },
+      {
+        icon: "monitor",
+        title: "Agrégalo a OBS",
+        body: "Copia el enlace del overlay en una fuente de navegador de OBS. Los subtítulos aparecen con 7 temas en vivo.",
+        route: "obs-setup",
+        linkLabel: "Configurar OBS",
+      },
     ],
   },
   band: {
     download: {
       icon: "download",
       heading: "¿Aún no tienes LiveAudio?",
-      body: "Es gratis y de código abierto (MIT), y funciona en tu propia PC.",
+      body: "Es gratis y de código abierto (MIT), funciona 100% en tu equipo en Windows y Linux, y no recopila datos.",
       actions: [{ label: "Descargar LiveAudio (gratis)", href: localizedPath(l, "download"), variant: "primary" }],
     },
     obs: {

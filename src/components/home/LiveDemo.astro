@@ -1,12 +1,20 @@
 ---
 /**
- * LiveDemo — "Live Demo" section. Leads with the CURRENT v1.6.0 (Rust + Tauri 2)
- * product screenshot; the old screen recording stays below, explicitly badged
- * as the deprecated Python version until a Tauri video exists (trust signal
- * stays honest: current UI first, archive clearly labeled). Native
- * <video controls> for the archive — the browser's own player, so it always
- * works. The Hero owns the page <h1>; this section uses an <h2>. Zero React.
- * Tokens/classes only. Props: lang.
+ * LiveDemo — "Live Demo" section on `/` and `/es/`.
+ *
+ * Displays real native Rust + Tauri 2 desktop captures already bundled in
+ * `public/media/liveaudio-v1.6.0/`:
+ *   1. Setup Home (`v1-6-0-setup-home.webp`) — audio source, language, profile,
+ *      live subtitles feed, and OBS Studio Browser Source URL.
+ *   2. Style Editor (`v1-6-0-style-editor.webp`) — live preview and theme/preset
+ *      controls for the 7 built-in OBS overlay themes.
+ *
+ * TODO (post-v1.6.5 tag): Drop in a fresh v1.6.5 NVIDIA Parakeet-TDT desktop
+ * screenshot and/or silent WebM/MP4 loop under `public/media/liveaudio-v1.6.5/`
+ * and update the image/video sources below once captured.
+ *
+ * Captions remain strictly honest about what the current captures show.
+ * Zero React. Tokens/classes only. Props: lang.
  */
 import type { Locale } from "../../i18n/routes";
 import { homeCopy } from "../../i18n/pages/home";
@@ -27,45 +35,42 @@ const copy = homeCopy(lang).demo;
       <p class="demo-lead">{copy.lead}</p>
     </header>
 
-    <!-- Real-capture trust badge: neon live-dot = SIGNAL (real/live), not amber. -->
+    <!-- Real-capture trust badge: neon live-dot = SIGNAL (real/live). -->
     <p class="pill demo-badge">
       <span class="live-dot" aria-hidden="true"></span>
       {copy.badge}
     </p>
 
-    <!-- Current v1.5.0 interface first (no Tauri video yet). -->
-    <figure class="console demo-frame">
-      <img
-        class="demo-image"
-        src="/media/liveaudio-v1.5.0/v1-5-0-avanzado.webp"
-        width="1917"
-        height="1013"
-        alt={copy.imageAlt}
-        loading="lazy"
-        decoding="async"
-      />
-      <figcaption class="demo-caption">{copy.imageCaption}</figcaption>
-    </figure>
+    <!-- Native Rust + Tauri 2 desktop captures (setup home + 7-theme style editor).
+         Replace with public/media/liveaudio-v1.6.5/ Parakeet capture or silent
+         WebM/MP4 loop once v1.6.5 UI media is recorded. -->
+    <div class="demo-grid">
+      <figure class="console demo-frame">
+        <img
+          class="demo-image"
+          src="/media/liveaudio-v1.6.0/v1-6-0-setup-home.webp"
+          width="1917"
+          height="1025"
+          alt={copy.setupAlt}
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption class="demo-caption">{copy.setupCaption}</figcaption>
+      </figure>
 
-    <!-- Archived recording: explicitly the deprecated Python version. -->
-    <p class="pill pill-amber demo-legacy-badge">
-      {copy.legacyBadge}
-    </p>
-
-    <!-- Native player in the hero console frame. Simple = robust. -->
-    <figure class="console demo-frame demo-legacy">
-      <video
-        class="demo-video"
-        poster="/demo/liveaudio-demo-poster.jpg"
-        controls
-        playsinline
-        preload="metadata"
-        aria-label={copy.videoAriaLabel}
-      >
-        <source src="/demo/liveaudio-demo.mp4" type="video/mp4" />
-      </video>
-      <figcaption class="demo-caption">{copy.legacyCaption}</figcaption>
-    </figure>
+      <figure class="console demo-frame">
+        <img
+          class="demo-image"
+          src="/media/liveaudio-v1.6.0/v1-6-0-style-editor.webp"
+          width="977"
+          height="850"
+          alt={copy.styleAlt}
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption class="demo-caption">{copy.styleCaption}</figcaption>
+      </figure>
+    </div>
   </div>
 </section>
 
@@ -95,6 +100,17 @@ const copy = homeCopy(lang).demo;
   .demo-badge {
     margin: 0 0 var(--space-7);
   }
+  .demo-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    align-items: start;
+  }
+  @media (min-width: 1024px) {
+    .demo-grid {
+      grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+    }
+  }
   .demo-image {
     display: block;
     width: 100%;
@@ -102,24 +118,10 @@ const copy = homeCopy(lang).demo;
     border-radius: var(--radius);
     background: var(--color-surface-2);
   }
-  .demo-legacy-badge {
-    margin: var(--space-8) 0 var(--space-5);
-  }
-  .demo-legacy {
-    opacity: 0.92;
-  }
-  /* Console frame around the video — reuses the hero `.console` treatment. */
   .demo-frame {
     margin: 0;
     padding: var(--space-3);
     overflow: hidden;
-  }
-  .demo-video {
-    display: block;
-    width: 100%;
-    height: auto;
-    border-radius: var(--radius);
-    background: var(--color-surface-2);
   }
   .demo-caption {
     margin: var(--space-3) 0 0;
@@ -127,5 +129,6 @@ const copy = homeCopy(lang).demo;
     font-size: var(--text-xs);
     color: var(--color-text-muted);
     padding-inline: var(--space-1);
+    line-height: 1.5;
   }
 </style>

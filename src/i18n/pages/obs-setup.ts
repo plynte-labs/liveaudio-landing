@@ -1,39 +1,29 @@
 /**
  * /obs-setup/ page copy — bilingual, fact-checked.
  *
- * This is the highest-intent, citable HowTo page (per the product spec). Every step
- * is the REAL OBS Browser-Source flow from the product spec (verbatim facts):
+ * Every step mirrors the real OBS Browser Source flow:
  *   1. OBS → Sources → + → Browser
- *   2. Paste the copied overlay URL (http://127.0.0.1:<port>/overlay), size 1920×1080
+ *   2. Start the system, copy the overlay URL (http://127.0.0.1:<port>/overlay),
+ *      leave Local File unchecked, size 1920×1080
  *   3. Disable "Shut down source when not visible"
- *   4. Custom port: ws_port in config.json; OBS HTML reads ?port=XXXX (default 8765)
- *   5. In LiveAudio: profile + device + model → Save → START SYSTEM
+ *   4. Match active port (default 8765; fallback up to ws_port + 9)
+ *   5. Check captions, pick from 7 live themes, record .srt/.vtt/.jsonl locally
  *
- * WebSocket payload fields (per the product spec): id, text, style, created_at, processed_at,
- * queue_delay, total_delay, latency, is_replay, catchup_interval_sec.
- * Loopback-only peers plus an Origin allowlist (403 otherwise), no auth. Verified against v1.6.0.
- *
- * Spanish is neutral/professional (no Rioplatense slang in artifacts).
+ * Spanish is neutral/professional (no regional slang or Spanglish leaks).
  */
 
 import type { Locale } from "../routes";
 import { localizedPath } from "../routes";
+import { LIVEAUDIO_TAG } from "../../config/release";
 
 /** One numbered step in the OBS setup HowTo. */
 export interface ObsStep {
-  /** Mono kicker (e.g. "// browser source"). */
   kicker: string;
-  /** Answer-first step name (also becomes the HowTo step `name`). */
   name: string;
-  /** Step body — the procedural detail (also becomes the HowTo step `text`). */
   text: string;
-  /** Optional inline code token shown as a `.pill` (port, filename, size…). */
   token?: string;
-  /** Optional amber operator caveat shown as a `.pill-amber`. */
   amber?: string;
-  /** One plain-language sentence shown on the walkthrough card. */
   short: string;
-  /** What the viewer should see once the step is done. */
   see: string;
 }
 
@@ -41,41 +31,31 @@ export interface ObsStep {
 export interface PayloadField {
   field: string;
   desc: string;
-  /** When true, render the value column in amber (timing law). */
   timing?: boolean;
 }
 
 export interface ObsSetupCopy {
-  // <head>
   title: string;
   description: string;
 
-  // Hero / answer-first opener
   eyebrow: string;
-  /** Single <h1> for the page. */
   h1: string;
   intro: string;
-  /** Plain-language lead shown under the H1 (the technical `intro` moves into Technical details). */
   introPlain: string;
-  /** Prominent overlay-URL block. */
   url: { label: string; value: string; hint: string; copy: string; copied: string };
-  /** Labels used by the walkthrough cards. */
   seeLabel: string;
   moreDetail: string;
   techEyebrow: string;
   techHeading: string;
 
-  // Steps section
   stepsEyebrow: string;
   stepsHeading: string;
   steps: ObsStep[];
 
-  // Diagram section
   diagramEyebrow: string;
   diagramHeading: string;
   diagramBody: string;
 
-  // Payload reference section
   payloadEyebrow: string;
   payloadHeading: string;
   payloadIntro: string;
@@ -84,17 +64,14 @@ export interface ObsSetupCopy {
   payloadFields: PayloadField[];
   payloadNote: string;
 
-  // Closing Download module
   closingEyebrow: string;
   closingHeading: string;
   closingBody: string;
   download: string;
   downloadHref: string;
 
-  // HowTo JSON-LD name
   howToName: string;
 
-  // Diagram node labels (passed to WsDiagram.astro)
   diagram: {
     liveaudio: string;
     obs: string;
@@ -107,19 +84,19 @@ export interface ObsSetupCopy {
 const en: ObsSetupCopy = {
   title: "OBS setup — LiveAudio local captions in OBS (step by step)",
   description:
-    "Add LiveAudio captions to OBS using a Browser source and the overlay URL copied from LiveAudio.",
+    "Add LiveAudio local captions to OBS Studio using a Browser Source with Local File unchecked, 7 live themes, anti-burst /overlay reconnection, and local .srt/.vtt/.jsonl session recording.",
 
   eyebrow: "// obs setup",
   h1: "Add LiveAudio captions to OBS in five steps.",
   intro:
-    "Start the system in LiveAudio, then copy its overlay URL into an OBS Browser source. The overlay talks to LiveAudio over a local WebSocket protected by a loopback-only listener and an Origin allowlist. Windows x64 (v1.6.0).",
+    `Start the system in LiveAudio, then copy its overlay URL into an OBS Browser Source. The /overlay page connects over a local WebSocket with anti-burst reconnection, 7 live themes (default, karaoke, neon, minimal, bold, rgb, typewriter), a loopback-only listener, and an Origin allowlist — while every session records .srt (DaVinci Resolve-ready), .vtt, and .jsonl locally and the stream-safe updater blocks updates while OBS is connected. Windows x64 & Linux x86_64 (${LIVEAUDIO_TAG}).`,
 
   introPlain:
-    "Start LiveAudio, copy its overlay link, and paste it into OBS. Five short steps, about what to click and what you should see.",
+    "Start LiveAudio, copy its overlay link, and paste it into OBS. Five short steps with 7 live themes, anti-burst reconnection, and automatic local .srt/.vtt/.jsonl recording.",
   url: {
     label: "Your overlay link",
     value: "http://127.0.0.1:8765/overlay",
-    hint: "Paste this into the Browser source URL box. Always use Copy URL in LiveAudio so the port matches: it can change if 8765 is busy.",
+    hint: "Paste this into the Browser Source URL box (with Local File unchecked). Always start the system before copying the URL in LiveAudio so the active port matches.",
     copy: "Copy link",
     copied: "Copied",
   },
@@ -142,7 +119,7 @@ const en: ObsSetupCopy = {
     {
       kicker: "// local overlay",
       name: "Paste the overlay URL and size it 1920×1080",
-      text: "In LiveAudio, select your audio device, profile and model and click Save. Start the system, then copy the overlay URL with Copy URL (Browser Source URL, in the OBS Studio Integration card). In OBS, leave Local File unchecked and paste it into URL. Set Width to 1920 and Height to 1080: the full canvas, because the overlay positions the captions itself.",
+      text: "In LiveAudio, select your audio device (mic or Windows WASAPI / Linux PipeWire-PulseAudio loopback), profile, and engine (NVIDIA Parakeet-TDT for EN/ES or Whisper), then click Save. Start the system before copying the overlay URL with Copy URL (Browser Source URL, in the OBS Studio Integration card). In OBS, leave Local File unchecked and paste it into URL. Set Width to 1920 and Height to 1080: the full canvas, because the overlay positions the captions itself.",
       token: "1920×1080",
       short: "Start the system in LiveAudio, press Copy URL, and paste it into the URL box. Leave Local File unchecked and set the size to 1920×1080.",
       see: "A full-canvas source. The overlay places the captions for you.",
@@ -165,30 +142,30 @@ const en: ObsSetupCopy = {
       see: "A URL ending in /overlay with the active port (8765 by default).",
     },
     {
-      kicker: "// go live",
-      name: "Check captions in OBS",
-      text: "Speak and check for captions in the OBS Browser source. Style tab changes reach OBS instantly. If you open OBS before LiveAudio, the overlay retries with a 1–8 s backoff and rescans the ports, so it connects once LiveAudio starts. If captions show in a regular browser but not in OBS, open the Browser source properties and press Refresh cache of current page.",
-      token: "Check captions",
-      short: "Speak, and watch the Browser source in OBS.",
-      see: "Your words appearing as captions in OBS.",
+      kicker: "// go live & themes",
+      name: "Check captions & pick a live OBS theme",
+      text: "Speak and check for captions in the OBS Browser Source. Switch live across 7 built-in themes in the Style tab (default, karaoke, neon, minimal, bold, rgb, typewriter) — changes reach OBS instantly without refreshing. Anti-burst /overlay reconnection keeps captions clean if OBS reconnects, every session saves DaVinci Resolve-ready .srt, .vtt, and .jsonl files locally, and the stream-safe updater blocks updates while live or OBS is connected. If captions show in a regular browser but not in OBS, open the Browser Source properties and press Refresh cache of current page.",
+      token: "7 live themes · anti-burst /overlay",
+      short: "Speak, watch captions appear in OBS, and switch live across the 7 built-in themes.",
+      see: "Your words appearing as styled captions in OBS.",
     },
   ],
 
   diagramEyebrow: "// the signal path",
   diagramHeading: "How the caption signal reaches OBS.",
   diagramBody:
-    "LiveAudio transcribes locally and broadcasts subtitle JSON over a local WebSocket. OBS connects through the included overlay, but any HTML or WebSocket client on localhost can receive the same broadcast. The server listens on 127.0.0.1 only, drops non-loopback peers and has no authentication. Browser pages are filtered by Origin (HTTP 403 otherwise): the OBS Browser source and the /overlay page are already allowed. Other local browser tools on a different port must be added in Advanced > Allowed local connections (the card also lists Recent blocked attempts).",
+    "LiveAudio transcribes locally and broadcasts subtitle JSON over a local WebSocket. OBS connects through the built-in /overlay page with anti-burst reconnection and 7 live themes, and any HTML or WebSocket client on localhost can receive the same broadcast. The server listens on 127.0.0.1 only, drops non-loopback peers, and filters browser pages by Origin (HTTP 403 otherwise): OBS Browser Source and /overlay are already allowed. Other local browser tools on a different port can be authorized in Advanced > Allowed local connections.",
 
   payloadEyebrow: "// websocket payload",
   payloadHeading: "What each caption frame contains.",
   payloadIntro:
-    "Every caption is a small JSON frame broadcast on the local WebSocket. These are the documented fields you can read in your own overlay or client. Besides caption frames, the server sends a hello frame first on each connection, theme frames, and optional subtitle_partial frames; these carry a type field and no caption text, so skip them when you only want captions.",
+    "Every caption is a small JSON frame broadcast on the local WebSocket. Besides caption frames, the server sends a hello frame first on each connection, theme frames, and optional subtitle_partial frames; these carry a type field and no caption text, so skip them when you only want final captions.",
   payloadColField: "field",
   payloadColDesc: "description",
   payloadFields: [
     { field: "id", desc: "Opaque per-session caption id, such as utt_42. Not monotonic; do not use it for ordering." },
     { field: "text", desc: "The transcribed caption text." },
-    { field: "style", desc: "Display style hint for the overlay." },
+    { field: "style", desc: "Active live theme: default, karaoke, neon, minimal, bold, rgb, or typewriter." },
     { field: "created_at", desc: "When the audio segment was captured." },
     { field: "processed_at", desc: "When transcription finished." },
     { field: "queue_delay", desc: "Seconds spent waiting in the queue.", timing: true },
@@ -198,13 +175,13 @@ const en: ObsSetupCopy = {
     { field: "catchup_interval_sec", desc: "Spacing used when replaying backlog.", timing: true },
   ],
   payloadNote:
-    "Latency depends on speech segmentation, model, hardware and system load. Timing fields are measured in seconds.",
+    "Latency depends on speech segmentation, model, hardware, and system load. Timing fields are measured in seconds. Every session also saves .srt, .vtt, and .jsonl locally.",
 
   closingEyebrow: "// download",
   closingHeading: "Get LiveAudio and wire up OBS today.",
   closingBody:
-    "Free & open-source (MIT). No subscription, no API key. You only pay your own electricity — hardware not included. Windows x64 (v1.6.0).",
-  download: "Download LiveAudio v1.6.0 (free)",
+    `Free & open-source (MIT) for Windows x64 & Linux x86_64 (${LIVEAUDIO_TAG}). No subscription, no API key, and zero data collected or retained by the desktop app.`,
+  download: `Download LiveAudio ${LIVEAUDIO_TAG} (free)`,
   downloadHref: localizedPath("en", "download"),
 
   howToName: "Add LiveAudio captions to OBS",
@@ -221,19 +198,19 @@ const en: ObsSetupCopy = {
 const es: ObsSetupCopy = {
   title: "Configurar OBS — subtítulos locales de LiveAudio en OBS (paso a paso)",
   description:
-    "Agrega subtítulos de LiveAudio a OBS mediante una fuente de navegador y la URL del overlay copiada desde LiveAudio.",
+    "Agrega subtítulos locales de LiveAudio a OBS Studio con una fuente de navegador (Archivo local desmarcado), 7 temas en vivo, reconexión anti-ráfagas en /overlay y grabación local .srt/.vtt/.jsonl.",
 
   eyebrow: "// configurar obs",
   h1: "Agrega los subtítulos de LiveAudio a OBS en cinco pasos.",
   intro:
-    "Inicia el sistema en LiveAudio y después copia la URL del overlay en una fuente de navegador de OBS. El overlay se comunica con LiveAudio por un WebSocket local protegido con un listener solo loopback y una lista de orígenes permitidos. Windows x64 (v1.6.0).",
+    `Inicia el sistema en LiveAudio y después copia la URL del overlay en una fuente de navegador de OBS. La página /overlay se conecta por un WebSocket local con reconexión anti-ráfagas, 7 temas en vivo (default, karaoke, neon, minimal, bold, rgb, typewriter), listener solo loopback y lista de orígenes permitidos, mientras cada sesión guarda .srt (listo para DaVinci Resolve), .vtt y .jsonl en local y el actualizador seguro bloquea actualizaciones mientras OBS está conectado. Windows x64 y Linux x86_64 (${LIVEAUDIO_TAG}).`,
 
   introPlain:
-    "Inicia LiveAudio, copia su enlace del overlay y pégalo en OBS. Cinco pasos cortos: qué pulsar y qué deberías ver.",
+    "Inicia LiveAudio, copia su enlace del overlay y pégalo en OBS. Cinco pasos cortos con 7 temas en vivo, reconexión anti-ráfagas y grabación automática .srt/.vtt/.jsonl en local.",
   url: {
     label: "Tu enlace del overlay",
     value: "http://127.0.0.1:8765/overlay",
-    hint: "Pégalo en el cuadro URL de la fuente de navegador. Usa siempre Copiar URL en LiveAudio para que el puerto coincida: puede cambiar si el 8765 está ocupado.",
+    hint: "Pégalo en el cuadro URL de la fuente de navegador (con Archivo local desmarcado). Inicia siempre el sistema antes de copiar la URL en LiveAudio para que el puerto activo coincida.",
     copy: "Copiar enlace",
     copied: "Copiado",
   },
@@ -256,7 +233,7 @@ const es: ObsSetupCopy = {
     {
       kicker: "// overlay local",
       name: "Pega la URL del overlay y configura 1920×1080",
-      text: "En LiveAudio, selecciona el dispositivo de audio, el perfil y el modelo y pulsa Guardar. Inicia el sistema y después copia la URL del overlay con Copiar URL (URL de Fuente de Navegador, en la tarjeta de integración con OBS Studio). En OBS, deja Archivo local desmarcado y pégala en URL. Configura Ancho 1920 y Alto 1080: el lienzo completo, porque el overlay posiciona los subtítulos por sí mismo.",
+      text: "En LiveAudio, selecciona tu dispositivo de audio (micrófono o loopback WASAPI en Windows / PipeWire-PulseAudio en Linux), el perfil y el motor (NVIDIA Parakeet-TDT para ES/EN o Whisper) y pulsa Guardar. Inicia el sistema antes de copiar la URL del overlay con Copiar URL (URL de Fuente de Navegador, en la tarjeta de integración con OBS Studio). En OBS, deja Archivo local desmarcado y pégala en URL. Configura Ancho 1920 y Alto 1080: el lienzo completo, porque el overlay posiciona los subtítulos por sí mismo.",
       token: "1920×1080",
       short: "Inicia el sistema en LiveAudio, pulsa Copiar URL y pégala en el cuadro URL. Deja Archivo local desmarcado y configura el tamaño 1920×1080.",
       see: "Una fuente de lienzo completo. El overlay coloca los subtítulos por ti.",
@@ -279,30 +256,30 @@ const es: ObsSetupCopy = {
       see: "Una URL que termina en /overlay con el puerto activo (8765 por defecto).",
     },
     {
-      kicker: "// salir en vivo",
-      name: "Comprueba los subtítulos en OBS",
-      text: "Habla y comprueba los subtítulos en la fuente de navegador de OBS. Los cambios de la pestaña Estilo llegan a OBS al instante. Si abres OBS antes que LiveAudio, el overlay reintenta con espera creciente de 1 a 8 s y vuelve a buscar el puerto, así que se conecta cuando LiveAudio inicia. Si los subtítulos se ven en un navegador normal pero no en OBS, abre las propiedades de la fuente de navegador y pulsa Actualizar la caché de la página actual.",
-      token: "Comprueba los subtítulos",
-      short: "Habla y mira la fuente de navegador en OBS.",
-      see: "Tus palabras apareciendo como subtítulos en OBS.",
+      kicker: "// salir en vivo y temas",
+      name: "Comprueba los subtítulos y elige un tema en vivo",
+      text: "Habla y comprueba los subtítulos en la fuente de navegador de OBS. Cambia al instante entre 7 temas integrados desde la pestaña Estilo (default, karaoke, neon, minimal, bold, rgb, typewriter) sin recargar OBS. La reconexión anti-ráfagas de /overlay evita acumulaciones si OBS reconecta, cada sesión guarda archivos .srt (listos para DaVinci Resolve), .vtt y .jsonl en local y el actualizador seguro bloquea actualizaciones mientras estás en directo o OBS está conectado. Si los subtítulos se ven en un navegador normal pero no en OBS, abre las propiedades de la fuente de navegador y pulsa Actualizar la caché de la página actual.",
+      token: "7 temas en vivo · /overlay anti-ráfagas",
+      short: "Habla, mira los subtítulos en OBS y cambia al vuelo entre los 7 temas integrados.",
+      see: "Tus palabras apareciendo como subtítulos estilizados en OBS.",
     },
   ],
 
   diagramEyebrow: "// el camino de la señal",
   diagramHeading: "Cómo llega la señal de subtítulos a OBS.",
   diagramBody:
-    "LiveAudio transcribe localmente y emite subtítulos en JSON por un WebSocket local. OBS se conecta mediante el overlay incluido, pero cualquier cliente HTML o WebSocket en localhost puede recibir la misma transmisión. El servidor escucha solo en 127.0.0.1, descarta pares que no sean loopback y no tiene autenticación. Las páginas de navegador se filtran por Origin (HTTP 403 en caso contrario): la fuente de navegador de OBS y la página /overlay ya están permitidas. Otras herramientas de navegador locales en otro puerto deben agregarse en Avanzado > Conexiones locales permitidas (la tarjeta también muestra Intentos bloqueados recientes).",
+    "LiveAudio transcribe localmente y emite subtítulos en JSON por un WebSocket local. OBS se conecta mediante la página integrada /overlay con reconexión anti-ráfagas y 7 temas en vivo, y cualquier cliente HTML o WebSocket en localhost puede recibir la misma transmisión. El servidor escucha solo en 127.0.0.1, descarta pares que no sean loopback y filtra páginas de navegador por Origin (HTTP 403 en caso contrario): la fuente de navegador de OBS y /overlay ya están permitidos. Otras herramientas locales en otro puerto pueden autorizarse en Avanzado > Conexiones locales permitidas.",
 
   payloadEyebrow: "// payload del websocket",
   payloadHeading: "Qué contiene cada frame de subtítulo.",
   payloadIntro:
-    "Cada subtítulo es un pequeño frame JSON emitido por el WebSocket local. Estos son los campos documentados que puedes leer en tu propio overlay o cliente. Además de los frames de subtítulo, el servidor envía primero un frame hello en cada conexión, frames theme y, opcionalmente, frames subtitle_partial; llevan un campo type y no tienen texto de subtítulo, así que omítelos si solo quieres subtítulos.",
+    "Cada subtítulo es un pequeño frame JSON emitido por el WebSocket local. Además de los frames de subtítulo, el servidor envía primero un frame hello en cada conexión, frames theme y, opcionalmente, frames subtitle_partial; llevan un campo type y no tienen texto de subtítulo, así que omítelos si solo quieres subtítulos finales.",
   payloadColField: "campo",
   payloadColDesc: "descripción",
   payloadFields: [
     { field: "id", desc: "Id opaco del subtítulo por sesión, como utt_42. No es monotónico; no lo uses para ordenar." },
     { field: "text", desc: "El texto transcrito del subtítulo." },
-    { field: "style", desc: "Sugerencia de estilo de visualización para el overlay." },
+    { field: "style", desc: "Tema en vivo activo: default, karaoke, neon, minimal, bold, rgb o typewriter." },
     { field: "created_at", desc: "Cuándo se capturó el segmento de audio." },
     { field: "processed_at", desc: "Cuándo terminó la transcripción." },
     { field: "queue_delay", desc: "Segundos de espera en la cola.", timing: true },
@@ -312,13 +289,13 @@ const es: ObsSetupCopy = {
     { field: "catchup_interval_sec", desc: "Espaciado usado al repetir el backlog.", timing: true },
   ],
   payloadNote:
-    "La latencia depende de la segmentación, el modelo, el hardware y la carga. Los campos de tiempo se miden en segundos.",
+    "La latencia depende de la segmentación, el modelo, el hardware y la carga. Los campos de tiempo se miden en segundos. Cada sesión guarda además .srt, .vtt y .jsonl en local.",
 
   closingEyebrow: "// descargar",
   closingHeading: "Descarga LiveAudio y configura OBS hoy.",
   closingBody:
-    "Gratis y de código abierto (MIT). Sin suscripción, sin API key. Solo pagas tu propia electricidad — el hardware no está incluido. Windows x64 (v1.6.0).",
-  download: "Descargar LiveAudio v1.6.0 (gratis)",
+    `Gratis y de código abierto (MIT) para Windows x64 y Linux x86_64 (${LIVEAUDIO_TAG}). Sin suscripción, sin clave API y sin recolección ni retención de datos en la aplicación de escritorio.`,
+  download: `Descargar LiveAudio ${LIVEAUDIO_TAG} (gratis)`,
   downloadHref: localizedPath("es", "download"),
 
   howToName: "Agregar subtítulos de LiveAudio a OBS",

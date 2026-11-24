@@ -21,7 +21,7 @@ const path = localizedPath("en", "terms");
   description="Terms of Service for LiveAudio desktop application and liveaudio.opencohost.com website. Open-source MIT licensing, warranty disclaimers, and terms of use."
   eyebrow="AGREEMENT · LEGAL"
   heading="Terms of Service"
-  lastUpdated="Last updated: October 2026"
+  lastUpdated="Last updated: November 2026"
   badge="MIT OPEN SOURCE"
   lang="en"
   path={path}
@@ -62,11 +62,13 @@ const path = localizedPath("en", "terms");
   <ul>
     <li>
       <strong>Hardware Capacity:</strong> You are solely responsible for ensuring your system meets the hardware requirements
-      (CPU instruction support, RAM, and GPU VRAM) needed to execute your chosen Whisper model size without thermal or stability issues.
+      (CPU instruction support, RAM, and optional GPU VRAM) needed to execute your chosen speech model without thermal or stability issues.
     </li>
     <li>
-      <strong>Third-Party Model Weights:</strong> While LiveAudio provides tools to fetch compatible Whisper GGML model binaries,
-      the original Whisper neural network architecture is developed by OpenAI. Model weights are subject to their respective open weights licenses.
+      <strong>Third-Party Model Weights:</strong> While LiveAudio provides tools to fetch compatible ONNX Runtime models
+      (NVIDIA Parakeet-TDT and Whisper) and optional CTranslate2 weights, the underlying neural network architectures and
+      pretrained weights are developed by their respective authors (including NVIDIA and OpenAI) and remain subject to their
+      respective open-weights licenses.
     </li>
     <li>
       <strong>Local WebSocket Endpoint:</strong> LiveAudio exposes an unencrypted local WebSocket stream (default: <code>ws://127.0.0.1:8765</code>)
@@ -146,7 +148,7 @@ const path = localizedPath("en", "terms");
     For questions regarding licensing or commercial collaborations, please contact:
   </p>
   <ul>
-    <li><strong>Email:</strong> <a href="mailto:contact@opencohost.com">contact@opencohost.com</a></li>
+    <li><strong>Email:</strong> <a href="mailto:gitrafuh@gmail.com">gitrafuh@gmail.com</a></li>
     <li><strong>GitHub Repository:</strong> <a href="https://github.com/plynte-labs/LiveAudio" target="_blank" rel="noopener noreferrer">github.com/plynte-labs/LiveAudio</a></li>
     <li><strong>Organization:</strong> Plynte Labs</li>
   </ul>
